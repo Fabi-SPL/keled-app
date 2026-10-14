@@ -9,6 +9,7 @@ struct CardItem: Codable, Hashable {
     var action: String?
     var on: Bool?
     var symbol: String?
+    var confirm: Bool?
 }
 
 /// A button on the card. With `url` it only opens something; otherwise the hub runs it.
@@ -185,6 +186,11 @@ extension Card {
         if s < 5400 { return "\(s / 60)m" }
         if s < 129_600 { return "\(s / 3600)h" }
         return "\(s / 86400)d"
+    }
+
+    /// The hub marks every action that needs a second tap and Face ID; rows and checks obey it too.
+    func needsConfirm(_ ref: String, item: CardItem? = nil) -> Bool {
+        item?.confirm == true || actions?.first(where: { $0.id == ref })?.confirm == true
     }
 
     func isArmed(_ ref: String, at now: Date) -> Bool {

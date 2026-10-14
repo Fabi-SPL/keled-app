@@ -6,16 +6,21 @@ import { execFile } from 'node:child_process'
 import { appendFileSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { promisify } from 'node:util'
-import { ACTION_REF, DATA_DIR, putCard } from './store.mjs'
+import { ACTION_REF, DATA_DIR, putCard, markConfirm } from './store.mjs'
 
 const execFileP = promisify(execFile)
 export const ARM_MS = 10_000
 export const FLASH_OK_MS = 30_000
 export const FLASH_FAIL_MS = 120_000
 
+// Args fill URL paths and argv: no dot segments that collapse a path, no leading dash an argv
+// would read as an option.
 export function parseRef(ref) {
   const m = String(ref ?? '').match(ACTION_REF)
-  return m ? { name: m[1], arg: m[2] ?? '' } : null
+  if (!m) return null
+  const arg = m[2] ?? ''
+  if (/^.{1,2}$/.test(arg) || arg.startsWith('-')) return null
+  return { name: m[1], arg }
 }
 
 // Only refs the card itself shows can be fired, so a stolen token cannot call a handler the
@@ -122,7 +127,8 @@ export function createActions({ feeds = [], runFeed }) {
 
   // Armed buttons and the last result ride along on the served card until they expire.
   function decorate(card, now = Date.now()) {
-    const out = { ...card }
+    const feed = card.source?.startsWith('feed:') ? feeds.find((f) => f.name === card.source.slice(5)) : null
+    const out = feed?.confirm?.length ? markConfirm(card, (n) => feed.confirm.includes(n)) : { ...card }
     const arm = {}
     for (const [key, until] of armed) {
       if (until < now) { armed.delete(key); continue }

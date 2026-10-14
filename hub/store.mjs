@@ -319,14 +319,25 @@ function writeAtomic(file, value) {
   renameSync(tmp, file)
 }
 
-// allowHandlers false is the HTTP path: the caller cannot set `do`, and a card that already has
-// handlers keeps them, so a phone can never turn a widget into a command runner.
+export const MAX_CARDS = 150
+export const MAX_CARD_BYTES = 32 * 1024
+const refuse = (status, msg) => Object.assign(new Error(msg), { status })
+
+// allowHandlers false is the HTTP path: the caller cannot set `do` or `source`, and cannot touch a
+// card that has handlers or belongs to a feed. Rewriting such a card's actions over the wire would
+// let a token holder re-aim a handler or skip its confirm.
 export function putCard(input, { allowHandlers = true } = {}) {
   const { card, errors } = normalizeCard(input, { allowHandlers })
-  if (errors) throw Object.assign(new Error(errors.join('; ')), { status: 400 })
+  if (errors) throw refuse(400, errors.join('; '))
+  const prev = getCard(card.id)
   if (!allowHandlers) {
-    const prev = getCard(card.id)
-    if (prev?.do) card.do = prev.do
+    if (prev?.do) throw refuse(409, `${card.id} has handlers; change it with widget.mjs on the PC`)
+    if (prev?.source?.startsWith('feed:')) throw refuse(409, `${card.id} belongs to ${prev.source}`)
+    card.source = 'push'
+  }
+  if (JSON.stringify(card).length > MAX_CARD_BYTES) throw refuse(413, `card over ${MAX_CARD_BYTES / 1024} KB`)
+  if (!prev && existsSync(CARDS()) && readdirSync(CARDS()).filter((f) => f.endsWith('.json')).length >= MAX_CARDS) {
+    throw refuse(507, `hub holds ${MAX_CARDS} cards; remove some first`)
   }
   writeAtomic(join(CARDS(), `${card.id}.json`), card)
   return card
@@ -412,11 +423,23 @@ export function withStaleness(card, now = Date.now()) {
   return { ...card, ageSec: age, stale: card.staleAfter ? age > card.staleAfter : false }
 }
 
-// What the phone receives: design resolved, handlers stripped.
+// Marks every button and row whose action needs a second tap. The phone guards exactly what it is
+// told to, so whatever decides confirm on the PC (a handler, a feed) has to be copied onto the card.
+export function markConfirm(card, needs) {
+  const name = (ref) => String(ref ?? '').split(':')[0]
+  return {
+    ...card,
+    actions: card.actions?.map((a) => (!a.url && needs(name(a.id)) ? { ...a, confirm: true } : a)),
+    items: card.items?.map((it) => (it.action && needs(name(it.action)) ? { ...it, confirm: true } : it)),
+  }
+}
+
+// What the phone receives: design resolved, handlers stripped, confirm made explicit.
 export function servedCard(card, now = Date.now()) {
-  const { do: _handlers, ...rest } = withStaleness(card, now)
+  const { do: handlers, ...rest } = withStaleness(card, now)
   const { theme, layouts } = resolveDesign(card)
-  return clean({ ...rest, theme, layouts })
+  const confirmed = (n) => !!handlers?.[n]?.confirm || !!card.actions?.some((a) => a.confirm && String(a.id).split(':')[0] === n)
+  return clean(markConfirm({ ...rest, theme, layouts }, confirmed))
 }
 
 export function assetPath(name) {

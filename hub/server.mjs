@@ -34,7 +34,8 @@ function readBody(req) {
     const chunks = []
     req.on('data', (c) => {
       size += c.length
-      if (size > MAX_BODY) { reject(Object.assign(new Error('body too large'), { status: 413 })); req.destroy() }
+      // Drain the rest unread so the client gets a clean 413 instead of a reset socket.
+      if (size > MAX_BODY) { chunks.length = 0; reject(Object.assign(new Error('body too large'), { status: 413 })) }
       else chunks.push(c)
     })
     req.on('end', () => {

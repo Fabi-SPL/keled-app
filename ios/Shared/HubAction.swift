@@ -1,4 +1,5 @@
 import AppIntents
+import SwiftUI
 import WidgetKit
 
 // One intent runs every widget button. Sessions add actions as data on the hub; the phone only
@@ -52,5 +53,22 @@ struct GuardedHubActionIntent: AppIntent {
         WidgetCenter.shared.reloadAllTimelines()
         await MainActor.run { NotificationCenter.default.post(name: .keledCardsChanged, object: nil) }
         return .result()
+    }
+}
+
+/// Every widget button that runs a hub action. Guarded refs go through Face ID on a locked phone.
+struct HubButton<Label: View>: View {
+    let card: String
+    let action: String
+    let on: Bool
+    let guarded: Bool
+    @ViewBuilder let label: () -> Label
+
+    var body: some View {
+        if guarded {
+            Button(intent: GuardedHubActionIntent(card: card, action: action, on: on), label: label).buttonStyle(.plain)
+        } else {
+            Button(intent: HubActionIntent(card: card, action: action, on: on), label: label).buttonStyle(.plain)
+        }
     }
 }

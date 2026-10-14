@@ -118,8 +118,9 @@ final class WebDelegate: NSObject, WKUIDelegate, WKNavigationDelegate {
     func webView(_ webView: WKWebView, requestMediaCapturePermissionFor origin: WKSecurityOrigin,
                  initiatedByFrame frame: WKFrameInfo, type: WKMediaCaptureType,
                  decisionHandler: @escaping (WKPermissionDecision) -> Void) {
-        // His own apps on the tailnet (voice notes, Cura) get the mic without a second prompt.
-        decisionHandler(origin.host.hasSuffix(".ts.net") ? .grant : .prompt)
+        // His own apps on his own tailnet (voice notes, Cura) get the mic without a second prompt;
+        // any other *.ts.net name can be a stranger's Funnel.
+        decisionHandler(KeledLinks.isHis(origin.host) ? .grant : .prompt)
     }
 
     func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String,
@@ -196,7 +197,8 @@ struct WebHostView: View {
                     Image(systemName: "chevron.down").font(.system(size: 16, weight: .semibold))
                 }
                 .accessibilityLabel("Close")
-                Text(target.title ?? target.url.host ?? "")
+                // A link names its own title, so a title is shown only for his own hosts.
+                Text(KeledLinks.isHis(target.url.host) ? (target.title ?? target.url.host ?? "") : (target.url.host ?? ""))
                     .font(.system(size: 15, weight: .semibold))
                     .lineLimit(1)
                 Spacer(minLength: 0)

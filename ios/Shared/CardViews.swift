@@ -219,7 +219,7 @@ struct ItemRow: View {
     var body: some View {
         HStack(spacing: 8) {
             if let ref = item.action, let on = item.on {
-                Button(intent: HubActionIntent(card: card.id, action: ref, on: !on)) {
+                HubButton(card: card.id, action: ref, on: !on, guarded: card.needsConfirm(ref, item: item)) {
                     Image(systemName: on ? "checkmark.circle.fill" : "circle")
                         .font(.system(size: compact ? 15 : 17, weight: .medium))
                         .foregroundStyle(on ? palette.tint(item.tint ?? card.tint) : palette.muted)
@@ -250,7 +250,7 @@ struct ItemRow: View {
                     .lineLimit(1)
             }
             if let ref = item.action, item.on == nil {
-                Button(intent: HubActionIntent(card: card.id, action: ref, on: true)) {
+                HubButton(card: card.id, action: ref, on: true, guarded: card.needsConfirm(ref, item: item)) {
                     Image(systemName: item.symbol ?? "checkmark")
                         .font(.system(size: 11, weight: .bold))
                         .foregroundStyle(palette.tint(item.tint ?? card.tint))

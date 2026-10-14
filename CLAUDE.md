@@ -102,11 +102,16 @@ node hub/widget.mjs put lamp --title Lamp --kind status --value Off \
 node hub/widget.mjs act lamp power          # fire it exactly like a tap, from here
 ```
 
-- Ref = `name` or `name:arg` (arg `[A-Za-z0-9._~-]`, so it cannot change the shape of a URL, body or argv).
+- Ref = `name` or `name:arg` (arg `[A-Za-z0-9._~-]`, never `.`, `..` or a leading `-`, so it cannot
+  change the shape of a URL path, body or argv).
   `{arg}` `{on}` `{card}` fill into the handler. Only refs the card shows can be fired.
 - Handler: `{"http": {...}}` or `{"run": [argv], "cwd": ...}`, plus `confirm` (second tap within 10 s,
   Face ID on a locked phone) and `then` toggle|remove|none (what the card shows after).
-- `do` can only be set from the CLI or a feed on this PC. HTTP `PUT` drops it, GET never serves it.
+- `do` can only be set from the CLI or a feed on this PC. GET never serves it. Over HTTP a `PUT` cannot
+  touch a card that has handlers or belongs to a feed (409), and `source` is always `push`.
+- Confirm is decided on the PC (handler `confirm`, feed `confirm`, action `confirm`) and the hub
+  copies it onto every button and row it applies to; the phone guards exactly those.
+- Limits: 150 cards, 32 KB per card, 64 KB per request (413).
 - Feeds: export `act({card, name, arg, on})` and optional `confirm: ['name']`; the feed re-runs after.
   `feeds/tv.mjs` is the example: each TV alert row has a tick that clears it on the TV.
 - After a tap the card shows `Done` (or the handler's `message`) for 30 s, a failure for 2 min.
@@ -118,7 +123,8 @@ node hub/widget.mjs act lamp power          # fire it exactly like a tap, from h
 iOS gives a widget no way to open an installed home-screen web app: every https link lands in
 Safari, whatever the manifest says. So a tap opens `keled://open?url=...` and Keled shows the web
 app full screen in a kept-alive web view (`ios/Keled/WebHost.swift`): coming back resumes, links to
-other sites go to Safari, the mic and camera work for `*.ts.net`. Logins are Keled's own (separate
+other sites go to Safari, the mic works without a prompt only on his own tailnet
+(`*.taildd1460.ts.net`), and the top bar shows the real host for anything else. Logins are Keled's own (separate
 from the PWA), so he logs in once per app inside Keled. Push notifications stay with the PWAs.
 
 ## Look before it ships (preview)
@@ -131,6 +137,11 @@ node hub/widget.mjs preview --file my-cards.json      # cards not stored yet
 Dispatches `ios-check.yml` with the cards, waits (~8 min), downloads light and dark screenshots of
 small, medium, large and the lock screen sizes to `shots/preview/<tag>/`. Open every PNG before
 calling a design done.
+
+The CI repo is public, so the cards cross GitHub sealed (AES-256-GCM, `hub/seal.mjs`, key in
+`C:/Programs/Claude/.secrets/keled-preview.key` and the `KELED_PREVIEW_KEY` secret). The runner
+shoots them into a folder it never uploads and seals each PNG; the CLI opens them here. Never send
+real cards to CI any other way.
 
 ## Build and ship
 

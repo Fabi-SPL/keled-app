@@ -121,7 +121,7 @@ test('handlers never reach the phone and cannot be set over HTTP', async () => {
     title: 'Alarm', items: [{ title: 'Smoke', action: 'ack:a1b2' }],
     do: { ack: { run: ['powershell', '-c', 'calc'] } },
   }) })
-  assert.equal(put.status, 200)
+  assert.equal(put.status, 409)
   assert.equal(store.getCard('alarm').do.ack.http.url, `${targetUrl}/ack/{arg}`)
   assert.equal(store.getCard('alarm').do.ack.run, undefined)
 })
@@ -197,4 +197,58 @@ test('assets are served by name only', async () => {
   assert.equal(r.headers.get('content-type'), 'image/png')
   assert.equal((await fetch(`${base}/v1/assets/logo.png`)).status, 401)
   assert.equal((await fetch(`${base}/v1/assets/..%2Fcards`, { headers: H })).status, 404)
+})
+
+const put = (id, body) => fetch(`${base}/v1/cards/${id}`, { method: 'PUT', headers: H, body: JSON.stringify(body) })
+
+test('over HTTP a card with handlers or a feed behind it cannot be rewritten, and source is forced', async () => {
+  store.putCard({ id: 'door', title: 'Door', actions: [{ id: 'open:front', label: 'Open', confirm: true }],
+    do: { open: { confirm: true, http: { url: `${targetUrl}/doors/{arg}/open` } } } })
+  const r = await put('door', { title: 'Door', actions: [{ id: 'open:..', label: 'Open' }] })
+  assert.equal(r.status, 409)
+  assert.equal(store.getCard('door').actions[0].id, 'open:front')
+  assert.equal((await put('feed-card', { title: 'Forged', items: [{ title: 'x', action: 'lamp:on' }] })).status, 409)
+  assert.equal((await put('forged', { title: 'F', source: 'feed:demo', items: [{ title: 'x', action: 'lamp:on' }] })).status, 200)
+  assert.equal(store.getCard('forged').source, 'push')
+  feedActs.length = 0
+  assert.equal((await act('forged', 'lamp:on')).status, 400)
+  assert.equal(feedActs.length, 0)
+})
+
+test('dot-segment and dash args are refused', async () => {
+  store.putCard({ id: 'paths', title: 'P', items: [{ title: 'a', action: 'go:..' }, { title: 'b', action: 'go:-rf' }, { title: 'c', action: 'go:.' }],
+    do: { go: { http: { url: `${targetUrl}/go/{arg}` } } } })
+  hits.length = 0
+  for (const ref of ['go:..', 'go:-rf', 'go:.']) assert.equal((await act('paths', ref)).status, 400)
+  assert.equal(hits.length, 0)
+})
+
+test('confirm decided on the PC reaches the phone on buttons and rows', async () => {
+  store.putCard({ id: 'guard', title: 'G', actions: [{ id: 'wipe', label: 'Wipe' }], items: [{ title: 'row', action: 'wipe:all' }],
+    do: { wipe: { confirm: true, http: { url: `${targetUrl}/wipe` } } } })
+  const served = (await cards()).find((c) => c.id === 'guard')
+  assert.equal(served.actions[0].confirm, true)
+  assert.equal(served.items[0].confirm, true)
+  assert.equal(served.do, undefined)
+  await runFeedWith([{ id: 'feed-guard', title: 'FG', items: [{ title: 'boom', action: 'nuke:x' }, { title: 'lamp', action: 'lamp:on' }] }])
+  const fg = (await cards()).find((c) => c.id === 'feed-guard')
+  assert.equal(fg.items[0].confirm, true)
+  assert.equal(fg.items[1].confirm, undefined)
+})
+
+async function runFeedWith(cardsOut) {
+  const { runFeed } = await import('../server.mjs')
+  await runFeed({ ...demoFeed, run: async () => cardsOut })
+}
+
+test('the hub caps card size and card count', async () => {
+  const node = { type: 'vstack', children: Array.from({ length: 400 }, (_, i) => ({ type: 'text', text: 'x'.repeat(300) + i })) }
+  const big = { title: 'Big', layouts: Object.fromEntries(['small', 'medium', 'large', 'circular', 'rectangular', 'inline'].map((f) => [f, node])) }
+  assert.equal((await put('big', big)).status, 413)
+  assert.throws(() => store.putCard({ id: 'big', ...big }), /over 32 KB/)
+  const n = store.listCards().length
+  for (let i = n; i < store.MAX_CARDS; i++) store.putCard({ id: `fill-${i}`, title: 'f' })
+  assert.equal((await put('one-too-many', { title: 'x' })).status, 507)
+  assert.equal((await put('forged', { title: 'still updatable' })).status, 200)
+  for (let i = n; i < store.MAX_CARDS; i++) store.removeCard(`fill-${i}`)
 })

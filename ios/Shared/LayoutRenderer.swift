@@ -319,7 +319,7 @@ enum NodeRenderer {
         if let url = action?.url, let target = KeledLinks.open(url, via: ctx.card.open, title: ctx.card.app ?? ctx.card.title) {
             return AnyView(Link(destination: target) { label })
         }
-        return intentButton(ctx, ref: ref, on: !(action?.on ?? ctx.item?.on ?? false), guarded: action?.confirm == true) { label }
+        return intentButton(ctx, ref: ref, on: !(action?.on ?? ctx.item?.on ?? false), guarded: ctx.card.needsConfirm(ref, item: ctx.item)) { label }
     }
 
     private static func checkView(_ n: LayoutNode, _ ctx: LayoutContext) -> AnyView {
@@ -328,7 +328,7 @@ enum NodeRenderer {
         let cardAction = ctx.card.actions?.first(where: { $0.id == ref })
         let on = ctx.item?.on ?? cardAction?.on ?? false
         let tint = color(n.color, ctx) ?? ctx.palette.accent
-        return intentButton(ctx, ref: ref, on: !on, guarded: false) {
+        return intentButton(ctx, ref: ref, on: !on, guarded: ctx.card.needsConfirm(ref, item: ctx.item)) {
             Image(systemName: on ? "checkmark.circle.fill" : "circle")
                 .font(.system(size: CGFloat(n.size ?? 18), weight: .medium))
                 .foregroundStyle(on ? tint : ctx.palette.muted)

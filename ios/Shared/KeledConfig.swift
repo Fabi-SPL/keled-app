@@ -42,4 +42,7 @@ enum KeledLinks {
     static func wantsSafari(_ url: URL) -> Bool { query(url, "via") == "safari" }
 
     static func title(of url: URL) -> String? { query(url, "t") }
+
+    static let tailnet = ".taildd1460.ts.net"
+    static func isHis(_ host: String?) -> Bool { host?.lowercased().hasSuffix(tailnet) ?? false }
 }
