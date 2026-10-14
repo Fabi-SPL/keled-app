@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import ImageIO
 
 enum HubError: Error {
     case notConfigured
@@ -89,9 +90,20 @@ enum AssetStore {
         return dir.appendingPathComponent(name)
     }
 
+    /// Decoded at most 1400 px on the long side: the widget extension dies near 30 MB, and a
+    /// 1 MB PNG can decode to far more than that at full size.
     static func image(_ name: String) -> UIImage? {
-        guard let url = file(name) else { return nil }
-        return UIImage(contentsOfFile: url.path)
+        guard let url = file(name),
+              let source = CGImageSourceCreateWithURL(url as CFURL, [kCGImageSourceShouldCache: false] as CFDictionary)
+        else { return nil }
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceThumbnailMaxPixelSize: 1400,
+        ]
+        guard let cg = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else { return nil }
+        return UIImage(cgImage: cg)
     }
 
     static func prefetch(_ names: Set<String>) async {
