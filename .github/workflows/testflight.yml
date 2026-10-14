@@ -1,0 +1,234 @@
+name: TestFlight Keled
+
+# Signed archive of the Keled app + widget extension, uploaded to App Store
+# Connect and installed through the TestFlight app on the iPhone and the iPad.
+#
+# Runs on every push to main that touches the app, by hand, and on the 1st of
+# every month: a TestFlight build expires after 90 days, and an expired build
+# kills every widget at once. The monthly run keeps a fresh one on the phone.
+#
+# Needs six repo secrets (see the guard step). Until they exist this workflow
+# skips cleanly instead of going red on every push.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ios/**'
+      - '.github/workflows/testflight.yml'
+      - 'scripts/asc.mjs'
+  workflow_dispatch:
+  schedule:
+    - cron: '17 5 1 * *'
+
+permissions:
+  contents: read
+  actions: write   # the keep-alive step re-enables this workflow's schedule
+
+jobs:
+  testflight:
+    runs-on: macos-15
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # build number is derived from commit count
+
+      - name: Guard - are the secrets present?
+        id: guard
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          KELED_HUB_URL: ${{ secrets.KELED_HUB_URL }}
+          KELED_HUB_TOKEN: ${{ secrets.KELED_HUB_TOKEN }}
+        run: |
+          MISSING=""
+          for NAME in ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_P8 APPLE_TEAM_ID KELED_HUB_URL KELED_HUB_TOKEN; do
+            eval "VALUE=\${$NAME}"
+            [ -n "$VALUE" ] || MISSING="$MISSING $NAME"
+          done
+          if [ -n "$MISSING" ]; then
+            echo "::notice::TestFlight upload skipped - missing secret(s):$MISSING"
+            echo "ready=false" >> $GITHUB_OUTPUT
+          else
+            echo "ready=true" >> $GITHUB_OUTPUT
+          fi
+
+      # The build number is the only thing TestFlight orders builds by, so it
+      # must never go backwards. Ask App Store Connect for the highest build
+      # already uploaded and go one past it (or the commit count, whichever is
+      # larger). If the lookup fails we stop rather than guess low.
+      - name: Derive build number
+        if: steps.guard.outputs.ready == 'true'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          set -o pipefail
+          COMMITS=$(git rev-list --count HEAD)
+          export ASC_KEY_PATH="$RUNNER_TEMP/AuthKey_derive.p8"
+          printf '%s' "$ASC_KEY_P8" > "$ASC_KEY_PATH"
+          APP=$(node scripts/asc.mjs raw GET "/v1/apps?filter[bundleId]=com.fabi.keled&fields[apps]=bundleId" \
+            | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const a=JSON.parse(s).data[0];if(!a)process.exit(1);console.log(a.id)})') \
+            || { echo "::error::No App Store Connect app for com.fabi.keled yet. Create it once: appstoreconnect.apple.com/apps -> + -> New App, bundle com.fabi.keled, SKU keled."; exit 1; }
+          PUBLISHED=$(node scripts/asc.mjs raw GET "/v1/builds?filter[app]=${APP}&limit=200&fields[builds]=version" \
+            | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(Math.max(0,...JSON.parse(s).data.map(b=>parseInt(b.attributes.version,10)||0))))')
+          rm -f "$ASC_KEY_PATH"
+          case "$PUBLISHED" in ''|*[!0-9]*) echo "ERROR: could not read published builds (got '$PUBLISHED')"; exit 1 ;; esac
+          if [ "$COMMITS" -gt "$PUBLISHED" ]; then BUILD_NUM=$COMMITS; else BUILD_NUM=$((PUBLISHED + 1)); fi
+          echo "BUILD_NUM=${BUILD_NUM}" >> $GITHUB_ENV
+          echo "commits=${COMMITS} published=${PUBLISHED} -> build ${BUILD_NUM}"
+
+      - name: Select latest Xcode
+        if: steps.guard.outputs.ready == 'true'
+        run: |
+          XCODE_PATH=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          xcodebuild -version
+
+      - name: Generate the project
+        if: steps.guard.outputs.ready == 'true'
+        working-directory: ios
+        run: |
+          brew install xcodegen
+          xcodegen generate
+          test -d Keled.xcodeproj
+
+      - name: Install the App Store Connect API key
+        if: steps.guard.outputs.ready == 'true'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          mkdir -p ~/private_keys ~/.appstoreconnect/private_keys
+          printf '%s' "$ASC_KEY_P8" > ~/private_keys/AuthKey_${ASC_KEY_ID}.p8
+          cp ~/private_keys/AuthKey_${ASC_KEY_ID}.p8 ~/.appstoreconnect/private_keys/
+          chmod 600 ~/private_keys/AuthKey_${ASC_KEY_ID}.p8 ~/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8
+          head -1 ~/private_keys/AuthKey_${ASC_KEY_ID}.p8 | grep -q "BEGIN PRIVATE KEY" \
+            || { echo "ERROR: ASC_KEY_P8 is not a PEM private key."; exit 1; }
+
+      # The repo is public; the hub address and its token only ever exist in
+      # secrets and inside the signed build. Never echo them.
+      - name: Inject the hub address and token
+        if: steps.guard.outputs.ready == 'true'
+        env:
+          KELED_HUB_URL: ${{ secrets.KELED_HUB_URL }}
+          KELED_HUB_TOKEN: ${{ secrets.KELED_HUB_TOKEN }}
+        run: |
+          F=ios/Shared/KeledConfig.swift
+          case "$KELED_HUB_URL" in https://*) ;; *) echo "ERROR: KELED_HUB_URL must be https"; exit 1 ;; esac
+          URL="${KELED_HUB_URL%/}"
+          sed -i '' "s|\"BUILD_HUB_URL\"|\"${URL}\"|" "$F"
+          sed -i '' "s|\"BUILD_HUB_TOKEN\"|\"${KELED_HUB_TOKEN}\"|" "$F"
+          if grep -q 'BUILD_HUB_' "$F"; then echo "ERROR: placeholder survived injection"; exit 1; fi
+          echo "Hub config injected."
+
+      - name: Stamp team ID into ExportOptions.plist
+        if: steps.guard.outputs.ready == 'true'
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: sed -i '' "s|__TEAM_ID__|${APPLE_TEAM_ID}|" ios/ExportOptions.plist
+
+      # Every ephemeral runner mints a fresh "Created via API" development
+      # certificate and can never reuse it. At ~12 Apple refuses more, so prune
+      # them first; this run makes its own a few seconds later.
+      - name: Prune stale CI development certificates
+        if: steps.guard.outputs.ready == 'true'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          export ASC_KEY_PATH="$RUNNER_TEMP/AuthKey_prune.p8"
+          printf '%s' "$ASC_KEY_P8" > "$ASC_KEY_PATH"
+          node scripts/asc.mjs raw GET "/v1/certificates?limit=50&fields[certificates]=certificateType,displayName" \
+            | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{for(const c of JSON.parse(s).data)if(c.attributes.certificateType==="DEVELOPMENT"&&c.attributes.displayName==="Created via API")console.log(c.id)})' \
+            | while read -r ID; do
+                echo "revoking stale CI cert $ID"
+                node scripts/asc.mjs raw DELETE "/v1/certificates/$ID" >/dev/null || true
+              done
+          rm -f "$ASC_KEY_PATH"
+
+      - name: Archive (signed, automatic provisioning)
+        if: steps.guard.outputs.ready == 'true'
+        working-directory: ios
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -project Keled.xcodeproj \
+            -scheme Keled \
+            -destination 'generic/platform=iOS' \
+            -configuration Release \
+            -archivePath $RUNNER_TEMP/Keled.xcarchive \
+            -derivedDataPath $RUNNER_TEMP/DerivedData \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${ASC_KEY_ID}.p8 \
+            -authenticationKeyID "${ASC_KEY_ID}" \
+            -authenticationKeyIssuerID "${ASC_ISSUER_ID}" \
+            DEVELOPMENT_TEAM="${APPLE_TEAM_ID}" \
+            CODE_SIGN_STYLE=Automatic \
+            CURRENT_PROJECT_VERSION=${BUILD_NUM} \
+            MARKETING_VERSION=1.0 \
+            ARCHS=arm64 ONLY_ACTIVE_ARCH=NO EXCLUDED_ARCHS=x86_64 SUPPORTS_MACCATALYST=NO \
+            2>&1 | tee archive.log | grep -E "error:|ARCHIVE (SUCCEEDED|FAILED)" || true
+          grep -q "ARCHIVE SUCCEEDED" archive.log || { echo "::error::archive failed"; tail -60 archive.log; exit 1; }
+          test -d "$RUNNER_TEMP/Keled.xcarchive/Products/Applications/Keled.app/PlugIns/KeledWidgets.appex" \
+            || { echo "::error::widget extension missing from the archive"; exit 1; }
+
+      - name: Export signed IPA
+        if: steps.guard.outputs.ready == 'true'
+        working-directory: ios
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -o pipefail
+          xcodebuild -exportArchive \
+            -archivePath $RUNNER_TEMP/Keled.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath $RUNNER_TEMP/export \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${ASC_KEY_ID}.p8 \
+            -authenticationKeyID "${ASC_KEY_ID}" \
+            -authenticationKeyIssuerID "${ASC_ISSUER_ID}" \
+            2>&1 | tee export.log
+          ls -la $RUNNER_TEMP/export
+
+      - name: Upload to TestFlight
+        if: steps.guard.outputs.ready == 'true'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          IPA=$(find $RUNNER_TEMP/export -name "*.ipa" | head -1)
+          [ -n "$IPA" ] || { echo "ERROR: no IPA exported"; exit 1; }
+          echo "Uploading build ${BUILD_NUM}"
+          # altool can print UPLOAD FAILED and still exit 0. Read its output.
+          set -o pipefail
+          xcrun altool --upload-app -f "$IPA" -t ios \
+            --apiKey "${ASC_KEY_ID}" --apiIssuer "${ASC_ISSUER_ID}" 2>&1 | tee /tmp/altool.log
+          if grep -qiE "UPLOAD FAILED|Failed to upload package|Validation failed" /tmp/altool.log; then
+            echo "::error::altool rejected the build - see the log above."
+            exit 1
+          fi
+          echo "Uploaded. Apple processes it in 5-30 min, then it appears in TestFlight."
+
+      # GitHub switches off schedules in a public repo after 60 days without
+      # activity, which would quietly end the monthly rebuild. Re-enabling the
+      # workflow through the API resets that clock.
+      - name: Keep the monthly schedule alive
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/testflight.yml/enable" || true
+
+      # No IPA artifact: the repo is public and the build carries the hub token.

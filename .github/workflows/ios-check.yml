@@ -1,0 +1,137 @@
+name: iOS check
+
+# Compiles the app and the widget extension for the simulator, then screenshots
+# every widget size on an iPhone and the home view on an iPad. Never signs and
+# never injects the hub config, so the build renders the sample cards and the
+# PNGs are safe to keep. This is the only place the Swift gets compiled: there
+# is no Mac, so a red run here is the compiler talking.
+
+on:
+  push:
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  screens:
+    runs-on: macos-15
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select latest Xcode
+        run: |
+          XCODE_PATH=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          xcodebuild -version
+
+      - name: Generate the project
+        working-directory: ios
+        run: |
+          brew install xcodegen
+          xcodegen generate
+          test -d Keled.xcodeproj
+
+      - name: Pick an iPhone and an iPad simulator
+        run: |
+          xcrun simctl list -j devices available > /tmp/devices.json
+          python3 - <<'PY' >> "$GITHUB_ENV"
+          import json, re
+          d = json.load(open("/tmp/devices.json"))["devices"]
+          def ver(rt):
+              m = re.search(r"iOS-(\d+)-(\d+)", rt)
+              return (int(m.group(1)), int(m.group(2))) if m else (0, 0)
+          rts = sorted([k for k in d if "iOS" in k], key=ver, reverse=True)
+          def pick(prefs, family):
+              for p in prefs:
+                  for rt in rts:
+                      for dev in d[rt]:
+                          if dev["name"] == p:
+                              return dev["udid"], dev["name"], rt
+              for rt in rts:
+                  for dev in d[rt]:
+                      if dev["name"].startswith(family):
+                          return dev["udid"], dev["name"], rt
+              raise SystemExit(f"no {family} simulator")
+          phone = pick(["iPhone 17 Pro", "iPhone 16 Pro", "iPhone 17", "iPhone 16"], "iPhone")
+          pad = pick(["iPad Pro 13-inch (M5)", "iPad Pro 13-inch (M4)", "iPad Air 13-inch (M3)", "iPad Air 13-inch (M2)"], "iPad")
+          print(f"PHONE={phone[0]}")
+          print(f"PAD={pad[0]}")
+          import sys
+          print(f"phone {phone[1]} on {phone[2]} | pad {pad[1]} on {pad[2]}", file=sys.stderr)
+          PY
+
+      - name: Build for the simulator (app + widget extension)
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project Keled.xcodeproj \
+            -scheme Keled \
+            -configuration Debug \
+            -destination "id=${PHONE}" \
+            -derivedDataPath "$RUNNER_TEMP/dd" \
+            CODE_SIGNING_ALLOWED=NO \
+            2>&1 | tee build.log | grep -E "error:|warning: .*Keled|BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "BUILD SUCCEEDED" build.log || { echo "::error::simulator build failed"; grep -E "error:" build.log | head -40; exit 1; }
+          APP="$RUNNER_TEMP/dd/Build/Products/Debug-iphonesimulator/Keled.app"
+          test -d "$APP/PlugIns/KeledWidgets.appex" || { echo "::error::widget extension was not embedded"; exit 1; }
+          echo "APP=$APP" >> "$GITHUB_ENV"
+
+      - name: Screenshot every widget size
+        run: |
+          mkdir -p shots
+          shoot() {  # device, screen, file, [appearance]
+            xcrun simctl ui "$1" appearance "${4:-light}"
+            DATA=$(xcrun simctl get_app_container "$1" com.fabi.keled data)
+            rm -f "$DATA/Documents/keled-screen-$2.ok"
+            xcrun simctl launch --terminate-running-process "$1" com.fabi.keled -KeledScreen "$2" -KeledDemo YES >/dev/null
+            for i in $(seq 1 40); do
+              [ -f "$DATA/Documents/keled-screen-$2.ok" ] && break
+              sleep 0.5
+            done
+            [ -f "$DATA/Documents/keled-screen-$2.ok" ] || { echo "::error::screen $2 never rendered"; exit 1; }
+            sleep 1
+            xcrun simctl io "$1" screenshot "shots/$3.png" >/dev/null
+            echo "shot $3"
+          }
+          for DEV in "$PHONE" "$PAD"; do
+            xcrun simctl boot "$DEV" || true
+            xcrun simctl bootstatus "$DEV" -b >/dev/null
+            xcrun simctl status_bar "$DEV" override --time 9:41 --batteryLevel 100 --cellularBars 4 || true
+            xcrun simctl install "$DEV" "$APP"
+          done
+          for S in small medium large lock board home; do shoot "$PHONE" "$S" "iphone-$S"; done
+          shoot "$PHONE" medium iphone-medium-dark dark
+          shoot "$PHONE" home iphone-home-dark dark
+          shoot "$PAD" home ipad-home
+          shoot "$PAD" board ipad-board
+          ls -la shots
+
+      - name: Keep the screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: keled-screens
+          path: shots/*.png
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Keep the build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: ios/build.log
+          retention-days: 3
+          if-no-files-found: ignore

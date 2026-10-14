@@ -1,0 +1,12 @@
+{
+  "name": "keled-app",
+  "private": true,
+  "type": "module",
+  "description": "One iPhone/iPad app that hosts widgets for every Keled web app, fed by a tailnet-only card hub.",
+  "scripts": {
+    "hub": "node hub/server.mjs",
+    "test": "node --test hub/test/hub.test.mjs",
+    "typecheck": "node --check hub/server.mjs && node --check hub/store.mjs && node --check hub/widget.mjs && node --check hub/config.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

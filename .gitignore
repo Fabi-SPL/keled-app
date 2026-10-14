@@ -1,0 +1,9 @@
+hub/data/
+node_modules/
+*.p8
+*.ipa
+*.xcarchive
+ios/*.xcodeproj
+DerivedData/
+.DS_Store
+shots/
