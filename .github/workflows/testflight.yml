@@ -82,6 +82,7 @@ jobs:
           case "$PUBLISHED" in ''|*[!0-9]*) echo "ERROR: could not read published builds (got '$PUBLISHED')"; exit 1 ;; esac
           if [ "$COMMITS" -gt "$PUBLISHED" ]; then BUILD_NUM=$COMMITS; else BUILD_NUM=$((PUBLISHED + 1)); fi
           echo "BUILD_NUM=${BUILD_NUM}" >> $GITHUB_ENV
+          echo "APP_ID=${APP}" >> $GITHUB_ENV
           echo "commits=${COMMITS} published=${PUBLISHED} -> build ${BUILD_NUM}"
 
       - name: Select latest Xcode
@@ -221,6 +222,21 @@ jobs:
             exit 1
           fi
           echo "Uploaded. Apple processes it in 5-30 min, then it appears in TestFlight."
+
+      # Health and Ride both have an internal "Auto" group that gets every build. Same here,
+      # so the build reaches his phone with no click. Never fails the run: the upload counts.
+      - name: Internal tester group (every build, no review)
+        if: steps.guard.outputs.ready == 'true'
+        continue-on-error: true
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          export ASC_KEY_PATH="$RUNNER_TEMP/AuthKey_group.p8"
+          printf '%s' "$ASC_KEY_P8" > "$ASC_KEY_PATH"
+          node scripts/tester-group.mjs "$APP_ID" || echo "::warning::tester group step failed; add yourself in TestFlight -> Internal Testing"
+          rm -f "$ASC_KEY_PATH"
 
       # GitHub switches off schedules in a public repo after 60 days without
       # activity, which would quietly end the monthly rebuild. Re-enabling the
