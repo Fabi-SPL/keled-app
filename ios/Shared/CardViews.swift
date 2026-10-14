@@ -268,12 +268,22 @@ struct ActionRow: View {
     let card: Card
     let now: Date
     var limit = 2
-    @Environment(\.cardPalette) private var palette
 
+    // Full labels when they fit; otherwise buttons with a symbol shrink to the symbol, except one
+    // waiting for its second tap, which always says so.
     var body: some View {
+        let shown = Array((card.actions ?? []).prefix(limit))
+        let squeezable = Set(shown.filter { $0.symbol != nil && !card.isArmed($0.id, at: now) }.map { $0.id })
+        ViewThatFits(in: .horizontal) {
+            row(shown, iconOnly: [])
+            row(shown, iconOnly: squeezable)
+        }
+    }
+
+    private func row(_ actions: [CardAction], iconOnly: Set<String>) -> some View {
         HStack(spacing: 6) {
-            ForEach(Array((card.actions ?? []).prefix(limit))) { action in
-                ActionButton(card: card, action: action, now: now)
+            ForEach(actions) { action in
+                ActionButton(card: card, action: action, now: now, iconOnly: iconOnly.contains(action.id))
             }
         }
     }
@@ -283,6 +293,7 @@ struct ActionButton: View {
     let card: Card
     let action: CardAction
     let now: Date
+    var iconOnly = false
     @Environment(\.cardPalette) private var palette
 
     private var label: some View {
@@ -291,13 +302,14 @@ struct ActionButton: View {
         let filled = action.style == "filled" && !armed
         return HStack(spacing: 4) {
             if let sym = armed ? "hand.tap.fill" : action.symbol { Image(systemName: sym) }
-            Text(armed ? "Tap again" : action.label).lineLimit(1)
+            if !iconOnly || armed { Text(armed ? "Tap again" : action.label).lineLimit(1) }
         }
         .font(palette.text(12, .semibold))
         .foregroundStyle(filled ? Color.white : tint)
-        .padding(.horizontal, 10)
+        .padding(.horizontal, iconOnly && !armed ? 8 : 10)
         .padding(.vertical, 6)
         .background(Capsule().fill(filled ? tint : tint.opacity(0.14)))
+        .accessibilityLabel(action.label)
     }
 
     var body: some View {

@@ -25,7 +25,10 @@ node C:/Programs/Claude/keled-app/hub/widget.mjs list | rm <id> | doctor
 - The card shows up in the widget editor's "Choose a card" list on the next refresh. No build.
 - `kind`: metric (big number), list (rows), gauge (ring, `progress` 0..1), status (dot + word), spark (`series`).
 - `tint` means status: ok / warn / bad / neutral; accent is the wine splash. Never colour for decoration.
-- `url` is where a tap goes: the web app. `--stale <sec>` greys the card once it is older than that.
+- `url` is where a tap goes: the web app, opened full screen **inside Keled** (see "Where a tap
+  goes"). `--open safari` sends it to Safari instead. `--stale <sec>` greys the card once it is older than that.
+- A card needs no app behind it: a tax deadline, a countdown, a number a script computes. `taxes-ustva`
+  is the worked example (app-less, own layouts, ticking day count, ELSTER link in Safari).
 - Lock screen sizes show `value` + `label` + one line. Keep `value` to 4-5 characters for the circular one.
 - Item titles and captions are hidden on a locked device (privacySensitive); numbers stay visible.
 - Minimal data only: counts, names, short subjects. Never mail bodies or anything you would not
@@ -54,7 +57,80 @@ Live feeds (one card each unless noted):
 | vesta | Vesta calendar on Hetzner, cal agent token | events today and tomorrow |
 | cura | Cura :4611 | last message from Lucid |
 | argus | Argus on Hetzner | network posture checks |
-| tv | Lucid TV :7480 | open alerts only |
+| tv | Lucid TV :7480 | open alerts only, tick clears one |
+
+## Give an app its own look (themes and free layouts, no build)
+
+Every web app is designed differently, so its widgets can be too. Two layers, both data:
+
+- **Theme** = colours, fonts, background for every card of one app. `hub/themes/<name>.json`,
+  picked by the card's `theme` field or automatically by its `app` name slugged (`Keled Mail` ->
+  `keled-mail`). Light and `dark` colours, `font`/`numbers` system|rounded|serif|mono, `bg` one hex or
+  a gradient, `image` an asset. `node hub/widget.mjs theme put keled-mail --file t.json`.
+- **Layout** = a node tree drawn natively per widget size: vstack, hstack, zstack, text, symbol,
+  image, ring, bar, spark, date (counts days or ticks live), button, check, link, each (per item).
+  On a card (`--layout small=s.json`) or in a theme keyed `<family>`, `<kind>.<family>` or
+  `<cardId>.<family>`. Families: small medium large xl circular rectangular inline.
+  `node hub/widget.mjs schema` lists every node field and template.
+
+```json
+{ "type": "vstack", "align": "leading", "maxW": true, "maxH": true, "frameAlign": "topLeading", "children": [
+  { "type": "text", "text": "{title}", "size": 11, "weight": "semibold", "color": "muted", "upper": true },
+  { "type": "spacer" },
+  { "type": "text", "text": "{value}", "size": 44, "weight": "bold", "design": "numbers", "color": "accent" },
+  { "type": "text", "text": "{label}", "size": 13 } ] }
+```
+
+- No layout for a size -> the built-in look, dressed in the theme. A bad field is refused at `put`, so a
+  typo never reaches the phone; an unknown node on the phone draws nothing, never a crash.
+- The lock screen (circular, rectangular, inline) and tinted home screens are drawn by iOS in one
+  colour: themes keep only their fonts there. Design those sizes for one colour.
+- Designing an app's look is Minerva's job, from that app's own CSS. Ad-hoc sessions put data and
+  maybe a layout, not a palette they invented.
+
+## Buttons on a widget (actions)
+
+Widgets can only run code compiled into the app, so there is one compiled button and the hub
+decides what it does. The phone sends `{card, action, on}`; nothing else.
+
+```bash
+# a put card: the handler lives on this PC, the phone never sees it
+node hub/widget.mjs put lamp --title Lamp --kind status --value Off \
+  --action "power|Toggle|power|filled" \
+  --do 'power={"http":{"method":"POST","url":"http://127.0.0.1:9999/lamp","body":{"on":"{on}"}},"then":"toggle"}'
+# rows: --item "Washer done|4m ago||warn|ack:a1" makes a tick on that row
+node hub/widget.mjs act lamp power          # fire it exactly like a tap, from here
+```
+
+- Ref = `name` or `name:arg` (arg `[A-Za-z0-9._~-]`, so it cannot change the shape of a URL, body or argv).
+  `{arg}` `{on}` `{card}` fill into the handler. Only refs the card shows can be fired.
+- Handler: `{"http": {...}}` or `{"run": [argv], "cwd": ...}`, plus `confirm` (second tap within 10 s,
+  Face ID on a locked phone) and `then` toggle|remove|none (what the card shows after).
+- `do` can only be set from the CLI or a feed on this PC. HTTP `PUT` drops it, GET never serves it.
+- Feeds: export `act({card, name, arg, on})` and optional `confirm: ['name']`; the feed re-runs after.
+  `feeds/tv.mjs` is the example: each TV alert row has a tick that clears it on the TV.
+- After a tap the card shows `Done` (or the handler's `message`) for 30 s, a failure for 2 min.
+  Every tap is logged to `hub/data/actions.log`.
+- An action with `url` instead of a handler only opens something.
+
+## Where a tap goes
+
+iOS gives a widget no way to open an installed home-screen web app: every https link lands in
+Safari, whatever the manifest says. So a tap opens `keled://open?url=...` and Keled shows the web
+app full screen in a kept-alive web view (`ios/Keled/WebHost.swift`): coming back resumes, links to
+other sites go to Safari, the mic and camera work for `*.ts.net`. Logins are Keled's own (separate
+from the PWA), so he logs in once per app inside Keled. Push notifications stay with the PWAs.
+
+## Look before it ships (preview)
+
+```bash
+node hub/widget.mjs preview taxes-ustva mail          # stored cards
+node hub/widget.mjs preview --file my-cards.json      # cards not stored yet
+```
+
+Dispatches `ios-check.yml` with the cards, waits (~8 min), downloads light and dark screenshots of
+small, medium, large and the lock screen sizes to `shots/preview/<tag>/`. Open every PNG before
+calling a design done.
 
 ## Build and ship
 
@@ -67,8 +143,12 @@ Live feeds (one card each unless noted):
 - `ios/project.yml` is XcodeGen; the `.xcodeproj` is generated in CI and never committed.
 - The hub URL and token reach the app only through repo secrets (`KELED_HUB_URL`,
   `KELED_HUB_TOKEN`). The repo is public: never commit either, never upload the IPA.
-- Swift changes only for a new card *kind* or a new layout. Add the kind in `hub/store.mjs`
-  (KINDS) and in `ios/Shared/CardViews.swift` in the same commit.
+- Swift changes only for a new card *kind* or a new layout *node type*. Add it in `hub/store.mjs`
+  (KINDS or NODE_TYPES) and in `ios/Shared/CardViews.swift` / `LayoutRenderer.swift` in the same commit.
+  Anything that needs a new intent, widget family or entitlement needs a TestFlight build; everything
+  else in this file is data.
+- TestFlight needs the App Store Connect app record for `com.fabi.keled` (created once by hand in
+  App Store Connect; the API cannot create apps).
 
 ## Hub tests
 
