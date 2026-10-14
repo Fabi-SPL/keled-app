@@ -1,0 +1,452 @@
+{
+  "ink": "#111111",
+  "muted": "#5e5e5e",
+  "accent": "#9b1b30",
+  "tile": "#f4f4f4",
+  "font": "system",
+  "numbers": "system",
+  "weight": "semibold",
+  "dark": {
+    "bg": [
+      "#121212"
+    ],
+    "ink": "#ececec",
+    "muted": "#a0a0a0",
+    "accent": "#e0687c",
+    "tile": "#1d1d1d"
+  },
+  "layouts": {
+    "mail.small": {
+      "type": "vstack",
+      "align": "leading",
+      "frameAlign": "topLeading",
+      "spacing": 0,
+      "maxW": true,
+      "maxH": true,
+      "children": [
+        {
+          "type": "hstack",
+          "spacing": 5,
+          "children": [
+            {
+              "type": "symbol",
+              "size": 12,
+              "accent": true,
+              "color": "tint",
+              "weight": "semibold"
+            },
+            {
+              "type": "text",
+              "text": "{title}",
+              "size": 13,
+              "weight": "semibold"
+            },
+            {
+              "type": "spacer"
+            }
+          ]
+        },
+        {
+          "type": "spacer"
+        },
+        {
+          "type": "text",
+          "text": "{value}",
+          "size": 46,
+          "tracking": -1.2,
+          "weight": "semibold",
+          "design": "numbers"
+        },
+        {
+          "type": "hstack",
+          "spacing": 5,
+          "children": [
+            {
+              "type": "circle",
+              "width": 6,
+              "height": 6,
+              "color": "tint"
+            },
+            {
+              "type": "text",
+              "text": "{label}",
+              "size": 11,
+              "tracking": 0.6,
+              "upper": true,
+              "weight": "semibold"
+            }
+          ]
+        },
+        {
+          "type": "each",
+          "limit": 2,
+          "spacing": 5,
+          "padding": [
+            10,
+            0,
+            0,
+            0
+          ],
+          "children": [
+            {
+              "type": "hstack",
+              "spacing": 8,
+              "children": [
+                {
+                  "type": "rect",
+                  "radius": 1.5,
+                  "width": 3,
+                  "height": 13,
+                  "color": "{item.tint}"
+                },
+                {
+                  "type": "text",
+                  "text": "{item.title}",
+                  "size": 11,
+                  "scale": 1,
+                  "privacy": true,
+                  "weight": "medium",
+                  "design": "mono"
+                },
+                {
+                  "type": "spacer",
+                  "minLength": 4
+                },
+                {
+                  "type": "text",
+                  "text": "{item.detail}",
+                  "size": 11,
+                  "scale": 0.8,
+                  "color": "muted"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "mail.medium": {
+      "type": "hstack",
+      "align": "top",
+      "spacing": 18,
+      "maxW": true,
+      "maxH": true,
+      "children": [
+        {
+          "type": "vstack",
+          "align": "leading",
+          "frameAlign": "topLeading",
+          "spacing": 0,
+          "maxW": true,
+          "maxH": true,
+          "children": [
+            {
+              "type": "hstack",
+              "spacing": 5,
+              "children": [
+                {
+                  "type": "symbol",
+                  "size": 12,
+                  "accent": true,
+                  "color": "tint",
+                  "weight": "semibold"
+                },
+                {
+                  "type": "text",
+                  "text": "{title}",
+                  "size": 13,
+                  "weight": "semibold"
+                },
+                {
+                  "type": "spacer"
+                }
+              ]
+            },
+            {
+              "type": "spacer"
+            },
+            {
+              "type": "text",
+              "text": "{value}",
+              "size": 46,
+              "tracking": -1.2,
+              "weight": "semibold",
+              "design": "numbers"
+            },
+            {
+              "type": "hstack",
+              "spacing": 5,
+              "children": [
+                {
+                  "type": "circle",
+                  "width": 6,
+                  "height": 6,
+                  "color": "tint"
+                },
+                {
+                  "type": "text",
+                  "text": "{label}",
+                  "size": 11,
+                  "tracking": 0.6,
+                  "upper": true,
+                  "weight": "semibold"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "{caption}",
+              "size": 11,
+              "lines": 2,
+              "privacy": true,
+              "color": "muted",
+              "padding": [
+                6,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "type": "vstack",
+          "align": "leading",
+          "frameAlign": "topLeading",
+          "spacing": 0,
+          "maxW": true,
+          "maxH": true,
+          "children": [
+            {
+              "type": "each",
+              "limit": 4,
+              "spacing": 6,
+              "children": [
+                {
+                  "type": "hstack",
+                  "spacing": 8,
+                  "children": [
+                    {
+                      "type": "rect",
+                      "radius": 1.5,
+                      "width": 3,
+                      "height": 28,
+                      "color": "{item.tint}"
+                    },
+                    {
+                      "type": "vstack",
+                      "align": "leading",
+                      "spacing": 1,
+                      "children": [
+                        {
+                          "type": "text",
+                          "text": "{item.title}",
+                          "size": 11.5,
+                          "scale": 1,
+                          "privacy": true,
+                          "weight": "semibold",
+                          "design": "mono"
+                        },
+                        {
+                          "type": "text",
+                          "text": "{item.detail}",
+                          "size": 11,
+                          "scale": 1,
+                          "color": "muted"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "spacer",
+                      "minLength": 4
+                    },
+                    {
+                      "type": "text",
+                      "text": "{item.tag}",
+                      "size": 11,
+                      "scale": 1,
+                      "color": "muted",
+                      "design": "mono"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "spacer"
+            }
+          ]
+        }
+      ]
+    },
+    "mail.large": {
+      "type": "vstack",
+      "align": "leading",
+      "frameAlign": "topLeading",
+      "spacing": 0,
+      "maxW": true,
+      "maxH": true,
+      "children": [
+        {
+          "type": "hstack",
+          "spacing": 5,
+          "children": [
+            {
+              "type": "symbol",
+              "size": 12,
+              "accent": true,
+              "color": "tint",
+              "weight": "semibold"
+            },
+            {
+              "type": "text",
+              "text": "{title}",
+              "size": 13,
+              "weight": "semibold"
+            },
+            {
+              "type": "spacer"
+            },
+            {
+              "type": "text",
+              "text": "{age}",
+              "size": 10,
+              "color": "muted",
+              "weight": "medium"
+            }
+          ]
+        },
+        {
+          "type": "spacer",
+          "minLength": 10
+        },
+        {
+          "type": "hstack",
+          "align": "baseline",
+          "spacing": 12,
+          "children": [
+            {
+              "type": "text",
+              "text": "{value}",
+              "size": 56,
+              "tracking": -1.6,
+              "weight": "semibold",
+              "design": "numbers"
+            },
+            {
+              "type": "hstack",
+              "spacing": 5,
+              "children": [
+                {
+                  "type": "circle",
+                  "width": 6,
+                  "height": 6,
+                  "color": "tint"
+                },
+                {
+                  "type": "text",
+                  "text": "{label}",
+                  "size": 12,
+                  "tracking": 0.6,
+                  "upper": true,
+                  "weight": "semibold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "divider",
+          "color": "muted@0.22",
+          "padding": [
+            12,
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "each",
+          "limit": 5,
+          "spacing": 9,
+          "children": [
+            {
+              "type": "hstack",
+              "spacing": 8,
+              "children": [
+                {
+                  "type": "rect",
+                  "radius": 1.5,
+                  "width": 3,
+                  "height": 30,
+                  "color": "{item.tint}"
+                },
+                {
+                  "type": "vstack",
+                  "align": "leading",
+                  "spacing": 1,
+                  "children": [
+                    {
+                      "type": "text",
+                      "text": "{item.title}",
+                      "size": 12.5,
+                      "scale": 1,
+                      "privacy": true,
+                      "weight": "semibold",
+                      "design": "mono"
+                    },
+                    {
+                      "type": "text",
+                      "text": "{item.detail}",
+                      "size": 12,
+                      "scale": 1,
+                      "color": "muted"
+                    }
+                  ]
+                },
+                {
+                  "type": "spacer",
+                  "minLength": 4
+                },
+                {
+                  "type": "text",
+                  "text": "{item.tag}",
+                  "size": 12,
+                  "scale": 1,
+                  "color": "muted",
+                  "design": "mono"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "spacer",
+          "minLength": 12
+        },
+        {
+          "type": "hstack",
+          "spacing": 5,
+          "children": [
+            {
+              "type": "symbol",
+              "name": "tag.fill",
+              "size": 10,
+              "color": "muted"
+            },
+            {
+              "type": "text",
+              "text": "{caption}",
+              "size": 11,
+              "privacy": true,
+              "color": "muted"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "by": "Minerva",
+  "note": "Keled Mail: neutral greys, #121212 dark, wine for what wants him, mono account codes, unread bars.",
+  "updatedAt": "2026-10-14T20:42:44.207Z"
+}

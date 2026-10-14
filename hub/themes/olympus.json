@@ -1,0 +1,818 @@
+{
+  "ink": "#1d1d1f",
+  "muted": "#6e6e73",
+  "accent": "#d4604a",
+  "tile": "#f5f5f7",
+  "font": "system",
+  "numbers": "system",
+  "weight": "semibold",
+  "dark": {
+    "ink": "#f5f5f7",
+    "muted": "#a1a1a6",
+    "accent": "#e2705a",
+    "tile": "#1d1d1f"
+  },
+  "layouts": {
+    "olympus.small": {
+      "type": "vstack",
+      "align": "leading",
+      "frameAlign": "topLeading",
+      "spacing": 0,
+      "maxW": true,
+      "maxH": true,
+      "children": [
+        {
+          "type": "hstack",
+          "spacing": 5,
+          "children": [
+            {
+              "type": "zstack",
+              "radius": 4.8,
+              "width": 20,
+              "height": 20,
+              "accent": true,
+              "bg": "accent",
+              "children": [
+                {
+                  "type": "text",
+                  "text": "Ψ",
+                  "size": 12.4,
+                  "scale": 1,
+                  "color": "white",
+                  "weight": "semibold"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "{title}",
+              "size": 13,
+              "weight": "semibold"
+            },
+            {
+              "type": "spacer"
+            }
+          ]
+        },
+        {
+          "type": "spacer"
+        },
+        {
+          "type": "text",
+          "text": "{value}",
+          "size": 46,
+          "tracking": -1.2,
+          "weight": "semibold",
+          "design": "numbers"
+        },
+        {
+          "type": "text",
+          "text": "{label}",
+          "size": 13,
+          "color": "muted",
+          "weight": "medium"
+        },
+        {
+          "type": "hstack",
+          "when": "{items.1.title}",
+          "spacing": 6,
+          "padding": [
+            8,
+            0,
+            0,
+            0
+          ],
+          "children": [
+            {
+              "type": "zstack",
+              "align": "topTrailing",
+              "children": [
+                {
+                  "type": "vstack",
+                  "align": "leading",
+                  "spacing": 0,
+                  "padding": [
+                    3,
+                    0,
+                    0,
+                    3
+                  ],
+                  "children": [
+                    {
+                      "type": "zstack",
+                      "width": 16,
+                      "height": 16,
+                      "children": [
+                        {
+                          "type": "circle",
+                          "color": "ink"
+                        },
+                        {
+                          "type": "symbol",
+                          "name": "person.fill",
+                          "size": 7.36,
+                          "color": "bg"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "circle",
+                  "radius": 3.36,
+                  "strokeWidth": 1.5,
+                  "width": 6.72,
+                  "height": 6.72,
+                  "color": "{items.1.tint}",
+                  "stroke": "bg"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "{items.1.detail}",
+              "size": 12,
+              "weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    "olympus.medium": {
+      "type": "hstack",
+      "align": "top",
+      "spacing": 14,
+      "maxW": true,
+      "maxH": true,
+      "children": [
+        {
+          "type": "vstack",
+          "align": "leading",
+          "frameAlign": "topLeading",
+          "spacing": 0,
+          "width": 112,
+          "maxH": true,
+          "children": [
+            {
+              "type": "hstack",
+              "spacing": 5,
+              "children": [
+                {
+                  "type": "zstack",
+                  "radius": 4.8,
+                  "width": 20,
+                  "height": 20,
+                  "accent": true,
+                  "bg": "accent",
+                  "children": [
+                    {
+                      "type": "text",
+                      "text": "Ψ",
+                      "size": 12.4,
+                      "scale": 1,
+                      "color": "white",
+                      "weight": "semibold"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "text": "{title}",
+                  "size": 13,
+                  "weight": "semibold"
+                },
+                {
+                  "type": "spacer"
+                }
+              ]
+            },
+            {
+              "type": "spacer"
+            },
+            {
+              "type": "text",
+              "text": "{value}",
+              "size": 44,
+              "tracking": -1.2,
+              "weight": "semibold",
+              "design": "numbers"
+            },
+            {
+              "type": "text",
+              "text": "{label}",
+              "size": 13,
+              "color": "muted",
+              "weight": "medium"
+            }
+          ]
+        },
+        {
+          "type": "zstack",
+          "align": "topLeading",
+          "frameAlign": "topLeading",
+          "maxW": true,
+          "maxH": true,
+          "children": [
+            {
+              "type": "vstack",
+              "align": "leading",
+              "frameAlign": "topLeading",
+              "spacing": 0,
+              "radius": 12,
+              "maxW": true,
+              "maxH": true,
+              "bg": "tile",
+              "padding": [
+                12
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "text": "Last meeting",
+                  "size": 11,
+                  "color": "muted",
+                  "weight": "semibold"
+                },
+                {
+                  "type": "spacer",
+                  "minLength": 4
+                },
+                {
+                  "type": "text",
+                  "text": "{items.0.title}",
+                  "size": 14,
+                  "lines": 3,
+                  "scale": 1,
+                  "privacy": true,
+                  "weight": "semibold"
+                },
+                {
+                  "type": "text",
+                  "text": "{items.0.detail}",
+                  "size": 11,
+                  "color": "muted",
+                  "padding": [
+                    3,
+                    0,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "vstack",
+              "when": "{items.1.title}",
+              "align": "leading",
+              "frameAlign": "topLeading",
+              "spacing": 0,
+              "radius": 12,
+              "maxW": true,
+              "maxH": true,
+              "bg": "#1d1d1f",
+              "stroke": "#424245",
+              "padding": [
+                12
+              ],
+              "children": [
+                {
+                  "type": "hstack",
+                  "spacing": 6,
+                  "children": [
+                    {
+                      "type": "zstack",
+                      "align": "topTrailing",
+                      "children": [
+                        {
+                          "type": "vstack",
+                          "align": "leading",
+                          "spacing": 0,
+                          "padding": [
+                            3,
+                            0,
+                            0,
+                            3
+                          ],
+                          "children": [
+                            {
+                              "type": "zstack",
+                              "width": 16,
+                              "height": 16,
+                              "children": [
+                                {
+                                  "type": "circle",
+                                  "color": "#f5f5f7"
+                                },
+                                {
+                                  "type": "symbol",
+                                  "name": "person.fill",
+                                  "size": 7.36,
+                                  "color": "#1d1d1f"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "circle",
+                          "radius": 3.36,
+                          "strokeWidth": 1.5,
+                          "width": 6.72,
+                          "height": 6.72,
+                          "color": "{items.1.tint}",
+                          "stroke": "#1d1d1f"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": "{items.1.detail}",
+                      "size": 11,
+                      "color": "#ffffff@0.7",
+                      "weight": "semibold"
+                    }
+                  ]
+                },
+                {
+                  "type": "spacer",
+                  "minLength": 4
+                },
+                {
+                  "type": "text",
+                  "text": "{items.1.title}",
+                  "size": 14,
+                  "lines": 3,
+                  "scale": 1,
+                  "privacy": true,
+                  "color": "#f5f5f7",
+                  "weight": "semibold"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "olympus.large": {
+      "type": "vstack",
+      "align": "leading",
+      "frameAlign": "topLeading",
+      "spacing": 0,
+      "maxW": true,
+      "maxH": true,
+      "children": [
+        {
+          "type": "hstack",
+          "spacing": 5,
+          "children": [
+            {
+              "type": "zstack",
+              "radius": 5.279999999999999,
+              "width": 22,
+              "height": 22,
+              "accent": true,
+              "bg": "accent",
+              "children": [
+                {
+                  "type": "text",
+                  "text": "Ψ",
+                  "size": 13.64,
+                  "scale": 1,
+                  "color": "white",
+                  "weight": "semibold"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "{title}",
+              "size": 13,
+              "weight": "semibold"
+            },
+            {
+              "type": "spacer"
+            },
+            {
+              "type": "text",
+              "text": "{age}",
+              "size": 10,
+              "color": "muted",
+              "weight": "medium"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "{caption}",
+          "size": 19,
+          "lines": 3,
+          "scale": 1,
+          "tracking": -0.3,
+          "privacy": true,
+          "weight": "semibold",
+          "padding": [
+            14,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "spacer",
+          "minLength": 12
+        },
+        {
+          "type": "zstack",
+          "height": 100,
+          "maxW": true,
+          "children": [
+            {
+              "type": "zstack",
+              "align": "topLeading",
+              "frameAlign": "topLeading",
+              "maxW": true,
+              "maxH": true,
+              "children": [
+                {
+                  "type": "vstack",
+                  "align": "leading",
+                  "frameAlign": "topLeading",
+                  "spacing": 0,
+                  "radius": 12,
+                  "maxW": true,
+                  "maxH": true,
+                  "bg": "tile",
+                  "padding": [
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "text": "Last meeting",
+                      "size": 11,
+                      "color": "muted",
+                      "weight": "semibold"
+                    },
+                    {
+                      "type": "spacer",
+                      "minLength": 4
+                    },
+                    {
+                      "type": "text",
+                      "text": "{items.0.title}",
+                      "size": 15,
+                      "lines": 2,
+                      "scale": 1,
+                      "privacy": true,
+                      "weight": "semibold"
+                    },
+                    {
+                      "type": "text",
+                      "text": "{items.0.detail}",
+                      "size": 11,
+                      "color": "muted",
+                      "padding": [
+                        3,
+                        0,
+                        0,
+                        0
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "vstack",
+                  "when": "{items.1.title}",
+                  "align": "leading",
+                  "frameAlign": "topLeading",
+                  "spacing": 0,
+                  "radius": 12,
+                  "maxW": true,
+                  "maxH": true,
+                  "bg": "#1d1d1f",
+                  "stroke": "#424245",
+                  "padding": [
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "hstack",
+                      "spacing": 6,
+                      "children": [
+                        {
+                          "type": "zstack",
+                          "align": "topTrailing",
+                          "children": [
+                            {
+                              "type": "vstack",
+                              "align": "leading",
+                              "spacing": 0,
+                              "padding": [
+                                3,
+                                0,
+                                0,
+                                3
+                              ],
+                              "children": [
+                                {
+                                  "type": "zstack",
+                                  "width": 16,
+                                  "height": 16,
+                                  "children": [
+                                    {
+                                      "type": "circle",
+                                      "color": "#f5f5f7"
+                                    },
+                                    {
+                                      "type": "symbol",
+                                      "name": "person.fill",
+                                      "size": 7.36,
+                                      "color": "#1d1d1f"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "circle",
+                              "radius": 3.36,
+                              "strokeWidth": 1.5,
+                              "width": 6.72,
+                              "height": 6.72,
+                              "color": "{items.1.tint}",
+                              "stroke": "#1d1d1f"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "text": "{items.1.detail}",
+                          "size": 11,
+                          "color": "#ffffff@0.7",
+                          "weight": "semibold"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "spacer",
+                      "minLength": 4
+                    },
+                    {
+                      "type": "text",
+                      "text": "{items.1.title}",
+                      "size": 15,
+                      "lines": 2,
+                      "scale": 1,
+                      "privacy": true,
+                      "color": "#f5f5f7",
+                      "weight": "semibold"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "vstack",
+          "align": "leading",
+          "spacing": 9,
+          "padding": [
+            12,
+            0,
+            0,
+            0
+          ],
+          "children": [
+            {
+              "type": "hstack",
+              "when": "{items.2.title}",
+              "spacing": 9,
+              "children": [
+                {
+                  "type": "zstack",
+                  "align": "topTrailing",
+                  "children": [
+                    {
+                      "type": "vstack",
+                      "align": "leading",
+                      "spacing": 0,
+                      "padding": [
+                        3,
+                        0,
+                        0,
+                        3
+                      ],
+                      "children": [
+                        {
+                          "type": "zstack",
+                          "width": 18,
+                          "height": 18,
+                          "children": [
+                            {
+                              "type": "circle",
+                              "color": "ink"
+                            },
+                            {
+                              "type": "symbol",
+                              "name": "person.fill",
+                              "size": 8.280000000000001,
+                              "color": "bg"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "circle",
+                      "radius": 3.78,
+                      "strokeWidth": 1.5,
+                      "width": 7.56,
+                      "height": 7.56,
+                      "color": "{items.2.tint}",
+                      "stroke": "bg"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "text": "{items.2.title}",
+                  "size": 13,
+                  "scale": 1,
+                  "privacy": true,
+                  "weight": "medium"
+                },
+                {
+                  "type": "spacer"
+                }
+              ]
+            },
+            {
+              "type": "hstack",
+              "when": "{items.3.title}",
+              "spacing": 9,
+              "children": [
+                {
+                  "type": "zstack",
+                  "align": "topTrailing",
+                  "children": [
+                    {
+                      "type": "vstack",
+                      "align": "leading",
+                      "spacing": 0,
+                      "padding": [
+                        3,
+                        0,
+                        0,
+                        3
+                      ],
+                      "children": [
+                        {
+                          "type": "zstack",
+                          "width": 18,
+                          "height": 18,
+                          "children": [
+                            {
+                              "type": "circle",
+                              "color": "ink"
+                            },
+                            {
+                              "type": "symbol",
+                              "name": "person.fill",
+                              "size": 8.280000000000001,
+                              "color": "bg"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "circle",
+                      "radius": 3.78,
+                      "strokeWidth": 1.5,
+                      "width": 7.56,
+                      "height": 7.56,
+                      "color": "{items.3.tint}",
+                      "stroke": "bg"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "text": "{items.3.title}",
+                  "size": 13,
+                  "scale": 1,
+                  "privacy": true,
+                  "weight": "medium"
+                },
+                {
+                  "type": "spacer"
+                }
+              ]
+            },
+            {
+              "type": "hstack",
+              "when": "{items.4.title}",
+              "spacing": 9,
+              "children": [
+                {
+                  "type": "zstack",
+                  "align": "topTrailing",
+                  "children": [
+                    {
+                      "type": "vstack",
+                      "align": "leading",
+                      "spacing": 0,
+                      "padding": [
+                        3,
+                        0,
+                        0,
+                        3
+                      ],
+                      "children": [
+                        {
+                          "type": "zstack",
+                          "width": 18,
+                          "height": 18,
+                          "children": [
+                            {
+                              "type": "circle",
+                              "color": "ink"
+                            },
+                            {
+                              "type": "symbol",
+                              "name": "person.fill",
+                              "size": 8.280000000000001,
+                              "color": "bg"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "circle",
+                      "radius": 3.78,
+                      "strokeWidth": 1.5,
+                      "width": 7.56,
+                      "height": 7.56,
+                      "color": "{items.4.tint}",
+                      "stroke": "bg"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "text": "{items.4.title}",
+                  "size": 13,
+                  "scale": 1,
+                  "privacy": true,
+                  "weight": "medium"
+                },
+                {
+                  "type": "spacer"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "spacer",
+          "minLength": 10
+        },
+        {
+          "type": "hstack",
+          "align": "baseline",
+          "spacing": 5,
+          "children": [
+            {
+              "type": "text",
+              "text": "{value}",
+              "size": 22,
+              "weight": "semibold",
+              "design": "numbers"
+            },
+            {
+              "type": "text",
+              "text": "{label}",
+              "size": 12,
+              "color": "muted",
+              "weight": "medium"
+            },
+            {
+              "type": "spacer"
+            },
+            {
+              "type": "text",
+              "text": "{items.0.detail}",
+              "size": 11,
+              "color": "muted"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "by": "Minerva",
+  "note": "Olympus: Apple neutrals, coral only in the mark tile, the waiting motion as an ink card.",
+  "updatedAt": "2026-10-14T20:42:44.497Z"
+}
