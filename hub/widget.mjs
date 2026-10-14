@@ -224,8 +224,14 @@ async function preview(ids, f) {
   if (!id) throw new Error(`run for ${tag} not found; check: gh run list -R ${REPO}`)
   console.log(`run ${id}: https://github.com/${REPO}/actions/runs/${id}  (build + shots take ~8 min)`)
   if (f.wait === 'false') return
+  // watch can exit non-zero on an API hiccup; the run's own conclusion is the verdict.
+  try { gh(['run', 'watch', String(id), '-R', REPO, '--interval', '20'], { stdio: 'ignore' }) } catch { /* checked below */ }
   let failed = false
-  try { gh(['run', 'watch', String(id), '-R', REPO, '--exit-status', '--interval', '20'], { stdio: 'ignore' }) } catch { failed = true }
+  for (let i = 0; i < 60; i++) {
+    const { status, conclusion } = JSON.parse(gh(['run', 'view', String(id), '-R', REPO, '--json', 'status,conclusion']))
+    if (status === 'completed') { failed = conclusion !== 'success'; break }
+    await sleep(15000)
+  }
   const out = join(ROOT, 'shots', 'preview', tag)
   mkdirSync(out, { recursive: true })
   try { gh(['run', 'download', String(id), '-R', REPO, '-n', 'keled-preview', '-D', out]) } catch { /* listed below */ }
