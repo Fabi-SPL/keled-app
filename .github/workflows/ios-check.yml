@@ -105,7 +105,7 @@ jobs:
       - name: Screenshot every widget size
         run: |
           mkdir -p shots
-          shoot() {  # device, screen, file, [appearance]
+          shoot() {  # device, screen, file, [appearance], [dir]
             xcrun simctl ui "$1" appearance "${4:-light}"
             DATA=$(xcrun simctl get_app_container "$1" com.fabi.keled data)
             rm -f "$DATA/Documents/keled-screen-$2.ok"
@@ -120,7 +120,7 @@ jobs:
             done
             [ -f "$DATA/Documents/keled-screen-$2.ok" ] || { echo "::error::screen $2 never rendered"; xcrun simctl spawn "$1" log show --last 2m --predicate 'process == "Keled"' --style compact 2>/dev/null | tail -30; exit 1; }
             sleep 1
-            xcrun simctl io "$1" screenshot "shots/$3.png" >/dev/null
+            xcrun simctl io "$1" screenshot "${5:-shots}/$3.png" >/dev/null
             echo "shot $3"
           }
           for DEV in "$PHONE" "$PAD"; do
@@ -138,16 +138,39 @@ jobs:
           if [ -n "$PREVIEW_CARDS" ]; then
             DATA=$(xcrun simctl get_app_container "$PHONE" com.fabi.keled data)
             mkdir -p "$DATA/Documents"
-            printf '%s' "$PREVIEW_CARDS" | base64 --decode | gunzip > "$DATA/Documents/preview-cards.json"
+            # Sealed by hub/seal.mjs: this repo is public, so real cards never appear in a log or artifact.
+            [ -n "$KELED_PREVIEW_KEY" ] || { echo "::error::KELED_PREVIEW_KEY secret missing"; exit 1; }
+            mkdir -p pv
+            printf '%s' "$PREVIEW_CARDS" | base64 --decode | node hub/seal.mjs open | gunzip > "$DATA/Documents/preview-cards.json"
             python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print('preview cards:', len(d['cards'] if isinstance(d, dict) else d))" "$DATA/Documents/preview-cards.json"
             for S in preview-small preview-medium preview-large; do
-              shoot "$PHONE" "$S" "$S"
-              shoot "$PHONE" "$S" "$S-dark" dark
+              shoot "$PHONE" "$S" "$S" light pv
+              shoot "$PHONE" "$S" "$S-dark" dark pv
             done
           fi
           ls -la shots
         env:
           PREVIEW_CARDS: ${{ inputs.cards }}
+          KELED_PREVIEW_KEY: ${{ secrets.KELED_PREVIEW_KEY }}
+
+      - name: Seal the preview shots
+        if: always() && inputs.cards != ''
+        run: |
+          mkdir -p sealed
+          for f in pv/*.png; do [ -f "$f" ] && node hub/seal.mjs seal < "$f" > "sealed/$(basename "$f").enc"; done
+          rm -rf pv
+          ls sealed
+        env:
+          KELED_PREVIEW_KEY: ${{ secrets.KELED_PREVIEW_KEY }}
+
+      - name: Keep the sealed preview
+        if: always() && inputs.cards != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: keled-preview
+          path: sealed/*.enc
+          retention-days: 3
+          if-no-files-found: ignore
 
       - name: Keep the screenshots
         if: always()

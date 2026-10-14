@@ -18,7 +18,8 @@ import {
 } from './store.mjs'
 import { loadSecret, SECRET_FILE, PORT, PUBLIC_URL } from './config.mjs'
 import { loadFeeds, runFeed } from './server.mjs'
-import { readFileSync, copyFileSync, mkdirSync, readdirSync, statSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, rmSync, copyFileSync, mkdirSync, readdirSync, statSync, existsSync } from 'node:fs'
+import { seal, open } from './seal.mjs'
 import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { execFileSync } from 'node:child_process'
@@ -209,7 +210,7 @@ async function preview(ids, f) {
       return servedCard(c)
     })
   }
-  const payload = gzipSync(JSON.stringify({ cards })).toString('base64')
+  const payload = seal(gzipSync(JSON.stringify({ cards }))).toString('base64')
   if (payload.length > 60_000) throw new Error(`cards too big to send (${payload.length} chars base64); preview fewer at once`)
   const tag = `${(f.tag || cards[0].id).replace(/[^a-z0-9-]/gi, '').slice(0, 24)}-${Date.now().toString(36)}`
   gh(['workflow', 'run', 'ios-check.yml', '-R', REPO, '-f', `cards=${payload}`, '-f', `tag=${tag}`])
@@ -227,7 +228,11 @@ async function preview(ids, f) {
   try { gh(['run', 'watch', String(id), '-R', REPO, '--exit-status', '--interval', '20'], { stdio: 'ignore' }) } catch { failed = true }
   const out = join(ROOT, 'shots', 'preview', tag)
   mkdirSync(out, { recursive: true })
-  try { gh(['run', 'download', String(id), '-R', REPO, '-n', 'keled-screens', '-D', out]) } catch { /* listed below */ }
+  try { gh(['run', 'download', String(id), '-R', REPO, '-n', 'keled-preview', '-D', out]) } catch { /* listed below */ }
+  for (const n of existsSync(out) ? readdirSync(out).filter((n) => n.endsWith('.png.enc')) : []) {
+    writeFileSync(join(out, n.slice(0, -4)), open(readFileSync(join(out, n))))
+    rmSync(join(out, n))
+  }
   const pngs = existsSync(out) ? readdirSync(out).filter((n) => n.startsWith('preview-')).sort() : []
   if (failed) console.log(`run FAILED; build log: gh run download ${id} -R ${REPO} -n build-log`)
   if (!pngs.length) throw new Error('no preview screenshots came back')
