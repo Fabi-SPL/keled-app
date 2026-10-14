@@ -2,13 +2,14 @@ import SwiftUI
 import WidgetKit
 
 /// Every card on the hub, grouped by app, drawn with the medium widget layout.
-/// Tapping a card opens its web app. Pull to refresh also reloads every widget.
+/// Tapping a card opens its web app inside Keled. Pull to refresh also reloads every widget.
 struct HomeView: View {
     @State private var cards: [Card] = []
     @State private var live = true
     @State private var loadedAt: Date?
     @Environment(\.openURL) private var openURL
     @Environment(\.scenePhase) private var phase
+    @EnvironmentObject private var router: WebRouter
 
     private struct AppGroup: Identifiable {
         let app: String
@@ -41,9 +42,9 @@ struct HomeView: View {
                             LazyVGrid(columns: [GridItem(.adaptive(minimum: 330), spacing: 14)], spacing: 14) {
                                 ForEach(group.cards) { card in
                                     Button {
-                                        if let raw = card.url, let url = URL(string: raw) { openURL(url) }
+                                        if let link = card.openURL { router.handle(link, system: openURL) }
                                     } label: {
-                                        WidgetFrame(height: 170) {
+                                        WidgetFrame(height: 170, card: card) {
                                             CardView(card: card, family: .systemMedium, live: live)
                                         }
                                     }
@@ -68,6 +69,9 @@ struct HomeView: View {
             }
         }
         .task { await load(reloadWidgets: true) }
+        .onReceive(NotificationCenter.default.publisher(for: .keledCardsChanged)) { _ in
+            Task { await load(reloadWidgets: false) }
+        }
         .onChange(of: phase) { _, now in
             if now == .active { Task { await load(reloadWidgets: true) } }
         }
@@ -82,10 +86,12 @@ struct HomeView: View {
     }
 }
 
-/// A widget-sized tile: system background, continuous corners, fixed height.
+/// A widget-sized tile: the card's own background (system background when unthemed),
+/// continuous corners, fixed height.
 struct WidgetFrame<Content: View>: View {
     var width: CGFloat? = nil
     var height: CGFloat
+    var card: Card? = nil
     var radius: CGFloat = 22
     var padding: CGFloat = 16
     @ViewBuilder var content: Content
@@ -95,7 +101,7 @@ struct WidgetFrame<Content: View>: View {
             .padding(padding)
             .frame(width: width, height: height)
             .frame(maxWidth: width == nil ? .infinity : nil)
-            .background(RoundedRectangle(cornerRadius: radius, style: .continuous).fill(Color(uiColor: .systemBackground)))
+            .background(Themed(card: card) { palette in CardBackground(palette: palette) })
             .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
     }
 }

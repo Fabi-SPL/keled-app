@@ -6,18 +6,32 @@ name: iOS check
 # PNGs are safe to keep. This is the only place the Swift gets compiled: there
 # is no Mac, so a red run here is the compiler talking.
 
+# `widget.mjs preview` dispatches this with a session's cards (gzip + base64) and a tag it can
+# find the run by; those runs also shoot the cards in preview-* screens, light and dark.
+run-name: ${{ inputs.tag && format('iOS preview {0}', inputs.tag) || 'iOS check' }}
+
 on:
   push:
     paths:
       - 'ios/**'
       - '.github/workflows/ios-check.yml'
   workflow_dispatch:
+    inputs:
+      cards:
+        description: 'Cards to preview: JSON, gzip, base64'
+        required: false
+        default: ''
+      tag:
+        description: 'Tag to find this run by'
+        required: false
+        default: ''
 
 permissions:
   contents: read
 
 concurrency:
-  group: ios-check-${{ github.ref }}
+  # Pushes replace each other; every preview run is its own, so two sessions never cancel each other.
+  group: ios-check-${{ github.event_name == 'push' && github.ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
@@ -111,12 +125,25 @@ jobs:
             xcrun simctl status_bar "$DEV" override --time 9:41 --batteryLevel 100 --cellularBars 4 || true
             xcrun simctl install "$DEV" "$APP"
           done
-          for S in small medium large lock board home; do shoot "$PHONE" "$S" "iphone-$S"; done
+          for S in small medium large lock board home themed themed2; do shoot "$PHONE" "$S" "iphone-$S"; done
           shoot "$PHONE" medium iphone-medium-dark dark
           shoot "$PHONE" home iphone-home-dark dark
+          shoot "$PHONE" themed iphone-themed-dark dark
           shoot "$PAD" home ipad-home
           shoot "$PAD" board ipad-board
+          if [ -n "$PREVIEW_CARDS" ]; then
+            DATA=$(xcrun simctl get_app_container "$PHONE" com.fabi.keled data)
+            mkdir -p "$DATA/Documents"
+            printf '%s' "$PREVIEW_CARDS" | base64 --decode | gunzip > "$DATA/Documents/preview-cards.json"
+            python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print('preview cards:', len(d['cards'] if isinstance(d, dict) else d))" "$DATA/Documents/preview-cards.json"
+            for S in preview-small preview-medium preview-large; do
+              shoot "$PHONE" "$S" "$S"
+              shoot "$PHONE" "$S" "$S-dark" dark
+            done
+          fi
           ls -la shots
+        env:
+          PREVIEW_CARDS: ${{ inputs.cards }}
 
       - name: Keep the screenshots
         if: always()

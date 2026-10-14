@@ -102,7 +102,7 @@ struct BoardIntent: WidgetConfigurationIntent {
 // MARK: Timeline
 
 struct CardEntry: TimelineEntry {
-    let date: Date
+    var date: Date
     let card: Card?
     let cards: [Card]
     let live: Bool
@@ -112,6 +112,18 @@ struct CardEntry: TimelineEntry {
 // iOS hands each widget roughly 40-70 reloads a day; 15 minutes keeps a whole home screen
 // inside that budget. Opening the app or pulling to refresh reloads them right away.
 private let refreshEvery: TimeInterval = 15 * 60
+
+/// The same data redrawn at each moment a card changes on its own (a "Tap again" falling back,
+/// a done/failed note ending), so the widget never waits 15 minutes to clear it.
+private func withTransitions(_ entry: CardEntry, until end: Date) -> [CardEntry] {
+    let cards = entry.card.map { [$0] } ?? entry.cards
+    let moments = Set(cards.flatMap { $0.transitions }).filter { $0 > entry.date && $0 < end }.sorted()
+    return [entry] + moments.map { d in
+        var next = entry
+        next.date = d.addingTimeInterval(1)
+        return next
+    }
+}
 
 struct CardProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> CardEntry {
@@ -128,7 +140,8 @@ struct CardProvider: AppIntentTimelineProvider {
 
     func timeline(for configuration: SelectCardIntent, in context: Context) async -> Timeline<CardEntry> {
         let entry = await entry(for: configuration)
-        return Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(refreshEvery)))
+        let refresh = Date().addingTimeInterval(refreshEvery)
+        return Timeline(entries: withTransitions(entry, until: refresh), policy: .after(refresh))
     }
 
     private func entry(for configuration: SelectCardIntent) async -> CardEntry {
@@ -151,7 +164,8 @@ struct BoardProvider: AppIntentTimelineProvider {
 
     func timeline(for configuration: BoardIntent, in context: Context) async -> Timeline<CardEntry> {
         let entry = await entry(for: configuration)
-        return Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(refreshEvery)))
+        let refresh = Date().addingTimeInterval(refreshEvery)
+        return Timeline(entries: withTransitions(entry, until: refresh), policy: .after(refresh))
     }
 
     private func entry(for configuration: BoardIntent) async -> CardEntry {
@@ -185,14 +199,14 @@ struct CardWidgetView: View {
     var body: some View {
         Group {
             if let card = entry.card {
-                CardView(card: card, family: family, live: entry.live)
+                CardView(card: card, family: family, live: entry.live, now: entry.date)
                     .widgetURL(card.openURL)
             } else {
                 EmptyCardView(family: family)
             }
         }
         .containerBackground(for: .widget) {
-            Color(uiColor: .systemBackground)
+            Themed(card: entry.card) { palette in CardBackground(palette: palette) }
         }
     }
 }

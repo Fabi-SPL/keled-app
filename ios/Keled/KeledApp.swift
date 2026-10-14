@@ -12,6 +12,7 @@ struct KeledApp: App {
 
 struct RootView: View {
     @Environment(\.openURL) private var openURL
+    @StateObject private var router = WebRouter()
 
     var body: some View {
         Group {
@@ -22,8 +23,10 @@ struct RootView: View {
                 HomeView()
             }
         }
-        .onOpenURL { url in
-            if let target = KeledLinks.target(of: url) { openURL(target) }
+        .environmentObject(router)
+        .fullScreenCover(item: $router.target) { target in
+            WebHostView(target: target)
         }
+        .onOpenURL { url in router.handle(url, system: openURL) }
     }
 }

@@ -6,6 +6,8 @@ import { join } from 'node:path'
 
 const dir = mkdtempSync(join(tmpdir(), 'keled-widgets-'))
 process.env.KELED_WIDGETS_DATA = dir
+process.env.KELED_WIDGETS_THEMES = join(dir, 'themes')
+process.env.KELED_WIDGETS_ASSETS = join(dir, 'assets')
 const store = await import('../store.mjs')
 const { createHub, authorized, runFeed, loadFeeds } = await import('../server.mjs')
 

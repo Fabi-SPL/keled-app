@@ -33,6 +33,15 @@
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Your web apps inside Keled can use the camera when you ask them to.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Your web apps inside Keled can record voice notes when you ask them to.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

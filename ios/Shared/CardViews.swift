@@ -1,24 +1,57 @@
 import SwiftUI
+import AppIntents
 import WidgetKit
 
 // One renderer for every card in every widget size. The app's gallery draws the same views,
 // so a simulator screenshot of the app shows exactly what the widget will show.
-// Anchor: Apple's own Batteries / Reminders widgets. Flat, system type, colour only for status.
+// A card with a layout for this size draws that layout (LayoutRenderer.swift); without one it gets
+// the built-in look below, dressed in its app's theme if the hub has one.
+// Anchor for the built-in look: Apple's own Batteries / Reminders widgets.
 
 struct CardView: View {
     let card: Card
     let family: WidgetFamily
     var live: Bool = true
+    var now: Date = Date()
+
+    static func key(_ family: WidgetFamily) -> String {
+        switch family {
+        case .systemSmall: return "small"
+        case .systemMedium: return "medium"
+        case .systemLarge: return "large"
+        case .systemExtraLarge: return "xl"
+        case .accessoryCircular: return "circular"
+        case .accessoryRectangular: return "rectangular"
+        case .accessoryInline: return "inline"
+        default: return "medium"
+        }
+    }
+
+    private var layout: LayoutNode? {
+        let key = CardView.key(family)
+        return card.layouts?[key] ?? (key == "xl" ? card.layouts?["large"] : nil)
+    }
 
     var body: some View {
+        Themed(card: card) { palette in
+            if let layout {
+                NodeRenderer.view(layout, LayoutContext(card: card, palette: palette, now: now))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            } else {
+                builtIn
+            }
+        }
+    }
+
+    @ViewBuilder private var builtIn: some View {
         switch family {
         case .accessoryCircular: CircularCard(card: card)
         case .accessoryRectangular: RectangularCard(card: card)
         case .accessoryInline: InlineCard(card: card)
-        case .systemSmall: SmallCard(card: card, live: live)
-        case .systemMedium: MediumCard(card: card, live: live)
-        case .systemExtraLarge: LargeCard(card: card, live: live, rows: 8)
-        default: LargeCard(card: card, live: live, rows: 6)
+        case .systemSmall: SmallCard(card: card, live: live, now: now)
+        case .systemMedium: MediumCard(card: card, live: live, now: now)
+        case .systemExtraLarge: LargeCard(card: card, live: live, now: now, rows: 8)
+        default: LargeCard(card: card, live: live, now: now, rows: 6)
         }
     }
 }
@@ -26,15 +59,17 @@ struct CardView: View {
 struct CardHeader: View {
     let card: Card
     let live: Bool
+    @Environment(\.cardPalette) private var palette
 
     var body: some View {
         HStack(spacing: 5) {
             Image(systemName: card.symbolName)
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(card.tintColor)
+                .foregroundStyle(palette.tint(card.tint))
                 .widgetAccentable()
             Text(card.title)
-                .font(.system(size: 13, weight: .semibold))
+                .font(palette.text(13, .semibold))
+                .foregroundStyle(palette.ink)
                 .lineLimit(1)
             Spacer(minLength: 4)
             FreshnessMark(card: card, live: live)
@@ -46,16 +81,41 @@ struct CardHeader: View {
 struct FreshnessMark: View {
     let card: Card
     let live: Bool
+    @Environment(\.cardPalette) private var palette
 
     var body: some View {
         if !live {
             Image(systemName: "wifi.slash")
                 .font(.system(size: 10, weight: .semibold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(palette.muted)
         } else if card.isStale, let age = card.ageText {
             Text(age)
                 .font(.system(size: 10, weight: .medium))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(palette.muted)
+        }
+    }
+}
+
+/// The caption line, or the last action's result while it is fresh.
+struct CaptionLine: View {
+    let card: Card
+    let now: Date
+    var size: CGFloat = 11
+    var lines = 2
+    @Environment(\.cardPalette) private var palette
+
+    var body: some View {
+        if let flash = card.activeFlash(at: now) {
+            Text(flash.text)
+                .font(palette.text(size, .semibold))
+                .foregroundStyle(palette.tint(flash.tint ?? "ok"))
+                .lineLimit(lines)
+        } else if let line = card.caption ?? card.items?.first?.title {
+            Text(line)
+                .font(palette.text(size))
+                .foregroundStyle(palette.muted)
+                .lineLimit(lines)
+                .privacySensitive()
         }
     }
 }
@@ -79,6 +139,7 @@ struct Ring: View {
 struct Sparkline: View {
     let values: [Double]
     let color: Color
+    var line: CGFloat = 2
 
     var body: some View {
         GeometryReader { geo in
@@ -91,7 +152,7 @@ struct Sparkline: View {
                     if i == 0 { p.move(to: CGPoint(x: x, y: y)) } else { p.addLine(to: CGPoint(x: x, y: y)) }
                 }
             }
-            .stroke(color, style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+            .stroke(color, style: StrokeStyle(lineWidth: line, lineCap: .round, lineJoin: .round))
         }
     }
 }
@@ -100,76 +161,154 @@ struct Sparkline: View {
 struct MainFigure: View {
     let card: Card
     var size: CGFloat = 40
+    @Environment(\.cardPalette) private var palette
 
     var body: some View {
+        let tint = palette.tint(card.tint)
         if card.kind == "gauge", let p = card.progress {
             HStack(spacing: 10) {
                 ZStack {
-                    Ring(progress: p, color: card.tintColor, line: size * 0.17)
+                    Ring(progress: p, color: tint, line: size * 0.17)
                     Text("\(Int((p * 100).rounded()))")
-                        .font(.system(size: size * 0.38, weight: .semibold, design: .rounded))
+                        .font(palette.number(size * 0.38))
                         .monospacedDigit()
+                        .foregroundStyle(palette.ink)
                 }
                 .frame(width: size * 1.5, height: size * 1.5)
                 if let label = card.label {
-                    Text(label).font(.system(size: 12, weight: .medium)).foregroundStyle(.secondary).lineLimit(2)
+                    Text(label).font(palette.text(12, .medium)).foregroundStyle(palette.muted).lineLimit(2)
                 }
             }
         } else if card.kind == "status" {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 7) {
-                    Circle().fill(card.tintColor).frame(width: size * 0.22, height: size * 0.22)
+                    Circle().fill(tint).frame(width: size * 0.22, height: size * 0.22)
                     Text(card.value ?? "–")
-                        .font(.system(size: size * 0.66, weight: .semibold, design: .rounded))
+                        .font(palette.number(size * 0.66))
+                        .foregroundStyle(palette.ink)
                         .minimumScaleFactor(0.5)
                         .lineLimit(1)
                 }
                 if let label = card.label {
-                    Text(label).font(.system(size: 12, weight: .medium)).foregroundStyle(.secondary).lineLimit(1)
+                    Text(label).font(palette.text(12, .medium)).foregroundStyle(palette.muted).lineLimit(1)
                 }
             }
         } else {
             VStack(alignment: .leading, spacing: 0) {
                 Text(card.value ?? "–")
-                    .font(.system(size: size, weight: .semibold, design: .rounded))
+                    .font(palette.number(size))
                     .monospacedDigit()
                     .minimumScaleFactor(0.5)
                     .lineLimit(1)
-                    .foregroundStyle(card.isStale ? Color.secondary : Color.primary)
+                    .foregroundStyle(card.isStale ? palette.muted : palette.ink)
                 if let label = card.label {
-                    Text(label).font(.system(size: 12, weight: .medium)).foregroundStyle(.secondary).lineLimit(1)
+                    Text(label).font(palette.text(12, .medium)).foregroundStyle(palette.muted).lineLimit(1)
                 }
             }
         }
     }
 }
 
+/// A list row. An item with `on` gets a tick box; an item with only an action gets a button at the end.
 struct ItemRow: View {
+    let card: Card
     let item: CardItem
     var compact = false
+    @Environment(\.cardPalette) private var palette
 
     var body: some View {
         HStack(spacing: 8) {
-            Circle()
-                .fill(KeledPalette.tint(item.tint ?? "neutral").opacity(item.tint == nil ? 0.45 : 1))
-                .frame(width: 6, height: 6)
+            if let ref = item.action, let on = item.on {
+                Button(intent: HubActionIntent(card: card.id, action: ref, on: !on)) {
+                    Image(systemName: on ? "checkmark.circle.fill" : "circle")
+                        .font(.system(size: compact ? 15 : 17, weight: .medium))
+                        .foregroundStyle(on ? palette.tint(item.tint ?? card.tint) : palette.muted)
+                }
+                .buttonStyle(.plain)
+            } else {
+                Circle()
+                    .fill(item.tint == nil ? palette.muted.opacity(0.6) : palette.tint(item.tint))
+                    .frame(width: 6, height: 6)
+            }
             VStack(alignment: .leading, spacing: 1) {
                 Text(item.title)
-                    .font(.system(size: compact ? 12 : 13, weight: .medium))
+                    .font(palette.text(compact ? 12 : 13, .medium))
+                    .foregroundStyle(item.on == true ? palette.muted : palette.ink)
+                    .strikethrough(item.on == true, color: palette.muted)
                     .lineLimit(1)
                 if !compact, let detail = item.detail {
-                    Text(detail).font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(1)
+                    Text(detail).font(palette.text(11)).foregroundStyle(palette.muted).lineLimit(1)
                 }
             }
             .privacySensitive()
             Spacer(minLength: 4)
             if let tag = item.tag {
                 Text(tag)
-                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .font(palette.number(11, .semibold))
                     .monospacedDigit()
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(palette.muted)
                     .lineLimit(1)
             }
+            if let ref = item.action, item.on == nil {
+                Button(intent: HubActionIntent(card: card.id, action: ref, on: true)) {
+                    Image(systemName: item.symbol ?? "checkmark")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(palette.tint(item.tint ?? card.tint))
+                        .frame(width: 24, height: 24)
+                        .background(Circle().fill(palette.tint(item.tint ?? card.tint).opacity(0.14)))
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+}
+
+/// The card's own buttons. Confirm-actions go through the guarded intent and need a second tap.
+struct ActionRow: View {
+    let card: Card
+    let now: Date
+    var limit = 2
+    @Environment(\.cardPalette) private var palette
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(Array((card.actions ?? []).prefix(limit))) { action in
+                ActionButton(card: card, action: action, now: now)
+            }
+        }
+    }
+}
+
+struct ActionButton: View {
+    let card: Card
+    let action: CardAction
+    let now: Date
+    @Environment(\.cardPalette) private var palette
+
+    private var label: some View {
+        let armed = card.isArmed(action.id, at: now)
+        let tint = armed ? KeledPalette.warn : action.style == "destructive" ? KeledPalette.bad : palette.accent
+        let filled = action.style == "filled" && !armed
+        return HStack(spacing: 4) {
+            if let sym = armed ? "hand.tap.fill" : action.symbol { Image(systemName: sym) }
+            Text(armed ? "Tap again" : action.label).lineLimit(1)
+        }
+        .font(palette.text(12, .semibold))
+        .foregroundStyle(filled ? Color.white : tint)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(Capsule().fill(filled ? tint : tint.opacity(0.14)))
+    }
+
+    var body: some View {
+        if let url = action.url, let target = KeledLinks.open(url, via: card.open, title: card.app ?? card.title) {
+            Link(destination: target) { label }
+        } else if action.confirm == true {
+            Button(intent: GuardedHubActionIntent(card: card.id, action: action.id, on: !(action.on ?? false))) { label }
+                .buttonStyle(.plain)
+        } else {
+            Button(intent: HubActionIntent(card: card.id, action: action.id, on: !(action.on ?? false))) { label }
+                .buttonStyle(.plain)
         }
     }
 }
@@ -177,17 +316,20 @@ struct ItemRow: View {
 struct SmallCard: View {
     let card: Card
     let live: Bool
+    let now: Date
+    @Environment(\.cardPalette) private var palette
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             CardHeader(card: card, live: live)
             Spacer(minLength: 0)
             MainFigure(card: card, size: 40)
-            if let series = card.series, series.count > 1 {
-                Sparkline(values: series, color: card.tintColor).frame(height: 18)
-            } else if let line = card.caption ?? card.items?.first?.title {
-                Text(line).font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(2)
-                    .privacySensitive()
+            if let action = card.actions?.first {
+                ActionButton(card: card, action: action, now: now)
+            } else if let series = card.series, series.count > 1 {
+                Sparkline(values: series, color: palette.tint(card.tint)).frame(height: 18)
+            } else {
+                CaptionLine(card: card, now: now)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -197,6 +339,8 @@ struct SmallCard: View {
 struct MediumCard: View {
     let card: Card
     let live: Bool
+    let now: Date
+    @Environment(\.cardPalette) private var palette
 
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
@@ -204,9 +348,10 @@ struct MediumCard: View {
                 CardHeader(card: card, live: live)
                 Spacer(minLength: 0)
                 MainFigure(card: card, size: 38)
-                if let caption = card.caption {
-                    Text(caption).font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(2)
-                        .privacySensitive()
+                if card.actions?.isEmpty == false {
+                    ActionRow(card: card, now: now, limit: 2)
+                } else {
+                    CaptionLine(card: card, now: now)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -214,14 +359,14 @@ struct MediumCard: View {
             if let items = card.items, !items.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(Array(items.prefix(4).enumerated()), id: \.offset) { _, item in
-                        ItemRow(item: item, compact: true)
+                        ItemRow(card: card, item: item, compact: true)
                     }
                     Spacer(minLength: 0)
                 }
                 .padding(.top, 2)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             } else if let series = card.series, series.count > 1 {
-                Sparkline(values: series, color: card.tintColor)
+                Sparkline(values: series, color: palette.tint(card.tint))
                     .padding(.vertical, 22)
                     .frame(maxWidth: .infinity)
             }
@@ -232,7 +377,9 @@ struct MediumCard: View {
 struct LargeCard: View {
     let card: Card
     let live: Bool
+    let now: Date
     let rows: Int
+    @Environment(\.cardPalette) private var palette
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -241,27 +388,26 @@ struct LargeCard: View {
                 MainFigure(card: card, size: 46)
                 Spacer(minLength: 8)
                 if let series = card.series, series.count > 1 {
-                    Sparkline(values: series, color: card.tintColor).frame(width: 120, height: 38)
+                    Sparkline(values: series, color: palette.tint(card.tint)).frame(width: 120, height: 38)
                 }
             }
-            if let caption = card.caption {
-                Text(caption).font(.system(size: 13)).foregroundStyle(.secondary).lineLimit(2)
-                    .privacySensitive()
-            }
+            CaptionLine(card: card, now: now, size: 13)
             if let items = card.items, !items.isEmpty {
                 VStack(alignment: .leading, spacing: 10) {
                     ForEach(Array(items.prefix(rows).enumerated()), id: \.offset) { _, item in
-                        ItemRow(item: item)
+                        ItemRow(card: card, item: item)
                     }
                 }
                 .padding(.top, 6)
             }
             Spacer(minLength: 0)
-            if let app = card.app {
+            if card.actions?.isEmpty == false {
+                ActionRow(card: card, now: now, limit: 3)
+            } else if let app = card.app {
                 Text(app.uppercased())
                     .font(.system(size: 9, weight: .semibold))
                     .tracking(0.8)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(palette.muted.opacity(0.7))
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -416,35 +562,44 @@ struct BoardView: View {
     }
 }
 
+/// A board tile wears its app's theme, so an iPad board reads as a mosaic of the apps themselves.
 struct BoardTile: View {
     let card: Card
 
     var body: some View {
-        Link(destination: card.openURL ?? KeledLinks.home) {
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 4) {
-                    Image(systemName: card.symbolName)
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(card.tintColor)
-                        .widgetAccentable()
-                    Text(card.title).font(.system(size: 11, weight: .semibold)).lineLimit(1)
+        Themed(card: card) { palette in
+            Link(destination: card.openURL ?? KeledLinks.home) {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 4) {
+                        Image(systemName: card.symbolName)
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(palette.tint(card.tint))
+                            .widgetAccentable()
+                        Text(card.title).font(palette.text(11, .semibold)).foregroundStyle(palette.ink).lineLimit(1)
+                        Spacer(minLength: 0)
+                    }
                     Spacer(minLength: 0)
+                    Text(card.value ?? "–")
+                        .font(palette.number(24))
+                        .monospacedDigit()
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
+                        .foregroundStyle(card.isStale ? palette.muted : palette.ink)
+                    if let label = card.label {
+                        Text(label).font(palette.text(10)).foregroundStyle(palette.muted).lineLimit(1)
+                    }
                 }
-                Spacer(minLength: 0)
-                Text(card.value ?? "–")
-                    .font(.system(size: 24, weight: .semibold, design: .rounded))
-                    .monospacedDigit()
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
-                    .foregroundStyle(card.isStale ? Color.secondary : Color.primary)
-                if let label = card.label {
-                    Text(label).font(.system(size: 10)).foregroundStyle(.secondary).lineLimit(1)
+                .padding(10)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .background {
+                    if palette.background.isEmpty {
+                        RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color(uiColor: .secondarySystemBackground))
+                    } else {
+                        CardBackground(palette: palette).clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    }
                 }
             }
-            .padding(10)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color(uiColor: .secondarySystemBackground)))
+            .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
     }
 }

@@ -17,6 +17,11 @@ struct ScreenshotView: View {
             case "large": large
             case "lock": lock
             case "board": board
+            case "themed": themed
+            case "themed2": themed2
+            case "preview-small": previewSmall
+            case "preview-medium": previewMedium
+            case "preview-large": previewLarge
             default: HomeView()
             }
         }
@@ -28,7 +33,7 @@ struct ScreenshotView: View {
     private var small: some View {
         page {
             LazyVGrid(columns: [GridItem(.fixed(170), spacing: 18), GridItem(.fixed(170), spacing: 18)], spacing: 18) {
-                ForEach(cards) { card in
+                ForEach(cards.prefix(6)) { card in
                     WidgetFrame(width: 170, height: 170) { CardView(card: card, family: .systemSmall) }
                 }
             }
@@ -75,6 +80,76 @@ struct ScreenshotView: View {
         page {
             WidgetFrame(width: 364, height: 170, padding: 12) { BoardView(cards: cards, family: .systemMedium, live: true) }
             WidgetFrame(width: 364, height: 382, padding: 14) { BoardView(cards: cards, family: .systemLarge, live: false) }
+        }
+    }
+
+    // Theme, free layout and actions, from the samples, on every build.
+    private var designed: [Card] { ["habits", "taxes", "alarm"].compactMap { id in cards.first { $0.id == id } } }
+
+    private var themed: some View {
+        page {
+            LazyVGrid(columns: [GridItem(.fixed(170), spacing: 18), GridItem(.fixed(170), spacing: 18)], spacing: 18) {
+                ForEach(designed) { card in
+                    WidgetFrame(width: 170, height: 170, card: card) { CardView(card: card, family: .systemSmall) }
+                }
+            }
+            ForEach(designed.prefix(2)) { card in
+                WidgetFrame(width: 364, height: 170, card: card) { CardView(card: card, family: .systemMedium) }
+            }
+        }
+    }
+
+    private var themed2: some View {
+        page {
+            ForEach(designed.suffix(1)) { card in
+                WidgetFrame(width: 364, height: 170, card: card) { CardView(card: card, family: .systemMedium) }
+            }
+            ForEach(designed.prefix(1)) { card in
+                WidgetFrame(width: 364, height: 382, card: card) { CardView(card: card, family: .systemLarge) }
+            }
+        }
+    }
+
+    // A session's own cards, dropped in by `widget.mjs preview` through CI, so it can look at a
+    // design before it reaches the phone. Documents/preview-cards.json, same shape as GET /v1/cards.
+    private var preview: [Card] {
+        let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        guard let data = try? Data(contentsOf: dir.appendingPathComponent("preview-cards.json")) else { return [] }
+        if let r = try? JSONDecoder().decode(CardsResponse.self, from: data), !r.cards.isEmpty { return r.cards }
+        return (try? JSONDecoder().decode([Card].self, from: data)) ?? []
+    }
+
+    private var previewSmall: some View {
+        page {
+            LazyVGrid(columns: [GridItem(.fixed(170), spacing: 18), GridItem(.fixed(170), spacing: 18)], spacing: 18) {
+                ForEach(preview.prefix(6)) { card in
+                    WidgetFrame(width: 170, height: 170, card: card) { CardView(card: card, family: .systemSmall) }
+                }
+            }
+        }
+    }
+
+    private var previewMedium: some View {
+        page {
+            ForEach(preview.prefix(4)) { card in
+                WidgetFrame(width: 364, height: 170, card: card) { CardView(card: card, family: .systemMedium) }
+            }
+        }
+    }
+
+    private var previewLarge: some View {
+        page {
+            ForEach(preview.prefix(1)) { card in
+                WidgetFrame(width: 364, height: 382, card: card) { CardView(card: card, family: .systemLarge) }
+                HStack(spacing: 14) {
+                    CardView(card: card, family: .accessoryCircular).frame(width: 76, height: 76)
+                    CardView(card: card, family: .accessoryRectangular).frame(width: 172, height: 76)
+                }
+                .padding(12)
+                .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(.black))
+                .foregroundStyle(.white)
+                .environment(\.colorScheme, .dark)
+            }
         }
     }
 
