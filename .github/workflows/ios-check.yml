@@ -100,6 +100,10 @@ jobs:
           grep -q "BUILD SUCCEEDED" build.log || { echo "::error::simulator build failed"; grep -E "error:" build.log | head -40; exit 1; }
           APP="$RUNNER_TEMP/dd/Build/Products/Debug-iphonesimulator/Keled.app"
           test -d "$APP/PlugIns/KeledWidgets.appex" || { echo "::error::widget extension was not embedded"; exit 1; }
+          for P in "$APP" "$APP/PlugIns/KeledWidgets.appex"; do
+            test -f "$P/PrivacyInfo.xcprivacy" || { echo "::error::no privacy manifest in $(basename "$P")"; exit 1; }
+          done
+          echo "privacy manifests: app + widget"
           echo "APP=$APP" >> "$GITHUB_ENV"
 
       - name: Screenshot every widget size
