@@ -38,9 +38,23 @@ A card that has to track live state gets a feed: `hub/feeds/<name>.mjs`, default
 
 ```powershell
 node hub/widget.mjs feed <name>      # dry run, prints the cards it would write
-Get-CimInstance Win32_Process -Filter "name='node.exe'" | ? CommandLine -like '*keled-app*server.mjs*' | % { Stop-Process -Id $_.ProcessId }
+Get-NetTCPConnection -LocalPort 7840 -State Listen | ? LocalAddress -eq '127.0.0.1' | % { Stop-Process -Id $_.OwningProcess }
 # run-hub.vbs restarts it 5 s later (scheduled task KeledWidgetHub, hidden)
 ```
+
+Live feeds (one card each unless noted):
+
+| Feed | Source | Card |
+|---|---|---|
+| lucid | Companion app :5274, cookie from its .env | habits done today, focus |
+| hq | Lucid HQ :4612 | unread sessions, running |
+| mail | Keled Mail on Hetzner | need-you count, marked for Claude (2 cards) |
+| office | Keled Office :4640 | run state, asks (2 cards) |
+| olympus | Olympus :7830 | last meeting, motions held for him |
+| vesta | Vesta calendar on Hetzner, cal agent token | events today and tomorrow |
+| cura | Cura :4611 | last message from Lucid |
+| argus | Argus on Hetzner | network posture checks |
+| tv | Lucid TV :7480 | open alerts only |
 
 ## Build and ship
 

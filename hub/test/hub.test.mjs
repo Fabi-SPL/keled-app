@@ -7,7 +7,7 @@ import { join } from 'node:path'
 const dir = mkdtempSync(join(tmpdir(), 'keled-widgets-'))
 process.env.KELED_WIDGETS_DATA = dir
 const store = await import('../store.mjs')
-const { createHub, authorized, runFeed } = await import('../server.mjs')
+const { createHub, authorized, runFeed, loadFeeds } = await import('../server.mjs')
 
 let server, base
 const TOKEN = 'test-token-123'
@@ -99,4 +99,11 @@ test('feeds tag their cards with the feed name', async () => {
   const cards = await runFeed({ name: 'demo', run: async () => [{ id: 'demo-a', title: 'A' }, null] })
   assert.equal(cards.length, 1)
   assert.equal(store.getCard('demo-a').source, 'feed:demo')
+})
+
+test('every feed module loads and exports run', async () => {
+  const feeds = await loadFeeds()
+  const names = feeds.map((f) => f.name).sort()
+  assert.deepEqual(names, ['argus', 'cura', 'hq', 'lucid', 'mail', 'office', 'olympus', 'tv', 'vesta'])
+  for (const f of feeds) assert.equal(typeof f.run, 'function')
 })
