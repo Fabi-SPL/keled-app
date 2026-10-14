@@ -105,13 +105,15 @@ jobs:
       - name: Screenshot every widget size
         run: |
           mkdir -p shots
+          # macOS has no timeout(1); a hung simctl call once held a run for 40 minutes.
+          t() { perl -e 'alarm shift; exec @ARGV' "$@"; }
           shoot() {  # device, screen, file, [appearance], [dir]
             xcrun simctl ui "$1" appearance "${4:-light}"
             DATA=$(xcrun simctl get_app_container "$1" com.fabi.keled data)
             rm -f "$DATA/Documents/keled-screen-$2.ok"
             # Two tries: a busy runner sometimes loses the first relaunch on the second simulator.
             for try in 1 2; do
-              xcrun simctl launch --terminate-running-process "$1" com.fabi.keled -KeledScreen "$2" -KeledDemo YES >/dev/null
+              t 60 xcrun simctl launch --terminate-running-process "$1" com.fabi.keled -KeledScreen "$2" -KeledDemo YES >/dev/null || echo "launch $2 did not return"
               for i in $(seq 1 60); do
                 [ -f "$DATA/Documents/keled-screen-$2.ok" ] && break 2
                 sleep 0.5
@@ -120,21 +122,25 @@ jobs:
             done
             [ -f "$DATA/Documents/keled-screen-$2.ok" ] || { echo "::error::screen $2 never rendered"; xcrun simctl spawn "$1" log show --last 2m --predicate 'process == "Keled"' --style compact 2>/dev/null | tail -30; exit 1; }
             sleep 1
-            xcrun simctl io "$1" screenshot "${5:-shots}/$3.png" >/dev/null
+            t 30 xcrun simctl io "$1" screenshot "${5:-shots}/$3.png" >/dev/null
             echo "shot $3"
           }
-          for DEV in "$PHONE" "$PAD"; do
+          # A preview needs only the phone and only its own cards: about a third of the time.
+          DEVS="$PHONE $PAD"; [ -n "$PREVIEW_CARDS" ] && DEVS="$PHONE"
+          for DEV in $DEVS; do
             xcrun simctl boot "$DEV" || true
-            xcrun simctl bootstatus "$DEV" -b >/dev/null
+            t 300 xcrun simctl bootstatus "$DEV" -b >/dev/null
             xcrun simctl status_bar "$DEV" override --time 9:41 --batteryLevel 100 --cellularBars 4 || true
             xcrun simctl install "$DEV" "$APP"
           done
-          for S in small medium large lock board home themed themed2; do shoot "$PHONE" "$S" "iphone-$S"; done
-          shoot "$PHONE" medium iphone-medium-dark dark
-          shoot "$PHONE" home iphone-home-dark dark
-          shoot "$PHONE" themed iphone-themed-dark dark
-          shoot "$PAD" home ipad-home
-          shoot "$PAD" board ipad-board
+          if [ -z "$PREVIEW_CARDS" ]; then
+            for S in small medium large lock board home themed themed2; do shoot "$PHONE" "$S" "iphone-$S"; done
+            shoot "$PHONE" medium iphone-medium-dark dark
+            shoot "$PHONE" home iphone-home-dark dark
+            shoot "$PHONE" themed iphone-themed-dark dark
+            shoot "$PAD" home ipad-home
+            shoot "$PAD" board ipad-board
+          fi
           if [ -n "$PREVIEW_CARDS" ]; then
             DATA=$(xcrun simctl get_app_container "$PHONE" com.fabi.keled data)
             mkdir -p "$DATA/Documents"
