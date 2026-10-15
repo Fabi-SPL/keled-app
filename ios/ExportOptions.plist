@@ -5,7 +5,16 @@
 	<key>method</key>
 	<string>app-store-connect</string>
 	<key>signingStyle</key>
-	<string>automatic</string>
+	<string>manual</string>
+	<key>signingCertificate</key>
+	<string>Apple Distribution</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>com.fabi.keled</key>
+		<string>com.fabi.keled appstore ci</string>
+		<key>com.fabi.keled.widgets</key>
+		<string>com.fabi.keled.widgets appstore ci</string>
+	</dict>
 	<key>destination</key>
 	<string>export</string>
 	<key>uploadSymbols</key>

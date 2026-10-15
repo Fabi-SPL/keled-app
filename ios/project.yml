@@ -39,6 +39,10 @@ targets:
         INFOPLIST_FILE: Keled/Info.plist
         CODE_SIGN_STYLE: Manual
         DEVELOPMENT_TEAM: ""
+      configs:
+        Release:
+          CODE_SIGN_IDENTITY: "Apple Distribution"
+          PROVISIONING_PROFILE_SPECIFIER: "com.fabi.keled appstore ci"
 
   KeledWidgets:
     type: app-extension
@@ -56,3 +60,7 @@ targets:
         CODE_SIGN_STYLE: Manual
         DEVELOPMENT_TEAM: ""
         SKIP_INSTALL: NO
+      configs:
+        Release:
+          CODE_SIGN_IDENTITY: "Apple Distribution"
+          PROVISIONING_PROFILE_SPECIFIER: "com.fabi.keled.widgets appstore ci"

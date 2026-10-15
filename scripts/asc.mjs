@@ -14,11 +14,14 @@
 //   node scripts/asc.mjs app-create com.fabi.lucidride "Ride" lucidride
 //   node scripts/asc.mjs builds com.fabi.lucidhealth
 //   node scripts/asc.mjs beta-groups <appId>
+//   node scripts/asc.mjs profile com.fabi.keled <certId> [--install]
 //   node scripts/asc.mjs raw GET /v1/apps?limit=5
 //   node scripts/asc.mjs raw POST /v1/bundleIds '{"data":{...}}'
 
 import { createSign } from 'node:crypto'
-import { readFileSync, existsSync } from 'node:fs'
+import { readFileSync, existsSync, writeFileSync, mkdirSync } from 'node:fs'
+import { homedir } from 'node:os'
+import { join } from 'node:path'
 
 const CFG = process.env.ASC_CONFIG || 'C:/Programs/Claude/.secrets/asc.json'
 
@@ -183,6 +186,45 @@ const CMDS = {
     for (const g of await all(`/v1/betaGroups?filter[app]=${app.id}&limit=200`)) {
       row(g.id, g.attributes.name, '| internal:', String(g.attributes.isInternalGroup))
     }
+  },
+
+  // One App Store profile per bundle, always signed by the one stored CI
+  // distribution certificate, so CI never mints a certificate and Apple never
+  // mails a revocation. Reuses the profile while it is ACTIVE and carries that
+  // certificate; otherwise replaces it (a capability change invalidates it).
+  // --install writes it where Xcode 15 and 16+ look for profiles.
+  async profile(identifier, certId, flag) {
+    if (!identifier || !certId) throw new Error('usage: profile <bundleId> <certificateId> [--install]')
+    const name = `${identifier} appstore ci`
+    const b = await bundleIdOf(identifier)
+    let keep = null
+    for (const p of await all(`/v1/profiles?filter[name]=${encodeURIComponent(name)}&limit=200`)) {
+      const certs = await all(`/v1/profiles/${p.id}/certificates`)
+      if (!keep && p.attributes.profileState === 'ACTIVE' && certs.some((c) => c.id === certId)) { keep = p; continue }
+      await api('DELETE', `/v1/profiles/${p.id}`)
+      console.error(`removed stale profile ${p.id} (${p.attributes.profileState})`)
+    }
+    if (!keep) {
+      keep = (await api('POST', '/v1/profiles', {
+        data: {
+          type: 'profiles',
+          attributes: { name, profileType: 'IOS_APP_STORE' },
+          relationships: {
+            bundleId: { data: { type: 'bundleIds', id: b.id } },
+            certificates: { data: [{ type: 'certificates', id: certId }] },
+          },
+        },
+      })).data
+      console.error(`created profile ${keep.id}`)
+    }
+    if (flag === '--install') {
+      const body = Buffer.from(keep.attributes.profileContent, 'base64')
+      for (const dir of [join(homedir(), 'Library/MobileDevice/Provisioning Profiles'), join(homedir(), 'Library/Developer/Xcode/UserData/Provisioning Profiles')]) {
+        mkdirSync(dir, { recursive: true })
+        writeFileSync(join(dir, `${keep.attributes.uuid}.mobileprovision`), body)
+      }
+    }
+    row(name, keep.attributes.uuid, keep.attributes.profileState, keep.attributes.expirationDate)
   },
 
   async testers() {
