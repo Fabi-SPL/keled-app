@@ -129,19 +129,23 @@ jobs:
             t 30 xcrun simctl io "$1" screenshot "${5:-shots}/$3.png" >/dev/null
             echo "shot $3"
           }
+          up() {
+            xcrun simctl boot "$1" || true
+            t 300 xcrun simctl bootstatus "$1" -b >/dev/null
+            xcrun simctl status_bar "$1" override --time 9:41 --batteryLevel 100 --cellularBars 4 || true
+            xcrun simctl install "$1" "$APP"
+          }
+          # One simulator at a time. With phone and iPad booted together the iPad launch hung
+          # on three attempts in a row (run 38700938634); the phone shuts down before the iPad boots.
           # A preview needs only the phone and only its own cards: about a third of the time.
-          DEVS="$PHONE $PAD"; [ -n "$PREVIEW_CARDS" ] && DEVS="$PHONE"
-          for DEV in $DEVS; do
-            xcrun simctl boot "$DEV" || true
-            t 300 xcrun simctl bootstatus "$DEV" -b >/dev/null
-            xcrun simctl status_bar "$DEV" override --time 9:41 --batteryLevel 100 --cellularBars 4 || true
-            xcrun simctl install "$DEV" "$APP"
-          done
+          up "$PHONE"
           if [ -z "$PREVIEW_CARDS" ]; then
             for S in small medium large lock board home themed themed2; do shoot "$PHONE" "$S" "iphone-$S"; done
             shoot "$PHONE" medium iphone-medium-dark dark
             shoot "$PHONE" home iphone-home-dark dark
             shoot "$PHONE" themed iphone-themed-dark dark
+            xcrun simctl shutdown "$PHONE" || true
+            up "$PAD"
             shoot "$PAD" home ipad-home
             shoot "$PAD" board ipad-board
           fi
