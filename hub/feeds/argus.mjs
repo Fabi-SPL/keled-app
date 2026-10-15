@@ -7,6 +7,7 @@ const TINT = { ok: 'ok', warn: 'warn', bad: 'bad', fail: 'bad', unknown: 'neutra
 const RANK = { bad: 0, fail: 0, warn: 1, unknown: 2, ok: 3 }
 
 export default {
+  refresh: '30m',
   every: 900,
   async run() {
     const p = await getJson(`${BASE}/api/posture`, { timeoutMs: 60000 })

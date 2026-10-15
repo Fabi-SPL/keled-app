@@ -11,6 +11,7 @@
 //   node .../widget.mjs act tv-alerts ack:3fa2c1                    (fire a button like the phone does)
 //   node .../widget.mjs preview mail taxes                          (simulator screenshots, ~8 min)
 //   node .../widget.mjs list | get <id> | rm <id> | feed <name> | doctor | init | schema
+//   node .../widget.mjs reloads [--hours 24]   how often the phone really fetched, per widget
 
 import {
   putCard, getCard, listCards, removeCard, withStaleness, servedCard, normalizeCard,
@@ -56,7 +57,7 @@ function cardFromFlags(id, f) {
   if (f.json) base = JSON.parse(f.json)
   if (f.file) base = readJson(f.file)
   const card = { ...base, id }
-  for (const k of ['title', 'app', 'symbol', 'tint', 'kind', 'value', 'label', 'caption', 'url', 'open', 'progress', 'series', 'order', 'theme']) {
+  for (const k of ['title', 'app', 'symbol', 'tint', 'kind', 'value', 'label', 'caption', 'url', 'open', 'progress', 'series', 'order', 'theme', 'refresh']) {
     if (f[k] !== undefined) card[k] = f[k]
   }
   if (f.stale !== undefined) card.staleAfter = f.stale
@@ -126,6 +127,8 @@ const SCHEMA = `Card fields (all optional except id + title):
             "then":"toggle"|"remove"|"none"     --do 'ack={"http":{...}}'
             An action ref is name or name:arg (arg [A-Za-z0-9._~-]{1,80}); {arg} {on} {card} fill in.
   staleAfter seconds; older cards render greyed with their age
+  refresh   how often the phone asks again: seconds or "5m" / "30m" / "1h" (floor 5m, default 15m)
+            match how fast the thing changes: a bank balance 30m, a live counter 5m   --refresh 5m
   order     sort key, lower first (default 100)
 
 Layout nodes (draw anything, natively): {"type": ..., children: [...]}
@@ -323,9 +326,17 @@ try {
       break
     }
     case 'doctor': await doctor(); break
+    case 'reloads': {
+      const { reloadStats } = await import('./reloads.mjs')
+      const rows = reloadStats(Number(flags.hours ?? 24))
+      if (!rows.length) { console.log('no phone fetches logged yet'); break }
+      console.log('source'.padEnd(30), 'fetches', ' median gap', ' shortest', ' last')
+      for (const r of rows) console.log(r.src.padEnd(30), String(r.count).padStart(7), (r.medianMin == null ? '-' : r.medianMin.toFixed(1) + ' min').padStart(11), (r.minMin == null ? '-' : r.minMin.toFixed(1) + ' min').padStart(9), ' ' + r.last)
+      break
+    }
     case 'schema': console.log(SCHEMA); break
     default:
-      console.log('usage: widget.mjs put|get|list|rm|theme|asset|act|preview|feed|doctor|init|schema   (schema prints every field)')
+      console.log('usage: widget.mjs put|get|list|rm|theme|asset|act|preview|feed|reloads|doctor|init|schema   (schema prints every field)')
       process.exit(cmd ? 1 : 0)
   }
 } catch (err) {

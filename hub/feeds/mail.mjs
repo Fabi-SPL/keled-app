@@ -5,6 +5,7 @@ import { getJson, plural } from './_http.mjs'
 const BASE = process.env.KELED_MAIL_URL || 'https://hetzner-lucid.taildd1460.ts.net:10443'
 
 export default {
+  refresh: '10m',
   every: 300,
   async run() {
     const [{ accounts = [] }, { threads = [] }] = await Promise.all([

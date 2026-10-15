@@ -106,6 +106,7 @@ test('feeds tag their cards with the feed name', async () => {
 test('every feed module loads and exports run', async () => {
   const feeds = await loadFeeds()
   const names = feeds.map((f) => f.name).sort()
-  assert.deepEqual(names, ['argus', 'cura', 'hq', 'lucid', 'mail', 'office', 'olympus', 'tv', 'vesta'])
+  assert.deepEqual(names, ['argus', 'cura', 'hq', 'lucid', 'mail', 'neural', 'office', 'olympus', 'tv', 'vesta'])
+  for (const f of feeds) assert.ok(f.refresh, `${f.name} sets the phone's pace`)
   for (const f of feeds) assert.equal(typeof f.run, 'function')
 })

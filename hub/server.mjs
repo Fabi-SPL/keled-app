@@ -10,6 +10,7 @@ import { join, dirname } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { putCard, getCard, listCards, removeCard, servedCard, assetPath, DATA_DIR } from './store.mjs'
 import { createActions } from './actions.mjs'
+import { logFetch } from './reloads.mjs'
 import { loadSecret, PORT } from './config.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -58,6 +59,7 @@ export function createHub({ token, feedStatus = () => ({}), feeds = [] }) {
 
       if (url.pathname === '/v1/cards' && req.method === 'GET') {
         const now = Date.now()
+        logFetch(req.headers['x-keled-source'], now)
         return send(res, 200, { now: new Date(now).toISOString(), cards: listCards().map((c) => serve(c, now)) })
       }
       if (url.pathname === '/v1/status' && req.method === 'GET') {
@@ -97,7 +99,8 @@ export function createHub({ token, feedStatus = () => ({}), feeds = [] }) {
   })
 }
 
-// Feeds: hub/feeds/<name>.mjs, default export { every: seconds, run(): card | card[], act?, confirm? }.
+// Feeds: hub/feeds/<name>.mjs, default export { every: seconds, refresh?, run(): card | card[], act?, confirm? }.
+// refresh is the phone's pace for that feed's cards (a card's own refresh wins).
 // act({ card, name, arg, on }) runs a widget action on one of the feed's cards; confirm lists the
 // action names that need a second tap.
 // A feed that throws keeps its last good cards and is reported in /v1/status.
@@ -108,7 +111,7 @@ export async function loadFeeds(dir = join(HERE, 'feeds')) {
   for (const f of files) {
     const mod = await import(pathToFileURL(join(dir, f)).href)
     const feed = mod.default
-    if (feed?.run) feeds.push({ name: f.replace(/\.mjs$/, ''), every: Math.max(30, feed.every ?? 300), run: feed.run, act: feed.act, confirm: feed.confirm })
+    if (feed?.run) feeds.push({ name: f.replace(/\.mjs$/, ''), every: Math.max(30, feed.every ?? 300), run: feed.run, act: feed.act, confirm: feed.confirm, refresh: feed.refresh })
   }
   return feeds
 }
@@ -116,7 +119,7 @@ export async function loadFeeds(dir = join(HERE, 'feeds')) {
 export async function runFeed(feed) {
   const out = await feed.run()
   const cards = (Array.isArray(out) ? out : [out]).filter(Boolean)
-  return cards.map((c) => putCard({ ...c, source: `feed:${feed.name}` }))
+  return cards.map((c) => putCard({ refresh: feed.refresh, ...c, source: `feed:${feed.name}` }))
 }
 
 async function main() {

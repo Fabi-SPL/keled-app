@@ -5,6 +5,7 @@ const BASE = process.env.KELED_OFFICE_URL || 'http://127.0.0.1:4640'
 const UI = 'https://fabi-pc.taildd1460.ts.net:3456'
 
 export default {
+  refresh: '5m',
   every: 120,
   async run() {
     const [state, asks, decisions] = await Promise.all([

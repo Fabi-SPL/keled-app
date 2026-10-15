@@ -12,6 +12,7 @@ const DAY = 86400000
 const clock = (ms) => new Date(ms).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
 
 export default {
+  refresh: '30m',
   every: 900,
   async run() {
     const { token } = JSON.parse(readFileSync(CFG, 'utf8'))

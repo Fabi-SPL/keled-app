@@ -12,6 +12,7 @@ const call = (name, arg) => getJson(`${BASE}/api/${name}`, {
 })
 
 export default {
+  refresh: '30m',
   every: 600,
   async run() {
     const list = await call('list')

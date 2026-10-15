@@ -8,6 +8,7 @@ const UI = 'https://fabi-pc.taildd1460.ts.net:7480'
 const TINT = { emergency: 'bad', attention: 'warn', info: 'neutral' }
 
 export default {
+  refresh: '15m',
   every: 300,
   async run() {
     const tv = await getJson(`${BASE}/api/tv`)

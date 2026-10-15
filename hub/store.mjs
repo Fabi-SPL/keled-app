@@ -13,6 +13,19 @@ export const THEMES_DIR = process.env.KELED_WIDGETS_THEMES || join(HERE, 'themes
 export const ASSETS_DIR = process.env.KELED_WIDGETS_ASSETS || join(HERE, 'assets')
 const CARDS = () => join(DATA_DIR, 'cards')
 
+// How often the phone should ask again, in seconds. iOS will not reload a widget sooner than
+// about 5 minutes and spreads 40-70 reloads a day per widget, so 300 is the floor and the
+// default stays at 15 minutes. "5m", "30m", "1h" and plain seconds are all accepted.
+export const REFRESH_MIN = 300
+export const REFRESH_MAX = 86400
+function refreshOf(v, errors) {
+  if (v === undefined || v === null || v === '') return undefined
+  const m = String(v).trim().match(/^(\d+(?:\.\d+)?)\s*(s|m|h)?$/i)
+  if (!m) { errors.push('refresh: seconds, or like "5m" / "1h"'); return undefined }
+  const sec = Math.round(Number(m[1]) * ({ s: 1, m: 60, h: 3600 }[(m[2] || 's').toLowerCase()]))
+  return Math.min(REFRESH_MAX, Math.max(REFRESH_MIN, sec))
+}
+
 export const KINDS = ['metric', 'list', 'gauge', 'status', 'spark']
 export const TINTS = ['accent', 'ok', 'warn', 'bad', 'neutral']
 export const FAMILIES = ['small', 'medium', 'large', 'xl', 'circular', 'rectangular', 'inline']
@@ -277,6 +290,7 @@ export function normalizeCard(input, { allowHandlers = true } = {}) {
 
   const url = linkUrl(input.url, 'url', errors)
   const staleAfter = num(input.staleAfter)
+  const refresh = refreshOf(input.refresh, errors)
   const order = num(input.order)
 
   let theme
@@ -304,6 +318,7 @@ export function normalizeCard(input, { allowHandlers = true } = {}) {
     theme, layouts, actions,
     do: handlers,
     staleAfter: staleAfter !== undefined ? Math.max(60, staleAfter) : undefined,
+    refresh,
     order,
     source: str(input.source, 40) ?? 'push',
     updatedAt: input.updatedAt && !Number.isNaN(Date.parse(input.updatedAt)) ? new Date(input.updatedAt).toISOString() : new Date().toISOString(),

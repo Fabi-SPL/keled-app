@@ -109,9 +109,14 @@ struct CardEntry: TimelineEntry {
     var title = "Keled"
 }
 
-// iOS hands each widget roughly 40-70 reloads a day; 15 minutes keeps a whole home screen
-// inside that budget. Opening the app or pulling to refresh reloads them right away.
-private let refreshEvery: TimeInterval = 15 * 60
+// iOS hands each widget its own budget of roughly 40-70 reloads a day and will not reload one
+// sooner than about 5 minutes. Each card says how fast it changes (card.refresh, set on the hub);
+// a widget asks again at the pace of its fastest card, 15 minutes when none says.
+// Opening the app or tapping a widget button reloads them right away, outside the budget.
+private func refreshEvery(_ cards: [Card]) -> TimeInterval {
+    let asked = cards.compactMap(\.refresh).min() ?? 15 * 60
+    return min(86400, max(5 * 60, asked))
+}
 
 /// The same data redrawn at each moment a card changes on its own (a "Tap again" falling back,
 /// a done/failed note ending), so the widget never waits 15 minutes to clear it.
@@ -140,12 +145,12 @@ struct CardProvider: AppIntentTimelineProvider {
 
     func timeline(for configuration: SelectCardIntent, in context: Context) async -> Timeline<CardEntry> {
         let entry = await entry(for: configuration)
-        let refresh = Date().addingTimeInterval(refreshEvery)
+        let refresh = Date().addingTimeInterval(refreshEvery(entry.card.map { [$0] } ?? []))
         return Timeline(entries: withTransitions(entry, until: refresh), policy: .after(refresh))
     }
 
     private func entry(for configuration: SelectCardIntent) async -> CardEntry {
-        let result = await HubClient.cardsOrCache()
+        let result = await HubClient.cardsOrCache(source: "widget:\(configuration.card?.id ?? "first")")
         let wanted = configuration.card?.id
         let card = result.cards.first { $0.id == wanted } ?? (wanted == nil ? result.cards.first : nil)
         return CardEntry(date: .now, card: card, cards: result.cards, live: result.live)
@@ -164,12 +169,12 @@ struct BoardProvider: AppIntentTimelineProvider {
 
     func timeline(for configuration: BoardIntent, in context: Context) async -> Timeline<CardEntry> {
         let entry = await entry(for: configuration)
-        let refresh = Date().addingTimeInterval(refreshEvery)
+        let refresh = Date().addingTimeInterval(refreshEvery(entry.cards))
         return Timeline(entries: withTransitions(entry, until: refresh), policy: .after(refresh))
     }
 
     private func entry(for configuration: BoardIntent) async -> CardEntry {
-        let result = await HubClient.cardsOrCache()
+        let result = await HubClient.cardsOrCache(source: "board:\(configuration.app?.id ?? "all")")
         let app = configuration.app?.id
         let cards = app == nil ? result.cards : result.cards.filter { $0.app == app }
         return CardEntry(date: .now, card: nil, cards: cards, live: result.live, title: app ?? "Keled")

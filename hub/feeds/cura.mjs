@@ -11,6 +11,7 @@ const short = (iso) => {
 }
 
 export default {
+  refresh: '15m',
   every: 300,
   async run() {
     const chat = await getJson(`${BASE}/api/chat?limit=1`)

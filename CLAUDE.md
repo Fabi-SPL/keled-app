@@ -37,7 +37,16 @@ node C:/Programs/Claude/keled-app/hub/widget.mjs list | rm <id> | doctor
 ## Keep a card fresh automatically (a feed)
 
 A card that has to track live state gets a feed: `hub/feeds/<name>.mjs`, default export
-`{ every: seconds, run(): card | card[] }`. See `feeds/office.mjs`. Feeds load when the hub starts:
+`{ every: seconds, refresh: '5m', run(): card | card[] }`. See `feeds/office.mjs`. Feeds load when the hub starts.
+
+Two clocks, both per feed. `every` is how often the hub polls the source (keep it at or under
+`refresh`). `refresh` is how often the phone asks again: seconds or `5m` / `30m` / `1h`, also
+settable per card (`--refresh`), card wins. Pick it by how fast the thing changes: a live
+counter 5m, mail 10m, a bank balance or a calendar 30m. iOS sets the real limits (Apple,
+"Keeping a widget up to date"): each widget has its own budget of about 40-70 reloads a day and
+is not reloaded sooner than about 5 minutes, so 5m is the floor and the hub clamps to it. Opening
+Keled and tapping a widget button reload everything outside that budget. `widget.mjs reloads`
+shows how often the phone really fetched, per widget, from the hub's log.
 
 ```powershell
 node hub/widget.mjs feed <name>      # dry run, prints the cards it would write
@@ -58,6 +67,9 @@ Live feeds (one card each unless noted):
 | cura | Cura :4611 | last message from Lucid |
 | argus | Argus on Hetzner | network posture checks |
 | tv | Lucid TV :7480 | open alerts only, tick clears one |
+| neural | Supabase knowledge_entries (tailnet) | node count, +last hour, +today, 24 h spark |
+
+Paces: neural, office, hq 5m · mail 10m · lucid, cura, tv 15m · olympus, vesta, argus 30m.
 
 ## Give an app its own look (themes and free layouts, no build)
 
@@ -150,7 +162,13 @@ real cards to CI any other way.
   on iPhone and iPad (artifact `keled-screens`). This is the compiler; read it before claiming
   any Swift change works.
 - `testflight.yml`: signed archive to TestFlight on push to main, by hand, and on the 1st of every
-  month (builds expire after 90 days and take every widget with them).
+  month (builds expire after 90 days and take every widget with them). Run it by hand with
+  `-f upload=false` to prove signing without uploading.
+- Signing: one Apple Distribution certificate (key and p12 in `C:/Programs/Claude/.secrets/apple-dist`,
+  repo secrets `DIST_P12_BASE64` / `DIST_P12_PASSWORD` / `DIST_CERT_ID`, expires 2027-10-15) and an
+  App Store profile per bundle that `scripts/asc.mjs profile` reuses or replaces. CI never creates or
+  revokes a certificate: every revoke mails Fabi "Your certificate has been revoked". Never bring back
+  `-allowProvisioningUpdates` or a prune step.
 - `ios/project.yml` is XcodeGen; the `.xcodeproj` is generated in CI and never committed.
 - The hub URL and token reach the app only through repo secrets (`KELED_HUB_URL`,
   `KELED_HUB_TOKEN`). The repo is public: never commit either, never upload the IPA.

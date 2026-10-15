@@ -19,17 +19,23 @@ enum HubClient {
             .appendingPathComponent("keled-cards.json")
     }
 
-    private static func request(_ path: String, timeout: TimeInterval = 8) throws -> URLRequest {
+    /// Who is asking, so the hub can measure how often iOS really reloads each widget.
+    static var defaultSource: String {
+        (Bundle.main.bundleIdentifier ?? "").hasSuffix(".widgets") ? "widget" : "app"
+    }
+
+    private static func request(_ path: String, timeout: TimeInterval = 8, source: String? = nil) throws -> URLRequest {
         guard KeledConfig.isConfigured, let url = URL(string: KeledConfig.hubURL + path) else {
             throw HubError.notConfigured
         }
         var req = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: timeout)
         req.setValue("Bearer \(KeledConfig.hubToken)", forHTTPHeaderField: "Authorization")
+        req.setValue(source ?? defaultSource, forHTTPHeaderField: "X-Keled-Source")
         return req
     }
 
-    static func fetch() async throws -> [Card] {
-        let (data, response) = try await URLSession.shared.data(for: try request("/v1/cards"))
+    static func fetch(source: String? = nil) async throws -> [Card] {
+        let (data, response) = try await URLSession.shared.data(for: try request("/v1/cards", source: source))
         let code = (response as? HTTPURLResponse)?.statusCode ?? 0
         guard code == 200 else { throw HubError.status(code) }
         let decoded = try JSONDecoder().decode(CardsResponse.self, from: data)
@@ -44,10 +50,10 @@ enum HubClient {
     }
 
     /// Fresh cards when the hub answers, the cached ones (live = false) when it does not.
-    static func cardsOrCache() async -> (cards: [Card], live: Bool) {
+    static func cardsOrCache(source: String? = nil) async -> (cards: [Card], live: Bool) {
         if KeledConfig.demo { return (Card.samples, true) }
         do {
-            let cards = try await fetch()
+            let cards = try await fetch(source: source)
             await AssetStore.prefetch(cards.reduce(into: Set<String>()) { $0.formUnion($1.assetNames) })
             return (cards, true)
         } catch {

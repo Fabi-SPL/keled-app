@@ -129,6 +129,8 @@ struct Card: Codable, Identifiable, Hashable {
     var ageSec: Int?
     var stale: Bool?
     var order: Double?
+    /// Seconds until the phone should ask again (hub clamps to 300...86400).
+    var refresh: Double?
 }
 
 /// A card that fails to decode is skipped, never the whole list: one bad card must not blank

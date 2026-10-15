@@ -22,6 +22,7 @@ function cookie() {
 }
 
 export default {
+  refresh: '15m',
   every: 600,
   async run() {
     const t = await getJson(`${BASE}/api/lucid/today`, { headers: { cookie: cookie() }, redirect: 'manual' })
