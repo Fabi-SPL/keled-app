@@ -55,7 +55,7 @@ export default [
   design(19, 'Three taps', 'today', 'small', 'any', ['lucid'], root([
     H([t('Today', 15, 600), sp(), t('{data.done}/{data.total}', 15, 600, 'rd', { color: 'accent' })]),
     sp(),
-    { type: 'each', limit: 3, spacing: 9, children: [H([habit(30), t('{item.tag}', 15, 600, 'rd')], { spacing: 10 })] },
+    { type: 'each', limit: 3, spacing: 9, children: [H([habit(30), t('{item.tag}', 15, 600, 'rd', { scale: 1 }), sp()], { spacing: 10 })] },
   ]), { theme: theme('lucid'), note: 'Your three habits; tap a circle to tick it.' }),
 
   design(20, 'Tear-off day', 'taxes', 'small', 'any', ['taxes-ustva'], V([

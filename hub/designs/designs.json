@@ -1,5 +1,5 @@
 {
- "version": "17ea9cb2b134",
+ "version": "7ad0e815ecf0",
  "designs": [
   {
    "id": "w01",
@@ -956,7 +956,7 @@
     "text": " · {data.next}",
     "date": "{data.nextAt}",
     "style": "dayTime",
-    "label": "{@soccerball}"
+    "label": "{@soccerball} "
    },
    "note": "The next calendar thing, one line above the clock.",
    "group": "calendar"
@@ -995,7 +995,7 @@
     "type": "date",
     "text": " days",
     "date": "{data.dueAt}",
-    "label": "{@doc.text} UStVA in"
+    "label": "{@doc.text} UStVA in "
    },
    "note": "Days until the UStVA is due.",
    "group": "taxes"
@@ -1313,8 +1313,12 @@
           "type": "text",
           "text": "{item.tag}",
           "size": 15,
+          "scale": 1,
           "weight": "semibold",
           "design": "rounded"
+         },
+         {
+          "type": "spacer"
          }
         ]
        }
@@ -3848,7 +3852,7 @@
       "type": "date",
       "date": "{data.dueAt}",
       "style": "dayMonth",
-      "label": "due",
+      "label": "due ",
       "size": 12,
       "weight": "semibold"
      }

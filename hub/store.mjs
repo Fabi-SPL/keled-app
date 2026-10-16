@@ -109,7 +109,8 @@ export function normalizeNode(input, path, errors, state = { count: 0 }, depth =
   if (!type) { if (!input.type) errors.push(`${path}: type is required`); return undefined }
   const node = { type }
   for (const [k, max] of Object.entries(NODE_STR)) {
-    if (input[k] !== undefined) node[k] = k === 'text' ? String(input[k]).slice(0, max) : str(input[k], max)
+    // text keeps its whitespace; a date's label keeps its edges so "UStVA in " meets the number with a space.
+    if (input[k] !== undefined) node[k] = k === 'text' ? String(input[k]).slice(0, max) : k === 'label' && input.type === 'date' ? String(input[k]).replace(/\s+/g, ' ').slice(0, max) : str(input[k], max)
   }
   for (const [k, [lo, hi]] of Object.entries(NODE_NUM)) {
     const n = num(input[k])

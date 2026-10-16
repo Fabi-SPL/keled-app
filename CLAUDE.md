@@ -100,6 +100,29 @@ Every web app is designed differently, so its widgets can be too. Two layers, bo
 - Designing an app's look is Minerva's job, from that app's own CSS. Ad-hoc sessions put data and
   maybe a layout, not a palette they invented.
 
+## Gallery widgets (designs that read several cards)
+
+Minerva's 53 concepts (`minerva/jobs/keled-widget-concepts`, W01-W53) ship as **designs**: a layout
+plus the cards it reads, drawn by the same renderer as a card layout. They live in
+`hub/designs/src/{lock,home,more}.mjs`, written with the helpers in `hub/designs/kit.mjs`.
+
+- **One gallery entry per group** (mail, neural, office, board, ...), so the add-widget list stays
+  short. Every design of that group is a style in the widget's edit menu ("W17 Big six · Small").
+- **Add or change a design:** edit `src/*.mjs`, then `node hub/designs/build.mjs` (validates every
+  design and writes `hub/designs/designs.json`, the bundled copy, the preview cards and
+  `ios/KeledWidgets/Gallery.swift`), then `npm test`. The hub serves `/v1/designs`; phones pick up
+  a new version on their next fetch. **No build** unless you add a new *group*: groups are widget
+  kinds, so a new group needs a push and a TestFlight build.
+- Templates reach other cards: `{cards.mail.value}`, `{cards.neural.data.today}`. A `when` or
+  `test` may start with `!` to negate.
+- **Photos on Clear:** an image node with `"full": true` keeps its colours on Clear and tinted Home
+  Screens (iOS 18+). Kel portraits and Themis ship in `ios/Shared/Bundled`. The lock screen is always
+  one colour, so lock designs use initials.
+- **His wallpapers are Pinterest pins:** served from `hub/assets/wall-*` only, gitignored, never
+  bundled or committed (this repo is public).
+- CI draws every design in light, dark, clear and lock (`Keled/DesignShots.swift`, artifact
+  `keled-screens`, folder `designs/`). Open them before calling a design done.
+
 ## Buttons on a widget (actions)
 
 Widgets can only run code compiled into the app, so there is one compiled button and the hub
