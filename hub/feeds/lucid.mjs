@@ -41,6 +41,10 @@ export function habitLook(name) {
   return { symbol: hit ? hit[1] : 'circle', short, slug }
 }
 
+// The CLI matches with ilike %name%, so it gets the longest run of the name with no punctuation in it.
+export const matchKey = (name) =>
+  String(name).split(/[^\p{L}\p{N}\s'&-]+/u).map((x) => x.trim()).sort((x, y) => y.length - x.length)[0] || String(name)
+
 async function today() {
   const t = await getJson(`${BASE}/api/lucid/today`, { headers: { cookie: cookie() }, redirect: 'manual' })
   if (!t.ok) throw new Error(t.error || 'lucid/today not ok')
@@ -108,7 +112,7 @@ export default {
     const habit = ((await today()).habits ?? []).find((h) => habitLook(h.name).slug === arg)
     if (!habit) throw new Error('no such habit')
     if (!!habit.done === on) return { message: on ? 'Already done' : 'Already open' }
-    await toggle(bare(habit.name).split('/')[0].trim() || habit.name)
+    await toggle(matchKey(habit.name))
     return { message: on ? `${habitLook(habit.name).short} done` : `${habitLook(habit.name).short} undone` }
   },
 }

@@ -111,13 +111,30 @@ jobs:
           mkdir -p shots
           # macOS has no timeout(1); a hung simctl call once held a run for 40 minutes.
           t() { perl -e 'alarm shift; exec @ARGV' "$@"; }
+          # A launch that never returns: is the app alive, where is its main thread, did it crash.
+          diag() {
+            echo "--- diag $2"
+            P=$(pgrep -f "Keled.app/Keled" | head -1)
+            if [ -n "$P" ]; then
+              echo "Keled pid $P"
+              t 40 sample "$P" 3 -file /tmp/keled-sample.txt >/dev/null 2>&1 || true
+              awk '/Call graph:/{f=1} f' /tmp/keled-sample.txt 2>/dev/null | head -140 | cut -c1-220
+            else
+              echo "no Keled process"
+            fi
+            ls -t ~/Library/Logs/DiagnosticReports/ 2>/dev/null | grep -i keled | head -3
+            F=$(ls -t ~/Library/Logs/DiagnosticReports/*eled* 2>/dev/null | head -1)
+            [ -n "$F" ] && head -c 8000 "$F"
+            S=$(date +%s); t 60 xcrun simctl launch "$1" com.apple.Preferences >/dev/null && echo "Settings launched in $(( $(date +%s) - S )) s" || echo "Settings launch also hung"
+            xcrun simctl terminate "$1" com.apple.Preferences 2>/dev/null || true
+          }
           shoot() {  # device, screen, file, [appearance], [dir]
             xcrun simctl ui "$1" appearance "${4:-light}"
             DATA=$(xcrun simctl get_app_container "$1" com.fabi.keled data)
             rm -f "$DATA/Documents/keled-screen-$2.ok"
             # Two tries: a busy runner sometimes loses the first relaunch on the second simulator.
             for try in 1 2; do
-              t 60 xcrun simctl launch --terminate-running-process "$1" com.fabi.keled -KeledScreen "$2" -KeledDemo YES >/dev/null || echo "launch $2 did not return"
+              t 60 xcrun simctl launch --terminate-running-process "$1" com.fabi.keled -KeledScreen "$2" -KeledDemo YES >/dev/null || { echo "launch $2 did not return"; diag "$1" "$2"; }
               for i in $(seq 1 60); do
                 [ -f "$DATA/Documents/keled-screen-$2.ok" ] && break 2
                 sleep 0.5
