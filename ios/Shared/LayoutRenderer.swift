@@ -279,9 +279,13 @@ enum NodeRenderer {
         case "image":
             let name = Template.fill(n.src, ctx)
             guard let img = AssetStore.image(name) else { return AnyView(EmptyView()) }
-            var image = Image(uiImage: img).resizable()
-            if n.full == true, #available(iOS 18.0, *) { image = image.widgetAccentedRenderingMode(.fullColor) }
-            return AnyView(n.fit == "fill" ? AnyView(image.scaledToFill()) : AnyView(image.scaledToFit()))
+            let image = Image(uiImage: img).resizable()
+            // Full colour keeps a portrait a photo on Clear and tinted Home Screens (iOS 18+).
+            if n.full == true, #available(iOS 18.0, *) {
+                let kept = image.widgetAccentedRenderingMode(.fullColor)
+                return n.fit == "fill" ? AnyView(kept.scaledToFill()) : AnyView(kept.scaledToFit())
+            }
+            return n.fit == "fill" ? AnyView(image.scaledToFill()) : AnyView(image.scaledToFit())
         case "spacer":
             return AnyView(Spacer(minLength: cg(n.minLength) ?? 0))
         case "divider":
