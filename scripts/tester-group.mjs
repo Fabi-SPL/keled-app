@@ -23,7 +23,7 @@ const write = (method, path, body, what) => {
   return asc(method, path, body)
 }
 const groupsOf = (app) => asc('GET', `/v1/apps/${app}/betaGroups?fields[betaGroups]=name,isInternalGroup,hasAccessToAllBuilds&limit=50`).data
-const testersOf = (group) => asc('GET', `/v1/betaGroups/${group}/betaTesters?fields[betaTesters]=inviteType&limit=50`).data
+const testersOf = (group) => asc('GET', `/v1/betaGroups/${group}/betaTesters?fields[betaTesters]=email,firstName,lastName&limit=50`).data
 
 let group = groupsOf(appId).find((g) => g.attributes.isInternalGroup && g.attributes.hasAccessToAllBuilds)
 if (group) console.log(`group "${group.attributes.name}" already gets every build`)
@@ -48,7 +48,17 @@ if (!testers.length) {
   console.log('::warning::No tester to copy. Add yourself once: TestFlight -> Internal Testing -> Auto -> +')
   process.exit(0)
 }
-write('POST', `/v1/betaGroups/${group.id}/relationships/betaTesters`, {
-  data: testers.map((t) => ({ type: 'betaTesters', id: t.id })),
-}, `add ${testers.length} tester(s) from the Health app's group`)
+// Tester records are per app: linking Health's tester id into another app's group answers
+// 409 "Tester(s) cannot be assigned" (measured 2026-10-16 on Keled). Creating the tester
+// again from the same address, straight into this group, is what works.
+for (const t of testers) {
+  const { email, firstName, lastName } = t.attributes
+  write('POST', '/v1/betaTesters', {
+    data: {
+      type: 'betaTesters',
+      attributes: { email, firstName, lastName },
+      relationships: { betaGroups: { data: [{ type: 'betaGroups', id: group.id }] } },
+    },
+  }, 'add a tester from the Health app\'s group')
+}
 console.log(`added ${testers.length} tester(s) from the Health app's group`)

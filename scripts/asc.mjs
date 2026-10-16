@@ -11,7 +11,8 @@
 //   node scripts/asc.mjs bundle-create com.fabi.lucidride "Ride"
 //   node scripts/asc.mjs caps com.fabi.lucidhealth
 //   node scripts/asc.mjs cap-enable com.fabi.lucidhealth APP_GROUPS
-//   node scripts/asc.mjs app-create com.fabi.lucidride "Ride" lucidride
+//   node scripts/asc.mjs app-new com.fabi.lucidride "Ride"     new app, never needs Fabi
+//   node scripts/asc.mjs spares [refill]
 //   node scripts/asc.mjs builds com.fabi.lucidhealth
 //   node scripts/asc.mjs beta-groups <appId>
 //   node scripts/asc.mjs profile com.fabi.keled <certId> [--install]
@@ -19,7 +20,7 @@
 //   node scripts/asc.mjs raw POST /v1/bundleIds '{"data":{...}}'
 
 import { createSign } from 'node:crypto'
-import { readFileSync, existsSync, writeFileSync, mkdirSync } from 'node:fs'
+import { readFileSync, existsSync, writeFileSync, mkdirSync, rmSync, statSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
@@ -104,6 +105,85 @@ const appOf = async (identifier) => {
 
 const row = (...c) => console.log(c.join('  '))
 
+const ensureBundle = async (identifier, name) => {
+  try { return await bundleIdOf(identifier) } catch { /* not registered yet */ }
+  return (await api('POST', '/v1/bundleIds', { data: { type: 'bundleIds', attributes: { identifier, name, platform: 'IOS' } } })).data
+}
+
+// One app-new or refill at a time across every session and seat.
+async function lock() {
+  const dir = join(homedir(), '.claude', 'locks')
+  mkdirSync(dir, { recursive: true })
+  const file = join(dir, 'asc-app-new.lock')
+  for (let i = 0; i < 72; i++) {
+    try {
+      writeFileSync(file, String(process.pid), { flag: 'wx' })
+      return () => rmSync(file, { force: true })
+    } catch {
+      try { if (Date.now() - statSync(file).mtimeMs > 10 * 60_000) { rmSync(file, { force: true }); continue } } catch { continue }
+      await new Promise((ok) => setTimeout(ok, 5000))
+    }
+  }
+  throw new Error(`another session has held ${file} for 6 minutes`)
+}
+
+// Spare records: made in his Brave while he is signed in, named "Fabi Spare N", SKU spareN,
+// bundle com.fabi.appN, never built. Claiming renames one, so the name is the marker.
+const SPARES = 5
+async function spareList() {
+  const out = []
+  for (const a of await all('/v1/apps?limit=200&fields[apps]=bundleId,name,sku')) {
+    if (!/^spare\d+$/.test(a.attributes.sku) || !/^Fabi Spare \d+$/.test(a.attributes.name)) continue
+    if (!(await api('GET', `/v1/builds?filter[app]=${a.id}&limit=1`)).data.length) out.push(a)
+  }
+  return out.sort((x, y) => x.attributes.sku.localeCompare(y.attributes.sku, 'en', { numeric: true }))
+}
+
+async function claimSpare(bundleId, name) {
+  const [spare] = await spareList()
+  if (!spare) {
+    throw new Error('No spare app records left and Brave is signed out of App Store Connect. One sign-in fixes it: '
+      + 'node scripts/asc-web.mjs wait-login, then node scripts/asc.mjs spares refill')
+  }
+  const info = (await all(`/v1/apps/${spare.id}/appInfos`))[0]
+  const loc = (await all(`/v1/appInfos/${info.id}/appInfoLocalizations`))[0]
+  const rename = (n) => api('PATCH', `/v1/appInfoLocalizations/${loc.id}`, { data: { type: 'appInfoLocalizations', id: loc.id, attributes: { name: n } } })
+  // A bundle ID that has sat on a record can never move to another one (409 DUPLICATE,
+  // measured 2026-10-16), so a claim is final: name first, and if every name is taken the
+  // spare stays untouched and claimable.
+  let got = null
+  for (const n of [name, `${name} Fabi`]) {
+    try { await rename(n); got = n; break } catch (e) { if (!/\b409\b/.test(e.message)) throw e }
+  }
+  if (!got) throw new Error(`"${name}" and "${name} Fabi" are both taken on the App Store; pick another name`)
+  try {
+    await api('PATCH', `/v1/apps/${spare.id}`, { data: { type: 'apps', id: spare.id, attributes: { bundleId } } })
+  } catch (e) {
+    await rename(spare.attributes.name)
+    throw e
+  }
+  return { id: spare.id, name: got }
+}
+
+async function refill(web, signedIn, force = false) {
+  const left = await spareList()
+  if (left.length >= SPARES) return
+  if (!signedIn) {
+    row('spares', `${left.length} left. Next time Brave is signed in: node scripts/asc.mjs spares refill`)
+    return
+  }
+  const used = (await all('/v1/apps?limit=200&fields[apps]=sku'))
+    .map((a) => Number((a.attributes.sku.match(/^spare(\d+)$/) || [])[1] || 0))
+  let n = Math.max(0, ...used)
+  for (let have = left.length; have < SPARES; have++) {
+    n++
+    await ensureBundle(`com.fabi.app${n}`, `Spare ${n}`)
+    const made = await web.createApp(`com.fabi.app${n}`, `Fabi Spare ${n}`, `spare${n}`)
+    row('spare', made.id, `com.fabi.app${n}`, '|', made.name)
+  }
+  if (force) row('spares', 'topped up to', String(SPARES))
+}
+
 const CMDS = {
   async whoami() {
     const apps = await all('/v1/apps?limit=200')
@@ -156,19 +236,54 @@ const CMDS = {
     row('enabled', capabilityType, 'on', identifier, '->', r.data.id)
   },
 
-  // Measured 2026-09-13, not guessed: POST /v1/apps returns
-  //   403 FORBIDDEN_ERROR - The resource 'apps' does not allow 'CREATE'.
-  //   Allowed operations are: GET_COLLECTION, GET_INSTANCE, UPDATE
-  // So the first app record for a bundle ID is a browser job, once per app.
-  // Everything after it (builds, TestFlight, metadata UPDATE) is scriptable.
-  async 'app-create'(bundleId) {
-    console.error([
-      `Apple does not allow app-record creation over the API (403, CREATE not permitted).`,
-      `Create it once at https://appstoreconnect.apple.com/apps -> + -> New App`,
-      `  Platform iOS | Bundle ID ${bundleId || '<bundle>'} | SKU = the bundle's last component`,
-      `Then everything else here works against it.`,
-    ].join(String.fromCharCode(10)))
-    process.exit(3)
+  // POST /v1/apps is refused for every key role: 403 "The resource 'apps' does not allow
+  // 'CREATE'", measured 2026-09-13 and again 2026-10-16 with an Account Holder + Admin key.
+  // So a new app never waits on Fabi, two routes, tried in this order:
+  //   1. his signed-in Brave makes the record (asc-web.mjs, the website's own endpoint);
+  //   2. signed out, a spare record "Fabi Spare N" is claimed. A record with no builds takes
+  //      a new name AND a new bundle ID over the API (both measured 2026-10-16).
+  // Idempotent: an existing record for the bundle is reported, never duplicated.
+  async 'app-new'(bundleId, name) {
+    if (!bundleId || !name) throw new Error('usage: app-new <bundleId> "<Name>"')
+    const unlock = await lock()
+    try {
+      const have = await all(`/v1/apps?filter[bundleId]=${encodeURIComponent(bundleId)}&limit=200`)
+      if (have.length) { row('exists', have[0].id, bundleId, '|', have[0].attributes.name); return }
+      await ensureBundle(bundleId, name)
+      const web = await import('./asc-web.mjs')
+      let signedIn = true
+      try {
+        const made = await web.createApp(bundleId, name, bundleId.split('.').pop().toLowerCase())
+        row('created', made.id, bundleId, '|', made.name, '| in his signed-in Brave')
+      } catch (e) {
+        if (e.code !== 'SIGNED_OUT' && !/browser proxy/.test(e.message)) throw e
+        signedIn = false
+        const made = await claimSpare(bundleId, name)
+        row('claimed', made.id, bundleId, '|', made.name, '| from a spare (Brave is signed out of App Store Connect)')
+      }
+      await refill(web, signedIn)
+    } finally {
+      unlock()
+    }
+    row('next', 'widget/extension bundle IDs + App Groups: bundle-create, cap-enable. Push a build;')
+    row('    ', 'testflight.yml runs tester-group.mjs after upload, so Fabi gets it with no invite.')
+  },
+
+  // Old name, same thing.
+  async 'app-create'(bundleId, name) {
+    await CMDS['app-new'](bundleId, name || bundleId.split('.').pop())
+  },
+
+  //   spares            how many claimable records are left
+  //   spares refill     top them up to SPARES (needs his Brave signed in)
+  async spares(action) {
+    const web = await import('./asc-web.mjs')
+    if (action === 'refill') {
+      const unlock = await lock()
+      try { await refill(web, await web.isSignedIn(), true) } finally { unlock() }
+    }
+    const left = await spareList()
+    row('spares', String(left.length), '|', left.map((a) => `${a.attributes.name} (${a.attributes.bundleId})`).join(', '))
   },
 
   async builds(identifier) {

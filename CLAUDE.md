@@ -176,8 +176,24 @@ real cards to CI any other way.
   (KINDS or NODE_TYPES) and in `ios/Shared/CardViews.swift` / `LayoutRenderer.swift` in the same commit.
   Anything that needs a new intent, widget family or entitlement needs a TestFlight build; everything
   else in this file is data.
-- TestFlight needs the App Store Connect app record for `com.fabi.keled` (created once by hand in
-  App Store Connect; the API cannot create apps).
+- Keled's App Store Connect record is app 6823607428 (made 2026-10-16). Fabi is in its internal
+  "Auto" group, which gets every build with no review.
+
+## A new iOS app, for any session (never ask Fabi)
+
+`node scripts/asc.mjs app-new com.fabi.<thing> "<Name>"` makes the App Store Connect record, the
+one step Apple's API refuses (POST /v1/apps is 403 for every key role). Two routes, in order:
+his signed-in Brave through the shared browser proxy (`scripts/asc-web.mjs`, the website's own
+endpoint, only ever POST /iris/v1/apps), else one of the spare records "Fabi Spare N", renamed and
+re-pointed at the new bundle ID over the API. `asc.mjs spares` shows how many are left; a run while
+he is signed in tops them back up to 5. It is idempotent and locked, a taken name falls back to
+"<Name> Fabi", and a bundle ID that sat on a record can never move to another one.
+
+Then: `bundle-create` / `cap-enable` for the widget extension and App Group, a `testflight.yml`
+copied from this repo, and `tester-group.mjs <appId>` (the workflow runs it after upload), so Fabi
+gets the app with no click beyond the one TestFlight invite mail per app. Automation never opens
+Agreements, Tax, Banking or Users: if Apple posts a new agreement, uploads fail until Fabi accepts
+it himself, and the session tells him so.
 
 ## Hub tests
 
