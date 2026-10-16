@@ -40,7 +40,44 @@ enum HubClient {
         guard code == 200 else { throw HubError.status(code) }
         let decoded = try JSONDecoder().decode(CardsResponse.self, from: data)
         try? data.write(to: cacheURL, options: .atomic)
+        if let version = decoded.designs, version != designsVersion() { await refreshDesigns() }
         return decoded.cards
+    }
+
+    // MARK: Designs
+
+    private static var designsURL: URL {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("keled-designs.json")
+    }
+
+    private static func decodeDesigns(_ url: URL?) -> DesignsResponse? {
+        guard let url, let data = try? Data(contentsOf: url) else { return nil }
+        return try? JSONDecoder().decode(DesignsResponse.self, from: data)
+    }
+
+    private static var bundledDesigns: DesignsResponse? {
+        decodeDesigns(Bundle.main.url(forResource: "designs", withExtension: "json"))
+    }
+
+    /// The hub's designs as last fetched, else the copy the app shipped with.
+    static func designs() -> [Design] {
+        if let cached = decodeDesigns(designsURL), !cached.designs.isEmpty { return cached.designs }
+        return bundledDesigns?.designs ?? []
+    }
+
+    static func designsVersion() -> String? {
+        decodeDesigns(designsURL)?.version ?? bundledDesigns?.version
+    }
+
+    /// Fetched only when the hub reports a version this process has not seen.
+    static func refreshDesigns() async {
+        guard let req = try? request("/v1/designs"),
+              let got = try? await URLSession.shared.data(for: req),
+              (got.1 as? HTTPURLResponse)?.statusCode == 200,
+              let decoded = try? JSONDecoder().decode(DesignsResponse.self, from: got.0),
+              !decoded.designs.isEmpty else { return }
+        try? got.0.write(to: designsURL, options: .atomic)
     }
 
     static func cached() -> [Card] {
@@ -98,8 +135,16 @@ enum AssetStore {
 
     /// Decoded at most 1400 px on the long side: the widget extension dies near 30 MB, and a
     /// 1 MB PNG can decode to far more than that at full size.
+    /// Kel portraits and Themis ship inside the app; everything else comes from the hub.
+    private static func bundled(_ name: String) -> URL? {
+        let ns = name as NSString
+        return Bundle.main.url(forResource: ns.deletingPathExtension, withExtension: ns.pathExtension)
+    }
+
     static func image(_ name: String) -> UIImage? {
-        guard let url = file(name),
+        guard let cached = file(name) else { return nil }
+        let url = FileManager.default.fileExists(atPath: cached.path) ? cached : bundled(name)
+        guard let url,
               let source = CGImageSourceCreateWithURL(url as CFURL, [kCGImageSourceShouldCache: false] as CFDictionary)
         else { return nil }
         let options: [CFString: Any] = [
@@ -117,7 +162,7 @@ enum AssetStore {
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         await withTaskGroup(of: Void.self) { group in
             for name in names {
-                guard let url = file(name) else { continue }
+                guard let url = file(name), bundled(name) == nil else { continue }
                 let modified = (try? url.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate
                 if let modified, Date().timeIntervalSince(modified) < maxAge { continue }
                 group.addTask {

@@ -2,12 +2,13 @@ import WidgetKit
 import SwiftUI
 import AppIntents
 
-// Two widgets cover everything. Adding a new card never needs a new build:
-// a session writes it to the hub, and it shows up in "Choose a card".
+// The gallery (one entry per app, its designs as styles) comes first; the two generic widgets
+// still show any card at all. Adding a card or a style never needs a new build.
 
 @main
 struct KeledWidgetBundle: WidgetBundle {
     var body: some Widget {
+        KeledGallery().body
         KeledCardWidget()
         KeledBoardWidget()
     }
@@ -113,7 +114,7 @@ struct CardEntry: TimelineEntry {
 // sooner than about 5 minutes. Each card says how fast it changes (card.refresh, set on the hub);
 // a widget asks again at the pace of its fastest card, 15 minutes when none says.
 // Opening the app or tapping a widget button reloads them right away, outside the budget.
-private func refreshEvery(_ cards: [Card]) -> TimeInterval {
+func refreshEvery(_ cards: [Card]) -> TimeInterval {
     let asked = cards.compactMap(\.refresh).min() ?? 15 * 60
     return min(86400, max(5 * 60, asked))
 }

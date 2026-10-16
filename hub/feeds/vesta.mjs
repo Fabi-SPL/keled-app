@@ -42,6 +42,9 @@ export default {
       label: 'today',
       caption: nextTimed ? `next ${clock(nextTimed.start)} ${nextTimed.title}` : todays.length ? 'all-day only' : 'nothing today',
       items: ahead.slice(0, 4).map((o) => ({ title: String(o.title || 'Event'), detail: when(o), tag: o.calendar })),
+      data: ahead[0]
+        ? { nextAt: new Date(ahead[0].start).toISOString(), next: String(ahead[0].title || 'Event').replace(/\s+-\s+/g, ' – '), nextAllDay: ahead[0].allDay ? '1' : '', today: String(todays.length) }
+        : { today: '0' },
       url: BASE,
       staleAfter: 3600,
       order: 40,

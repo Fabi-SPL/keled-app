@@ -1,0 +1,6725 @@
+{
+ "version": "17ea9cb2b134",
+ "designs": [
+  {
+   "id": "w01",
+   "name": "Account bracelet",
+   "n": 1,
+   "family": "circular",
+   "device": "any",
+   "cards": [
+    "mail"
+   ],
+   "layout": {
+    "type": "zstack",
+    "frameAlign": "center",
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "canvas",
+      "width": 72,
+      "height": 72,
+      "box": [
+       72,
+       72
+      ],
+      "children": [
+       {
+        "type": "arcs",
+        "test": "{item.tint} == warn",
+        "count": "{count}",
+        "line": 5.5,
+        "spacing": 14,
+        "strokeWidth": 2,
+        "r": 31,
+        "from": 7
+       }
+      ]
+     },
+     {
+      "type": "vstack",
+      "align": "center",
+      "spacing": 0,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "envelope",
+        "size": 12,
+        "color": "ink",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "{value}",
+        "size": 28,
+        "weight": "semibold",
+        "design": "rounded"
+       }
+      ]
+     }
+    ]
+   },
+   "note": "One arc per mail account; thick where an account needs you.",
+   "group": "mail"
+  },
+  {
+   "id": "w02",
+   "name": "Growth clock",
+   "n": 2,
+   "family": "circular",
+   "device": "any",
+   "cards": [
+    "neural"
+   ],
+   "layout": {
+    "type": "zstack",
+    "frameAlign": "center",
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "canvas",
+      "width": 72,
+      "height": 72,
+      "box": [
+       72,
+       72
+      ],
+      "children": [
+       {
+        "type": "rays",
+        "limit": 12,
+        "size": 13.5,
+        "line": 3.6,
+        "cap": 364,
+        "r": 19,
+        "from": 21
+       }
+      ]
+     },
+     {
+      "type": "vstack",
+      "align": "center",
+      "spacing": 0,
+      "children": [
+       {
+        "type": "text",
+        "text": "+{data.hour}",
+        "size": 14,
+        "weight": "semibold",
+        "design": "rounded"
+       },
+       {
+        "type": "text",
+        "text": "/h",
+        "size": 10,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Twelve rays for the last twelve hours of network growth.",
+   "group": "neural"
+  },
+  {
+   "id": "w03",
+   "name": "Deadline gauge",
+   "n": 3,
+   "family": "circular",
+   "device": "any",
+   "cards": [
+    "taxes-ustva"
+   ],
+   "layout": {
+    "type": "zstack",
+    "frameAlign": "center",
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "canvas",
+      "width": 72,
+      "height": 72,
+      "box": [
+       72,
+       72
+      ],
+      "children": [
+       {
+        "type": "gauge",
+        "date": "{data.dueAt}",
+        "start": "{data.from}",
+        "line": 4.5,
+        "r": 29,
+        "from": 225,
+        "to": 495
+       }
+      ]
+     },
+     {
+      "type": "vstack",
+      "align": "center",
+      "spacing": 0,
+      "y": -2,
+      "children": [
+       {
+        "type": "date",
+        "date": "{data.dueAt}",
+        "size": 23,
+        "weight": "semibold",
+        "design": "rounded"
+       },
+       {
+        "type": "text",
+        "text": "days",
+        "size": 10,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "text": "{value}",
+      "frameAlign": "bottom",
+      "size": 11,
+      "maxH": true,
+      "weight": "semibold",
+      "padding": [
+       0,
+       0,
+       3,
+       0
+      ]
+     }
+    ]
+   },
+   "note": "Fills as the UStVA deadline comes closer.",
+   "group": "taxes"
+  },
+  {
+   "id": "w04",
+   "name": "Solid bubble",
+   "n": 4,
+   "family": "circular",
+   "device": "any",
+   "cards": [
+    "office-asks"
+   ],
+   "layout": {
+    "type": "zstack",
+    "frameAlign": "center",
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "canvas",
+      "width": 72,
+      "height": 72,
+      "box": [
+       72,
+       72
+      ],
+      "children": [
+       {
+        "type": "path",
+        "d": "M36 9c15 0 27 9.9 27 22.2S51 53.4 36 53.4c-2.9 0-5.7-.4-8.3-1.1L14.5 59l3.2-10.3C12.3 44.6 9 38.3 9 31.2 9 18.9 21 9 36 9z"
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "text": "{value}",
+      "size": 30,
+      "y": -5,
+      "knock": true,
+      "weight": "semibold",
+      "design": "rounded"
+     }
+    ]
+   },
+   "note": "Asks waiting for you, punched through a speech bubble.",
+   "group": "asks"
+  },
+  {
+   "id": "w05",
+   "name": "Thread stack",
+   "n": 5,
+   "family": "circular",
+   "device": "any",
+   "cards": [
+    "hq"
+   ],
+   "layout": {
+    "type": "zstack",
+    "frameAlign": "center",
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "canvas",
+      "width": 72,
+      "height": 72,
+      "box": [
+       72,
+       72
+      ],
+      "children": [
+       {
+        "type": "rect",
+        "radius": 2.2,
+        "width": 22,
+        "height": 4.5,
+        "opacity": 0.45,
+        "x": 25,
+        "y": 14
+       },
+       {
+        "type": "rect",
+        "radius": 2.5,
+        "width": 32,
+        "height": 5,
+        "opacity": 0.7,
+        "x": 20,
+        "y": 21
+       },
+       {
+        "type": "rect",
+        "radius": 8,
+        "width": 42,
+        "height": 28,
+        "x": 15,
+        "y": 29
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "text": "{value}",
+      "size": 22,
+      "y": 7,
+      "knock": true,
+      "weight": "semibold",
+      "design": "rounded"
+     }
+    ]
+   },
+   "note": "Unread HQ sessions on a stack of threads.",
+   "group": "hq"
+  },
+  {
+   "id": "w06",
+   "name": "Habit trio",
+   "n": 6,
+   "family": "circular",
+   "device": "any",
+   "cards": [
+    "lucid"
+   ],
+   "layout": {
+    "type": "zstack",
+    "frameAlign": "center",
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "each",
+      "test": "{index} == 1",
+      "limit": 1,
+      "y": -18,
+      "children": [
+       {
+        "type": "check",
+        "style": "glyph",
+        "action": "{item.action}",
+        "symbol": "{item.symbol}",
+        "size": 26.6,
+        "line": 1.7,
+        "scale": 0.6,
+        "color": "ink"
+       }
+      ]
+     },
+     {
+      "type": "each",
+      "test": "{index} == 2",
+      "limit": 1,
+      "x": -14.5,
+      "y": 10,
+      "children": [
+       {
+        "type": "check",
+        "style": "glyph",
+        "action": "{item.action}",
+        "symbol": "{item.symbol}",
+        "size": 26.6,
+        "line": 1.7,
+        "scale": 0.6,
+        "color": "ink"
+       }
+      ]
+     },
+     {
+      "type": "each",
+      "test": "{index} == 3",
+      "limit": 1,
+      "x": 14.5,
+      "y": 10,
+      "children": [
+       {
+        "type": "check",
+        "style": "glyph",
+        "action": "{item.action}",
+        "symbol": "{item.symbol}",
+        "size": 26.6,
+        "line": 1.7,
+        "scale": 0.6,
+        "color": "ink"
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Your three habits; tap one to tick it.",
+   "group": "today"
+  },
+  {
+   "id": "w07",
+   "name": "Odometer, dated",
+   "n": 7,
+   "family": "rectangular",
+   "device": "any",
+   "cards": [
+    "neural"
+   ],
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "leading",
+    "spacing": 1,
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "point.3.connected.trianglepath.dotted",
+        "size": 13,
+        "color": "ink",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "Neural network",
+        "size": 13,
+        "weight": "semibold"
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "text": "{value}",
+      "size": 25,
+      "weight": "semibold",
+      "design": "mono"
+     },
+     {
+      "type": "hstack",
+      "spacing": 4,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "clock",
+        "size": 11,
+        "color": "muted",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "at {time} · +{data.hour}/h",
+        "size": 12,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Total nodes, with the time it was counted.",
+   "group": "neural"
+  },
+  {
+   "id": "w08",
+   "name": "She wrote",
+   "n": 8,
+   "family": "rectangular",
+   "device": "any",
+   "cards": [
+    "cura"
+   ],
+   "layout": {
+    "type": "hstack",
+    "align": "top",
+    "frameAlign": "leading",
+    "spacing": 8,
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "vstack",
+      "align": "leading",
+      "spacing": 0,
+      "width": 44,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "bubble.left",
+        "size": 15,
+        "color": "ink",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "{value}",
+        "size": 24,
+        "weight": "semibold",
+        "design": "rounded"
+       },
+       {
+        "type": "text",
+        "text": "{label}",
+        "size": 11,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "text": "{caption}",
+      "frameAlign": "leading",
+      "size": 12,
+      "lines": 3,
+      "privacy": true,
+      "maxW": true,
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "How long since Cura wrote, and her first line. Hidden while locked.",
+   "group": "cura"
+  },
+  {
+   "id": "w09",
+   "name": "Who is in",
+   "n": 9,
+   "family": "rectangular",
+   "device": "any",
+   "cards": [
+    "office"
+   ],
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "leading",
+    "spacing": 4,
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "text",
+      "text": "{data.busy} busy · {data.hold} you hold",
+      "size": 13,
+      "weight": "semibold"
+     },
+     {
+      "type": "each",
+      "style": "row",
+      "limit": 6,
+      "spacing": 4,
+      "children": [
+       {
+        "type": "zstack",
+        "width": 21,
+        "height": 21,
+        "children": [
+         {
+          "type": "circle",
+          "when": "!{item.on}",
+          "strokeWidth": 1.5,
+          "width": 21,
+          "height": 21,
+          "stroke": "muted"
+         },
+         {
+          "type": "text",
+          "text": "{item.initial}",
+          "when": "!{item.on}",
+          "size": 9,
+          "color": "muted",
+          "weight": "semibold",
+          "design": "rounded"
+         },
+         {
+          "type": "circle",
+          "when": "{item.on}",
+          "width": 21,
+          "height": 21,
+          "color": "ink"
+         },
+         {
+          "type": "text",
+          "text": "{item.initial}",
+          "when": "{item.on}",
+          "size": 9,
+          "knock": true,
+          "weight": "semibold",
+          "design": "rounded"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "text": "{data.who}: {data.task}",
+      "when": "{data.busy} > 0",
+      "size": 11,
+      "color": "muted",
+      "weight": "medium"
+     },
+     {
+      "type": "text",
+      "text": "{caption}",
+      "when": "{data.busy} == 0",
+      "size": 11,
+      "color": "muted",
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "One ring per Kel, filled while she works.",
+   "group": "office"
+  },
+  {
+   "id": "w10",
+   "name": "Four lights",
+   "n": 10,
+   "family": "rectangular",
+   "device": "any",
+   "cards": [
+    "argus"
+   ],
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "center",
+    "spacing": 8,
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 0,
+      "children": [
+       {
+        "type": "text",
+        "text": "Network",
+        "size": 13,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "text",
+        "text": "{label}",
+        "size": 12,
+        "weight": "medium",
+        "design": "mono"
+       }
+      ]
+     },
+     {
+      "type": "each",
+      "limit": 4,
+      "spacing": 4,
+      "columns": 4,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "center",
+        "spacing": 4,
+        "maxW": true,
+        "children": [
+         {
+          "type": "mark",
+          "value": "{item.tint}",
+          "size": 18
+         },
+         {
+          "type": "text",
+          "text": "{item.tag}",
+          "size": 11,
+          "weight": "medium",
+          "design": "mono"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Argus checks as marks: dot wants you, tick is fine.",
+   "group": "network"
+  },
+  {
+   "id": "w11",
+   "name": "Kickoff timer",
+   "n": 11,
+   "family": "rectangular",
+   "device": "any",
+   "cards": [
+    "vesta"
+   ],
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "leading",
+    "spacing": 1,
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "soccerball",
+        "size": 13,
+        "color": "ink",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "{data.next}",
+        "size": 13,
+        "weight": "semibold"
+       }
+      ]
+     },
+     {
+      "type": "date",
+      "date": "{data.nextAt}",
+      "style": "timer",
+      "size": 25,
+      "weight": "semibold",
+      "design": "mono"
+     },
+     {
+      "type": "date",
+      "text": " · {caption}",
+      "date": "{data.nextAt}",
+      "style": "dayTime",
+      "size": 12,
+      "color": "muted",
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "Counts down to the next thing on the calendar, live.",
+   "group": "calendar"
+  },
+  {
+   "id": "w12",
+   "name": "Six pillars",
+   "n": 12,
+   "family": "rectangular",
+   "device": "any",
+   "cards": [
+    "olympus"
+   ],
+   "layout": {
+    "type": "hstack",
+    "frameAlign": "leading",
+    "spacing": 10,
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "canvas",
+      "width": 62,
+      "height": 56,
+      "box": [
+       62,
+       56
+      ],
+      "children": [
+       {
+        "type": "path",
+        "d": "M3 12.5 31 2l28 10.5z"
+       },
+       {
+        "type": "rect",
+        "width": 58,
+        "height": 3.6,
+        "x": 2,
+        "y": 14
+       },
+       {
+        "type": "repeat",
+        "value": "{data.carried}",
+        "fit": "spread",
+        "count": "{data.total}",
+        "spacing": 2.4,
+        "strokeWidth": 1.4,
+        "height": 27,
+        "x": 4.5,
+        "y": 21,
+        "dash": [
+         2.6,
+         2
+        ],
+        "track": "ink"
+       },
+       {
+        "type": "rect",
+        "width": 62,
+        "height": 4,
+        "x": 0,
+        "y": 50.5
+       }
+      ]
+     },
+     {
+      "type": "vstack",
+      "align": "leading",
+      "spacing": 1,
+      "children": [
+       {
+        "type": "text",
+        "text": "{data.carried}/{data.total}",
+        "size": 28,
+        "weight": "medium",
+        "design": "serif"
+       },
+       {
+        "type": "text",
+        "text": "carried · {data.wait} wait",
+        "size": 11,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     }
+    ]
+   },
+   "note": "One pillar per motion: solid carried, dashed waiting on you.",
+   "group": "board"
+  },
+  {
+   "id": "w13",
+   "name": "Account ledger",
+   "n": 13,
+   "family": "rectangular",
+   "device": "any",
+   "cards": [
+    "mail"
+   ],
+   "layout": {
+    "type": "hstack",
+    "frameAlign": "leading",
+    "spacing": 10,
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "vstack",
+      "align": "leading",
+      "spacing": 0,
+      "children": [
+       {
+        "type": "text",
+        "text": "{value}",
+        "size": 34,
+        "weight": "semibold",
+        "design": "rounded"
+       },
+       {
+        "type": "hstack",
+        "spacing": 3,
+        "children": [
+         {
+          "type": "symbol",
+          "name": "envelope",
+          "size": 11,
+          "color": "ink",
+          "weight": "regular"
+         },
+         {
+          "type": "text",
+          "text": "need you",
+          "size": 11,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "vstack",
+      "align": "leading",
+      "spacing": 2,
+      "maxW": true,
+      "children": [
+       {
+        "type": "each",
+        "test": "{item.tint} == warn",
+        "limit": 2,
+        "spacing": 2,
+        "children": [
+         {
+          "type": "hstack",
+          "spacing": 4,
+          "children": [
+           {
+            "type": "mark",
+            "value": "warn",
+            "size": 7
+           },
+           {
+            "type": "text",
+            "text": "{item.title}",
+            "size": 12,
+            "weight": "medium",
+            "design": "mono"
+           },
+           {
+            "type": "spacer",
+            "minLength": 4
+           },
+           {
+            "type": "text",
+            "text": "{item.value}",
+            "size": 12,
+            "weight": "medium",
+            "design": "mono"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "hstack",
+        "spacing": 4,
+        "children": [
+         {
+          "type": "mark",
+          "value": "ok",
+          "size": 13
+         },
+         {
+          "type": "text",
+          "text": "{data.clear} clear",
+          "size": 12,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Which accounts need you, and how many are clear.",
+   "group": "mail"
+  },
+  {
+   "id": "w14",
+   "name": "Next match",
+   "n": 14,
+   "family": "inline",
+   "device": "any",
+   "cards": [
+    "vesta"
+   ],
+   "layout": {
+    "type": "date",
+    "text": " · {data.next}",
+    "date": "{data.nextAt}",
+    "style": "dayTime",
+    "label": "{@soccerball}"
+   },
+   "note": "The next calendar thing, one line above the clock.",
+   "group": "calendar"
+  },
+  {
+   "id": "w15",
+   "name": "Four that want you",
+   "n": 15,
+   "family": "inline",
+   "device": "any",
+   "cards": [
+    "mail",
+    "office-asks",
+    "hq",
+    "olympus"
+   ],
+   "layout": {
+    "type": "text",
+    "text": "{@envelope} {cards.mail.value}  {@questionmark.bubble} {cards.office-asks.value}  {@square.stack} {cards.hq.value}  {@building.columns} {cards.olympus.data.wait}",
+    "size": 13,
+    "weight": "semibold"
+   },
+   "note": "Mail, asks, HQ and the board in one line.",
+   "group": "overview"
+  },
+  {
+   "id": "w16",
+   "name": "Tax countdown",
+   "n": 16,
+   "family": "inline",
+   "device": "any",
+   "cards": [
+    "taxes-ustva"
+   ],
+   "layout": {
+    "type": "date",
+    "text": " days",
+    "date": "{data.dueAt}",
+    "label": "{@doc.text} UStVA in"
+   },
+   "note": "Days until the UStVA is due.",
+   "group": "taxes"
+  },
+  {
+   "id": "w17",
+   "name": "Big six",
+   "n": 17,
+   "family": "small",
+   "device": "any",
+   "cards": [
+    "mail"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#111111",
+    "muted": "#5e5e5e",
+    "accent": "#9b1b30",
+    "tile": "#f4f4f4",
+    "dark": {
+     "bg": [
+      "#121212"
+     ],
+     "ink": "#ececec",
+     "muted": "#a0a0a0",
+     "accent": "#e0687c",
+     "tile": "#1f1f1f"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "align": "bottom",
+      "spacing": 8,
+      "children": [
+       {
+        "type": "text",
+        "text": "{value}",
+        "size": 78,
+        "tracking": -2,
+        "weight": "semibold",
+        "design": "rounded"
+       },
+       {
+        "type": "vstack",
+        "align": "leading",
+        "spacing": 4,
+        "padding": [
+         0,
+         0,
+         12,
+         0
+        ],
+        "children": [
+         {
+          "type": "symbol",
+          "name": "envelope",
+          "size": 17,
+          "color": "accent",
+          "weight": "regular"
+         },
+         {
+          "type": "text",
+          "text": "need\nyou",
+          "size": 13,
+          "lines": 2,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "each",
+      "style": "row",
+      "align": "bottom",
+      "limit": 6,
+      "spacing": 7,
+      "children": [
+       {
+        "type": "zstack",
+        "children": [
+         {
+          "type": "rect",
+          "when": "{item.tint} == warn",
+          "radius": 4,
+          "height": 40,
+          "maxW": true,
+          "color": "warn"
+         },
+         {
+          "type": "rect",
+          "when": "{item.tint} != warn",
+          "radius": 3,
+          "height": 9,
+          "maxW": true,
+          "color": "muted@0.35"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "How many mails need you, one bar per account.",
+   "group": "mail"
+  },
+  {
+   "id": "w18",
+   "name": "Today, with its time",
+   "n": 18,
+   "family": "small",
+   "device": "any",
+   "cards": [
+    "neural"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#0f1b2a",
+    "muted": "#5c6b7a",
+    "accent": "#1b7fd6",
+    "tile": "#eef5fc",
+    "dark": {
+     "bg": [
+      "#141a21"
+     ],
+     "ink": "#eef3f8",
+     "muted": "#9aa7b4",
+     "accent": "#5eb1ff",
+     "tile": "#1f2731"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "point.3.connected.trianglepath.dotted",
+        "size": 14,
+        "color": "accent",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "Neural",
+        "size": 13,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer",
+        "minLength": 6
+       },
+       {
+        "type": "text",
+        "text": "{time}",
+        "size": 12,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 10,
+      "minLength": 10
+     },
+     {
+      "type": "text",
+      "text": "+{data.today}",
+      "size": 31,
+      "weight": "semibold",
+      "design": "rounded"
+     },
+     {
+      "type": "text",
+      "text": "nodes today · +{data.hour}/h",
+      "size": 12,
+      "color": "muted",
+      "weight": "medium"
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "bars",
+      "spacing": 1.6,
+      "width": 126,
+      "height": 32,
+      "cap": 364,
+      "box": [
+       126,
+       32
+      ],
+      "color": "accent"
+     }
+    ]
+   },
+   "note": "Growth today, with the hour it was counted.",
+   "group": "neural"
+  },
+  {
+   "id": "w19",
+   "name": "Three taps",
+   "n": 19,
+   "family": "small",
+   "device": "any",
+   "cards": [
+    "lucid"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#0f1b2a",
+    "muted": "#5c6b7a",
+    "accent": "#1b7fd6",
+    "tile": "#eef5fc",
+    "dark": {
+     "bg": [
+      "#141a21"
+     ],
+     "ink": "#eef3f8",
+     "muted": "#9aa7b4",
+     "accent": "#5eb1ff",
+     "tile": "#1f2731"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 0,
+      "children": [
+       {
+        "type": "text",
+        "text": "Today",
+        "size": 15,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "text",
+        "text": "{data.done}/{data.total}",
+        "size": 15,
+        "color": "accent",
+        "weight": "semibold",
+        "design": "rounded"
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "each",
+      "limit": 3,
+      "spacing": 9,
+      "children": [
+       {
+        "type": "hstack",
+        "spacing": 10,
+        "children": [
+         {
+          "type": "check",
+          "style": "glyph",
+          "action": "{item.action}",
+          "symbol": "{item.symbol}",
+          "size": 30,
+          "line": 1.7,
+          "scale": 0.54,
+          "color": "accent"
+         },
+         {
+          "type": "text",
+          "text": "{item.tag}",
+          "size": 15,
+          "weight": "semibold",
+          "design": "rounded"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Your three habits; tap a circle to tick it.",
+   "group": "today"
+  },
+  {
+   "id": "w20",
+   "name": "Tear-off day",
+   "n": 20,
+   "family": "small",
+   "device": "any",
+   "cards": [
+    "taxes-ustva"
+   ],
+   "theme": {
+    "bg": [
+     "#fff8ec"
+    ],
+    "ink": "#2a1f10",
+    "muted": "#6f604b",
+    "accent": "#a85d00",
+    "tile": "#f4e6cf",
+    "dark": {
+     "bg": [
+      "#1d1810"
+     ],
+     "ink": "#f6ecdc",
+     "muted": "#b3a58f",
+     "accent": "#ffb547",
+     "tile": "#2b2318"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "top",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "rect",
+      "height": 8,
+      "maxW": true,
+      "color": "accent"
+     },
+     {
+      "type": "vstack",
+      "align": "leading",
+      "frameAlign": "topLeading",
+      "spacing": 0,
+      "maxW": true,
+      "maxH": true,
+      "padding": [
+       10,
+       16,
+       14,
+       16
+      ],
+      "children": [
+       {
+        "type": "date",
+        "date": "{data.dueAt}",
+        "style": "dayDot",
+        "size": 13,
+        "color": "accent",
+        "weight": "semibold"
+       },
+       {
+        "type": "date",
+        "date": "{data.dueAt}",
+        "style": "day",
+        "size": 60,
+        "weight": "regular",
+        "design": "serif"
+       },
+       {
+        "type": "text",
+        "text": "UStVA {data.quarter}",
+        "size": 14,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "hstack",
+        "spacing": 4,
+        "children": [
+         {
+          "type": "symbol",
+          "name": "clock",
+          "size": 12,
+          "color": "accent",
+          "weight": "regular"
+         },
+         {
+          "type": "date",
+          "text": " days to go",
+          "date": "{data.dueAt}",
+          "size": 12,
+          "color": "accent",
+          "weight": "semibold"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "The UStVA due date as a calendar page.",
+   "group": "taxes"
+  },
+  {
+   "id": "w21",
+   "name": "Open bubble",
+   "n": 21,
+   "family": "small",
+   "device": "any",
+   "cards": [
+    "office-asks"
+   ],
+   "theme": {
+    "bg": [
+     "#b9b8c4"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#1d1d1f",
+    "tile": "#b9b8c4",
+    "dark": {
+     "bg": [
+      "#55545e"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#f5f5f7",
+     "tile": "#55545e"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     14,
+     16,
+     14,
+     16
+    ],
+    "children": [
+     {
+      "type": "zstack",
+      "maxW": true,
+      "children": [
+       {
+        "type": "canvas",
+        "width": 104,
+        "height": 84,
+        "box": [
+         104,
+         84
+        ],
+        "children": [
+         {
+          "type": "path",
+          "d": "M52 6c25.4 0 46 15.6 46 34.8S77.4 75.6 52 75.6c-4.6 0-9-.5-13.2-1.5L18 82l5.4-15.4C13.6 60.2 6 51 6 40.8 6 21.6 26.6 6 52 6z",
+          "line": 3,
+          "stroke": "ink"
+         }
+        ]
+       },
+       {
+        "type": "text",
+        "text": "{value}",
+        "size": 40,
+        "y": -3,
+        "weight": "semibold",
+        "design": "rounded"
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "text",
+      "text": "asks for you",
+      "size": 14,
+      "weight": "semibold"
+     },
+     {
+      "type": "text",
+      "text": "{caption}",
+      "size": 11,
+      "lines": 1,
+      "opacity": 0.8,
+      "color": "muted",
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "Questions and decisions the office is holding for you.",
+   "group": "asks"
+  },
+  {
+   "id": "w22",
+   "name": "All quiet",
+   "n": 22,
+   "family": "small",
+   "device": "any",
+   "cards": [
+    "tv-alerts"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#1d1d1f",
+    "tile": "#f5f5f7",
+    "dark": {
+     "bg": [
+      "#1c1c1e"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#f5f5f7",
+     "tile": "#2c2c2e"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "align": "top",
+      "spacing": 0,
+      "children": [
+       {
+        "type": "canvas",
+        "width": 74,
+        "height": 56,
+        "box": [
+         74,
+         56
+        ],
+        "children": [
+         {
+          "type": "rect",
+          "line": 2.6,
+          "radius": 9,
+          "width": 70,
+          "height": 44,
+          "x": 2,
+          "y": 2,
+          "stroke": "ink"
+         },
+         {
+          "type": "path",
+          "d": "M14 25h11l4-8 6 16 5-10 3 2h17",
+          "line": 2.2,
+          "stroke": "muted"
+         },
+         {
+          "type": "path",
+          "d": "M29 53h16M37 46v7",
+          "line": 2.6,
+          "stroke": "ink"
+         }
+        ]
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "mark",
+        "value": "ok",
+        "when": "{value} == 0",
+        "size": 18
+       },
+       {
+        "type": "mark",
+        "value": "warn",
+        "when": "{value} != 0",
+        "size": 18
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "hstack",
+      "align": "firstBaseline",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "text",
+        "text": "{value}",
+        "size": 34,
+        "weight": "semibold",
+        "design": "rounded"
+       },
+       {
+        "type": "text",
+        "text": "{label}",
+        "size": 13,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "text": "{caption}",
+      "size": 12,
+      "lines": 1,
+      "color": "muted",
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "TV alerts; a tick when nothing is wrong.",
+   "group": "tv"
+  },
+  {
+   "id": "w23",
+   "name": "Window, photo crop",
+   "n": 23,
+   "family": "small",
+   "device": "any",
+   "cards": [
+    "mail"
+   ],
+   "theme": {
+    "bg": [
+     "#141414"
+    ],
+    "ink": "#ffffff",
+    "muted": "#ffffffc7",
+    "accent": "#ffffff",
+    "tile": "#ffffff29",
+    "image": "wall-nyc.jpg",
+    "dark": {
+     "bg": [
+      "#141414"
+     ],
+     "ink": "#ffffff",
+     "muted": "#ffffffc7",
+     "accent": "#ffffff",
+     "tile": "#ffffff29"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "envelope",
+        "size": 13,
+        "color": "ink",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "Mail",
+        "size": 13,
+        "weight": "semibold"
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "text",
+      "text": "{value}",
+      "size": 52,
+      "tracking": -1,
+      "weight": "semibold",
+      "design": "rounded"
+     },
+     {
+      "type": "text",
+      "text": "need you",
+      "size": 12,
+      "color": "muted",
+      "weight": "medium"
+     },
+     {
+      "type": "spacer",
+      "height": 8,
+      "minLength": 8
+     },
+     {
+      "type": "each",
+      "style": "row",
+      "align": "bottom",
+      "limit": 6,
+      "spacing": 5,
+      "children": [
+       {
+        "type": "zstack",
+        "children": [
+         {
+          "type": "rect",
+          "when": "{item.tint} == warn",
+          "radius": 3,
+          "height": 26,
+          "maxW": true,
+          "color": "ink"
+         },
+         {
+          "type": "rect",
+          "when": "{item.tint} != warn",
+          "radius": 2.5,
+          "height": 7,
+          "maxW": true,
+          "color": "ink@0.45"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Mail over one of your own photos. White type, so it suits dark photos.",
+   "group": "mail"
+  },
+  {
+   "id": "w24",
+   "name": "Unread threads",
+   "n": 24,
+   "family": "medium",
+   "device": "any",
+   "cards": [
+    "hq"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#6e56cf",
+    "tile": "#f3f1fb",
+    "dark": {
+     "bg": [
+      "#18171d"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#a594ff",
+     "tile": "#26242e"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "align": "top",
+      "spacing": 14,
+      "maxH": true,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "leading",
+        "frameAlign": "topLeading",
+        "spacing": 0,
+        "width": 88,
+        "maxH": true,
+        "children": [
+         {
+          "type": "symbol",
+          "name": "square.stack",
+          "size": 20,
+          "color": "accent",
+          "weight": "regular"
+         },
+         {
+          "type": "text",
+          "text": "{value}",
+          "size": 44,
+          "weight": "semibold",
+          "design": "rounded"
+         },
+         {
+          "type": "text",
+          "text": "unread",
+          "size": 12,
+          "color": "muted",
+          "weight": "medium"
+         },
+         {
+          "type": "spacer"
+         },
+         {
+          "type": "text",
+          "text": "{caption}",
+          "size": 11,
+          "lines": 2,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       },
+       {
+        "type": "vstack",
+        "align": "leading",
+        "frameAlign": "topLeading",
+        "spacing": 0,
+        "maxW": true,
+        "maxH": true,
+        "children": [
+         {
+          "type": "each",
+          "limit": 3,
+          "spacing": 0,
+          "children": [
+           {
+            "type": "vstack",
+            "align": "leading",
+            "spacing": 0,
+            "children": [
+             {
+              "type": "hstack",
+              "spacing": 0,
+              "padding": [
+               8,
+               0,
+               8,
+               0
+              ],
+              "children": [
+               {
+                "type": "text",
+                "text": "{item.title}",
+                "size": 13,
+                "lines": 1,
+                "weight": "semibold"
+               },
+               {
+                "type": "spacer",
+                "minLength": 6
+               },
+               {
+                "type": "text",
+                "text": "{item.detail}",
+                "size": 12,
+                "color": "muted",
+                "weight": "medium"
+               }
+              ]
+             },
+             {
+              "type": "divider",
+              "color": "line"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "HQ sessions waiting on you, newest first.",
+   "group": "hq"
+  },
+  {
+   "id": "w25",
+   "name": "The temple",
+   "n": 25,
+   "family": "medium",
+   "device": "any",
+   "cards": [
+    "olympus"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#d4604a",
+    "tile": "#f5f5f7",
+    "dark": {
+     "bg": [
+      "#1c1c1e"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#e2705a",
+     "tile": "#2c2c2e"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 16,
+      "maxH": true,
+      "children": [
+       {
+        "type": "canvas",
+        "width": 124,
+        "height": 112,
+        "box": [
+         124,
+         112
+        ],
+        "children": [
+         {
+          "type": "path",
+          "d": "M6 25 62 4l56 21z",
+          "color": "accent"
+         },
+         {
+          "type": "rect",
+          "width": 116,
+          "height": 7.2,
+          "x": 4,
+          "y": 28
+         },
+         {
+          "type": "repeat",
+          "value": "{data.carried}",
+          "fit": "spread",
+          "count": "{data.total}",
+          "spacing": 4.8,
+          "strokeWidth": 2.4,
+          "height": 54,
+          "x": 9,
+          "y": 42,
+          "dash": [
+           5.2,
+           4
+          ],
+          "track": "ink"
+         },
+         {
+          "type": "rect",
+          "width": 124,
+          "height": 8,
+          "x": 0,
+          "y": 101
+         }
+        ]
+       },
+       {
+        "type": "vstack",
+        "align": "leading",
+        "frameAlign": "topLeading",
+        "spacing": 0,
+        "maxW": true,
+        "maxH": true,
+        "children": [
+         {
+          "type": "hstack",
+          "align": "bottom",
+          "spacing": 6,
+          "children": [
+           {
+            "type": "text",
+            "text": "{data.carried}",
+            "size": 44,
+            "weight": "medium",
+            "design": "serif"
+           },
+           {
+            "type": "text",
+            "text": "of {data.total}\ncarried",
+            "size": 12,
+            "lines": 2,
+            "color": "muted",
+            "weight": "medium"
+           }
+          ]
+         },
+         {
+          "type": "spacer",
+          "height": 6,
+          "minLength": 6
+         },
+         {
+          "type": "hstack",
+          "spacing": 5,
+          "children": [
+           {
+            "type": "mark",
+            "value": "warn",
+            "size": 10
+           },
+           {
+            "type": "text",
+            "text": "{data.wait} wait on you",
+            "size": 13,
+            "weight": "semibold"
+           }
+          ]
+         },
+         {
+          "type": "spacer"
+         },
+         {
+          "type": "text",
+          "text": "Board · {age} ago",
+          "size": 11,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "One pillar per motion: solid carried, dashed waiting on you.",
+   "group": "board"
+  },
+  {
+   "id": "w26",
+   "name": "Tailnet floor",
+   "n": 26,
+   "family": "medium",
+   "device": "any",
+   "cards": [
+    "argus"
+   ],
+   "theme": {
+    "bg": [
+     "#f4f4f1"
+    ],
+    "ink": "#141414",
+    "muted": "#5f5f5a",
+    "accent": "#141414",
+    "tile": "#e6e6e1",
+    "dark": {
+     "bg": [
+      "#0f100f"
+     ],
+     "ink": "#e6e8e3",
+     "muted": "#9a9d96",
+     "accent": "#e6e8e3",
+     "tile": "#1d1f1d"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "align": "top",
+      "spacing": 14,
+      "maxH": true,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "leading",
+        "spacing": 0,
+        "width": 96,
+        "children": [
+         {
+          "type": "canvas",
+          "width": 84,
+          "height": 84,
+          "box": [
+           84,
+           84
+          ],
+          "children": [
+           {
+            "type": "repeat",
+            "value": "{data.online}",
+            "count": "{data.devices}",
+            "spacing": 6,
+            "radius": 6,
+            "strokeWidth": 1.4,
+            "width": 24,
+            "height": 24,
+            "columns": 3,
+            "dash": [
+             3,
+             2.4
+            ],
+            "color": "ink",
+            "track": "muted"
+           }
+          ]
+         },
+         {
+          "type": "spacer",
+          "height": 8,
+          "minLength": 8
+         },
+         {
+          "type": "text",
+          "text": "{data.online}/{data.devices} online",
+          "size": 11,
+          "color": "muted",
+          "weight": "medium",
+          "design": "mono"
+         }
+        ]
+       },
+       {
+        "type": "vstack",
+        "align": "leading",
+        "frameAlign": "topLeading",
+        "spacing": 0,
+        "maxW": true,
+        "maxH": true,
+        "children": [
+         {
+          "type": "hstack",
+          "spacing": 5,
+          "children": [
+           {
+            "type": "symbol",
+            "name": "network",
+            "size": 14,
+            "color": "ink",
+            "weight": "regular"
+           },
+           {
+            "type": "text",
+            "text": "Network",
+            "size": 13,
+            "weight": "semibold"
+           }
+          ]
+         },
+         {
+          "type": "text",
+          "text": "{label}",
+          "size": 19,
+          "weight": "medium",
+          "design": "mono"
+         },
+         {
+          "type": "spacer",
+          "height": 8,
+          "minLength": 8
+         },
+         {
+          "type": "each",
+          "limit": 3,
+          "spacing": 6,
+          "children": [
+           {
+            "type": "hstack",
+            "spacing": 6,
+            "children": [
+             {
+              "type": "mark",
+              "value": "{item.tint}",
+              "size": 11
+             },
+             {
+              "type": "text",
+              "text": "{item.title}",
+              "size": 12,
+              "lines": 1,
+              "weight": "medium"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "One square per tailnet device, and the checks worth a look.",
+   "group": "network"
+  },
+  {
+   "id": "w27",
+   "name": "Faces",
+   "n": 27,
+   "family": "medium",
+   "device": "any",
+   "cards": [
+    "office"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#1d1d1f",
+    "tile": "#b9b8c4",
+    "dark": {
+     "bg": [
+      "#1c1c1e"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#f5f5f7",
+     "tile": "#55545e"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "building.2",
+        "size": 14,
+        "color": "accent",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "Office",
+        "size": 13,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer",
+        "minLength": 6
+       },
+       {
+        "type": "text",
+        "text": "{data.busy} busy · {data.hold} you hold",
+        "size": 12,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "each",
+      "style": "row",
+      "limit": 6,
+      "spacing": 4,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "center",
+        "spacing": 3,
+        "children": [
+         {
+          "type": "zstack",
+          "width": 44,
+          "height": 44,
+          "children": [
+           {
+            "type": "circle",
+            "when": "{item.on}",
+            "strokeWidth": 2,
+            "width": 44,
+            "height": 44,
+            "stroke": "ok"
+           },
+           {
+            "type": "zstack",
+            "when": "{item.on}",
+            "width": 36,
+            "height": 36,
+            "opacity": 1,
+            "children": [
+             {
+              "type": "circle",
+              "width": 36,
+              "height": 36,
+              "color": "tile"
+             },
+             {
+              "type": "text",
+              "text": "{item.initial}",
+              "size": 15,
+              "color": "muted",
+              "weight": "semibold",
+              "design": "rounded"
+             },
+             {
+              "type": "image",
+              "src": "{item.image}",
+              "fit": "fill",
+              "radius": 18,
+              "width": 36,
+              "height": 36,
+              "full": true
+             }
+            ]
+           },
+           {
+            "type": "zstack",
+            "when": "!{item.on}",
+            "width": 36,
+            "height": 36,
+            "opacity": 0.5,
+            "children": [
+             {
+              "type": "circle",
+              "width": 36,
+              "height": 36,
+              "color": "tile"
+             },
+             {
+              "type": "text",
+              "text": "{item.initial}",
+              "size": 15,
+              "color": "muted",
+              "weight": "semibold",
+              "design": "rounded"
+             },
+             {
+              "type": "image",
+              "src": "{item.image}",
+              "fit": "fill",
+              "radius": 18,
+              "width": 36,
+              "height": 36,
+              "full": true
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "text",
+          "text": "{item.title}",
+          "size": 11,
+          "weight": "semibold"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "text",
+      "text": "{data.who}: {data.task}",
+      "when": "{data.busy} > 0",
+      "size": 12,
+      "lines": 1,
+      "color": "muted",
+      "weight": "medium"
+     },
+     {
+      "type": "text",
+      "text": "Nobody working · last {data.last}",
+      "when": "{data.busy} == 0",
+      "size": 12,
+      "lines": 1,
+      "color": "muted",
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "The Kels by face; a green ring on whoever is working.",
+   "group": "office"
+  },
+  {
+   "id": "w28",
+   "name": "Runway",
+   "n": 28,
+   "family": "medium",
+   "device": "any",
+   "cards": [
+    "vesta",
+    "taxes-ustva"
+   ],
+   "theme": {
+    "bg": [
+     "#fbfbf6"
+    ],
+    "ink": "#1b2117",
+    "muted": "#5f6758",
+    "accent": "#4c7a35",
+    "tile": "#edf1e5",
+    "dark": {
+     "bg": [
+      "#151912"
+     ],
+     "ink": "#eef2e8",
+     "muted": "#a3ab9b",
+     "accent": "#9bcc7f",
+     "tile": "#20261c"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "calendar",
+        "size": 14,
+        "color": "accent",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "Coming up",
+        "size": 13,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer",
+        "minLength": 6
+       },
+       {
+        "type": "text",
+        "text": "{caption}",
+        "size": 12,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "zstack",
+      "children": [
+       {
+        "type": "rect",
+        "height": 2,
+        "maxW": true,
+        "color": "line"
+       },
+       {
+        "type": "hstack",
+        "spacing": 0,
+        "children": [
+         {
+          "type": "circle",
+          "width": 12,
+          "height": 12,
+          "color": "ink"
+         },
+         {
+          "type": "spacer"
+         },
+         {
+          "type": "circle",
+          "width": 12,
+          "height": 12,
+          "color": "accent"
+         },
+         {
+          "type": "spacer"
+         },
+         {
+          "type": "canvas",
+          "width": 14,
+          "height": 14,
+          "box": [
+           14,
+           14
+          ],
+          "children": [
+           {
+            "type": "path",
+            "d": "M7 0 14 7 7 14 0 7z",
+            "color": "warn"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 8,
+      "minLength": 8
+     },
+     {
+      "type": "hstack",
+      "align": "top",
+      "spacing": 0,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "leading",
+        "spacing": 0,
+        "children": [
+         {
+          "type": "text",
+          "text": "Today",
+          "size": 12,
+          "weight": "semibold"
+         },
+         {
+          "type": "text",
+          "text": "{data.today} planned",
+          "size": 11,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       },
+       {
+        "type": "spacer",
+        "minLength": 6
+       },
+       {
+        "type": "vstack",
+        "align": "center",
+        "spacing": 0,
+        "children": [
+         {
+          "type": "date",
+          "date": "{data.nextAt}",
+          "style": "dayTime",
+          "size": 12,
+          "weight": "semibold"
+         },
+         {
+          "type": "text",
+          "text": "{data.next}",
+          "size": 11,
+          "lines": 1,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       },
+       {
+        "type": "spacer",
+        "minLength": 6
+       },
+       {
+        "type": "vstack",
+        "align": "trailing",
+        "spacing": 0,
+        "children": [
+         {
+          "type": "date",
+          "date": "{data.dueAt}",
+          "style": "dayMonth",
+          "card": "taxes-ustva",
+          "size": 12,
+          "weight": "semibold"
+         },
+         {
+          "type": "text",
+          "text": "UStVA",
+          "size": 11,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Today, the next calendar thing and the tax deadline on one line.",
+   "group": "calendar"
+  },
+  {
+   "id": "w29",
+   "name": "What wants you",
+   "n": 29,
+   "family": "large",
+   "device": "any",
+   "cards": [
+    "*"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#1d1d1f",
+    "tile": "#f2f2f4",
+    "dark": {
+     "bg": [
+      "#1c1c1e"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#f5f5f7",
+     "tile": "#2c2c2e"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 0,
+      "children": [
+       {
+        "type": "text",
+        "text": "Wants you",
+        "size": 17,
+        "weight": "bold"
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "text",
+        "text": "{time}",
+        "size": 12,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 10,
+      "minLength": 10
+     },
+     {
+      "type": "hstack",
+      "spacing": 8,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "leading",
+        "card": "mail",
+        "spacing": 0,
+        "radius": 14,
+        "height": 106,
+        "maxW": true,
+        "bg": "tile",
+        "padding": [
+         12
+        ],
+        "children": [
+         {
+          "type": "hstack",
+          "spacing": 0,
+          "children": [
+           {
+            "type": "symbol",
+            "name": "envelope",
+            "size": 14,
+            "color": "accent",
+            "weight": "regular"
+           },
+           {
+            "type": "spacer"
+           },
+           {
+            "type": "mark",
+            "value": "{tint}",
+            "size": 12
+           }
+          ]
+         },
+         {
+          "type": "spacer"
+         },
+         {
+          "type": "text",
+          "text": "{value}",
+          "size": 34,
+          "weight": "semibold",
+          "design": "rounded"
+         },
+         {
+          "type": "text",
+          "text": "mails need you",
+          "size": 12,
+          "lines": 1,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       },
+       {
+        "type": "vstack",
+        "align": "leading",
+        "card": "office-asks",
+        "spacing": 0,
+        "radius": 14,
+        "height": 106,
+        "maxW": true,
+        "bg": "tile",
+        "padding": [
+         12
+        ],
+        "children": [
+         {
+          "type": "hstack",
+          "spacing": 0,
+          "children": [
+           {
+            "type": "symbol",
+            "name": "questionmark.bubble",
+            "size": 14,
+            "color": "accent",
+            "weight": "regular"
+           },
+           {
+            "type": "spacer"
+           },
+           {
+            "type": "mark",
+            "value": "{tint}",
+            "size": 12
+           }
+          ]
+         },
+         {
+          "type": "spacer"
+         },
+         {
+          "type": "text",
+          "text": "{value}",
+          "size": 34,
+          "weight": "semibold",
+          "design": "rounded"
+         },
+         {
+          "type": "text",
+          "text": "asks for you",
+          "size": 12,
+          "lines": 1,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 8,
+      "minLength": 8
+     },
+     {
+      "type": "hstack",
+      "spacing": 8,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "leading",
+        "card": "hq",
+        "spacing": 0,
+        "radius": 14,
+        "height": 106,
+        "maxW": true,
+        "bg": "tile",
+        "padding": [
+         12
+        ],
+        "children": [
+         {
+          "type": "hstack",
+          "spacing": 0,
+          "children": [
+           {
+            "type": "symbol",
+            "name": "square.stack",
+            "size": 14,
+            "color": "accent",
+            "weight": "regular"
+           },
+           {
+            "type": "spacer"
+           },
+           {
+            "type": "mark",
+            "value": "{tint}",
+            "size": 12
+           }
+          ]
+         },
+         {
+          "type": "spacer"
+         },
+         {
+          "type": "text",
+          "text": "{value}",
+          "size": 34,
+          "weight": "semibold",
+          "design": "rounded"
+         },
+         {
+          "type": "text",
+          "text": "unread in HQ",
+          "size": 12,
+          "lines": 1,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       },
+       {
+        "type": "vstack",
+        "align": "leading",
+        "card": "olympus",
+        "spacing": 0,
+        "radius": 14,
+        "height": 106,
+        "maxW": true,
+        "bg": "tile",
+        "padding": [
+         12
+        ],
+        "children": [
+         {
+          "type": "hstack",
+          "spacing": 0,
+          "children": [
+           {
+            "type": "symbol",
+            "name": "building.columns",
+            "size": 14,
+            "color": "accent",
+            "weight": "regular"
+           },
+           {
+            "type": "spacer"
+           },
+           {
+            "type": "mark",
+            "value": "{tint}",
+            "size": 12
+           }
+          ]
+         },
+         {
+          "type": "spacer"
+         },
+         {
+          "type": "text",
+          "text": "{data.wait}",
+          "size": 34,
+          "weight": "semibold",
+          "design": "rounded"
+         },
+         {
+          "type": "text",
+          "text": "wait on you",
+          "size": 12,
+          "lines": 1,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "hstack",
+      "spacing": 10,
+      "children": [
+       {
+        "type": "hstack",
+        "card": "lucid",
+        "spacing": 6,
+        "maxW": true,
+        "children": [
+         {
+          "type": "mark",
+          "value": "{tint}",
+          "size": 11
+         },
+         {
+          "type": "symbol",
+          "name": "sun.max",
+          "size": 12,
+          "color": "muted",
+          "weight": "regular"
+         },
+         {
+          "type": "text",
+          "text": "Today",
+          "size": 13,
+          "weight": "semibold"
+         },
+         {
+          "type": "spacer",
+          "minLength": 4
+         },
+         {
+          "type": "text",
+          "text": "{value}",
+          "size": 12,
+          "lines": 1,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       },
+       {
+        "type": "hstack",
+        "card": "argus",
+        "spacing": 6,
+        "maxW": true,
+        "children": [
+         {
+          "type": "mark",
+          "value": "{tint}",
+          "size": 11
+         },
+         {
+          "type": "symbol",
+          "name": "network",
+          "size": 12,
+          "color": "muted",
+          "weight": "regular"
+         },
+         {
+          "type": "text",
+          "text": "Network",
+          "size": 13,
+          "weight": "semibold"
+         },
+         {
+          "type": "spacer",
+          "minLength": 4
+         },
+         {
+          "type": "text",
+          "text": "{label}",
+          "size": 12,
+          "lines": 1,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 8,
+      "minLength": 8
+     },
+     {
+      "type": "hstack",
+      "spacing": 10,
+      "children": [
+       {
+        "type": "hstack",
+        "card": "tv-alerts",
+        "spacing": 6,
+        "maxW": true,
+        "children": [
+         {
+          "type": "mark",
+          "value": "{tint}",
+          "size": 11
+         },
+         {
+          "type": "symbol",
+          "name": "tv",
+          "size": 12,
+          "color": "muted",
+          "weight": "regular"
+         },
+         {
+          "type": "text",
+          "text": "Alerts",
+          "size": 13,
+          "weight": "semibold"
+         },
+         {
+          "type": "spacer",
+          "minLength": 4
+         },
+         {
+          "type": "text",
+          "text": "{caption}",
+          "size": 12,
+          "lines": 1,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       },
+       {
+        "type": "hstack",
+        "card": "vesta",
+        "spacing": 6,
+        "maxW": true,
+        "children": [
+         {
+          "type": "mark",
+          "value": "{tint}",
+          "size": 11
+         },
+         {
+          "type": "symbol",
+          "name": "calendar",
+          "size": 12,
+          "color": "muted",
+          "weight": "regular"
+         },
+         {
+          "type": "text",
+          "text": "Calendar",
+          "size": 13,
+          "weight": "semibold"
+         },
+         {
+          "type": "spacer",
+          "minLength": 4
+         },
+         {
+          "type": "text",
+          "text": "{caption}",
+          "size": 12,
+          "lines": 1,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "The four that want you as tiles, the rest as one line each.",
+   "group": "overview"
+  },
+  {
+   "id": "w30",
+   "name": "Pigeonholes",
+   "n": 30,
+   "family": "large",
+   "device": "any",
+   "cards": [
+    "mail",
+    "mail-claude"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#111111",
+    "muted": "#5e5e5e",
+    "accent": "#9b1b30",
+    "tile": "#f4f4f4",
+    "dark": {
+     "bg": [
+      "#121212"
+     ],
+     "ink": "#ececec",
+     "muted": "#a0a0a0",
+     "accent": "#e0687c",
+     "tile": "#1f1f1f"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "envelope",
+        "size": 15,
+        "color": "accent",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "Mail",
+        "size": 15,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "text",
+        "text": "{value} need you",
+        "size": 13,
+        "color": "accent",
+        "weight": "semibold"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 12,
+      "minLength": 12
+     },
+     {
+      "type": "each",
+      "limit": 6,
+      "spacing": 8,
+      "columns": 2,
+      "children": [
+       {
+        "type": "hstack",
+        "spacing": 8,
+        "radius": 10,
+        "maxW": true,
+        "bg": "tile",
+        "padding": [
+         8,
+         10,
+         8,
+         8
+        ],
+        "children": [
+         {
+          "type": "rect",
+          "when": "{item.tint} == warn",
+          "radius": 1.5,
+          "width": 3,
+          "height": 58,
+          "color": "warn"
+         },
+         {
+          "type": "vstack",
+          "align": "leading",
+          "frameAlign": "leading",
+          "spacing": 1,
+          "maxW": true,
+          "children": [
+           {
+            "type": "text",
+            "text": "{item.title}",
+            "size": 11,
+            "lines": 1,
+            "color": "muted",
+            "weight": "semibold",
+            "design": "mono"
+           },
+           {
+            "type": "text",
+            "text": "{item.tag}",
+            "size": 18,
+            "weight": "semibold",
+            "design": "mono"
+           },
+           {
+            "type": "text",
+            "text": "{item.detail}",
+            "size": 11,
+            "lines": 1,
+            "color": "muted",
+            "weight": "medium"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "tag",
+        "size": 12,
+        "color": "muted",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "{cards.mail-claude.value} marked for Claude",
+        "size": 12,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Every mail account as a pigeonhole, plus what is marked for Claude.",
+   "group": "mail"
+  },
+  {
+   "id": "w31",
+   "name": "Themis on the table",
+   "n": 31,
+   "family": "large",
+   "device": "any",
+   "cards": [
+    "olympus"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#d4604a",
+    "tile": "#f5f5f7",
+    "dark": {
+     "bg": [
+      "#1c1c1e"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#e2705a",
+     "tile": "#2c2c2e"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 12,
+      "children": [
+       {
+        "type": "zstack",
+        "radius": 14,
+        "width": 72,
+        "height": 72,
+        "children": [
+         {
+          "type": "rect",
+          "radius": 14,
+          "width": 72,
+          "height": 72,
+          "color": "accent"
+         },
+         {
+          "type": "image",
+          "src": "themis.png",
+          "fit": "fit",
+          "width": 64,
+          "height": 66,
+          "y": 3,
+          "full": true
+         }
+        ]
+       },
+       {
+        "type": "vstack",
+        "align": "leading",
+        "spacing": 1,
+        "children": [
+         {
+          "type": "text",
+          "text": "{data.carried}/{data.total}",
+          "size": 34,
+          "weight": "medium",
+          "design": "serif"
+         },
+         {
+          "type": "text",
+          "text": "carried · board {age} ago",
+          "size": 12,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 12,
+      "minLength": 12
+     },
+     {
+      "type": "text",
+      "text": "{caption}",
+      "size": 17,
+      "lines": 3,
+      "weight": "regular",
+      "design": "serif"
+     },
+     {
+      "type": "spacer",
+      "height": 10,
+      "minLength": 10
+     },
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "mark",
+        "value": "warn",
+        "size": 10
+       },
+       {
+        "type": "text",
+        "text": "{data.wait} wait on you",
+        "size": 13,
+        "weight": "semibold"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 4,
+      "minLength": 4
+     },
+     {
+      "type": "each",
+      "test": "{item.tint} == warn",
+      "limit": 3,
+      "spacing": 0,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "leading",
+        "spacing": 0,
+        "children": [
+         {
+          "type": "divider",
+          "color": "line"
+         },
+         {
+          "type": "text",
+          "text": "{item.title}",
+          "size": 13,
+          "lines": 1,
+          "weight": "medium",
+          "padding": [
+           8,
+           0,
+           8,
+           0
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Themis, the board count, the next letter and what waits on you.",
+   "group": "board"
+  },
+  {
+   "id": "w32",
+   "name": "Rate, not a counter",
+   "n": 32,
+   "family": "small",
+   "device": "phone",
+   "cards": [
+    "neural"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#0f1b2a",
+    "muted": "#5c6b7a",
+    "accent": "#1b7fd6",
+    "tile": "#eef5fc",
+    "dark": {
+     "bg": [
+      "#141a21"
+     ],
+     "ink": "#eef3f8",
+     "muted": "#9aa7b4",
+     "accent": "#5eb1ff",
+     "tile": "#1f2731"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "center",
+    "frameAlign": "center",
+    "spacing": 2,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     10
+    ],
+    "children": [
+     {
+      "type": "text",
+      "text": "nodes last hour",
+      "size": 12,
+      "color": "muted",
+      "weight": "medium"
+     },
+     {
+      "type": "text",
+      "text": "+{data.hour}",
+      "size": 50,
+      "tracking": -1,
+      "weight": "semibold",
+      "design": "rounded"
+     },
+     {
+      "type": "spacer",
+      "height": 6,
+      "minLength": 6
+     },
+     {
+      "type": "bars",
+      "limit": 12,
+      "spacing": 2.4,
+      "width": 136,
+      "height": 26,
+      "cap": 364,
+      "box": [
+       136,
+       26
+      ],
+      "color": "accent"
+     },
+     {
+      "type": "spacer",
+      "height": 6,
+      "minLength": 6
+     },
+     {
+      "type": "text",
+      "text": "{value} at {time}",
+      "size": 11,
+      "color": "muted",
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "How fast the network grows, for the nightstand.",
+   "group": "neural"
+  },
+  {
+   "id": "w33",
+   "name": "Kickoff",
+   "n": 33,
+   "family": "small",
+   "device": "phone",
+   "cards": [
+    "vesta"
+   ],
+   "theme": {
+    "bg": [
+     "#fbfbf6"
+    ],
+    "ink": "#1b2117",
+    "muted": "#5f6758",
+    "accent": "#4c7a35",
+    "tile": "#edf1e5",
+    "dark": {
+     "bg": [
+      "#151912"
+     ],
+     "ink": "#eef2e8",
+     "muted": "#a3ab9b",
+     "accent": "#9bcc7f",
+     "tile": "#20261c"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "center",
+    "frameAlign": "center",
+    "spacing": 2,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     10
+    ],
+    "children": [
+     {
+      "type": "symbol",
+      "name": "soccerball",
+      "size": 18,
+      "color": "accent",
+      "weight": "regular"
+     },
+     {
+      "type": "text",
+      "text": "{data.next}",
+      "align": "center",
+      "size": 13,
+      "lines": 2,
+      "weight": "semibold"
+     },
+     {
+      "type": "spacer",
+      "height": 4,
+      "minLength": 4
+     },
+     {
+      "type": "date",
+      "date": "{data.nextAt}",
+      "style": "timer",
+      "align": "center",
+      "size": 34,
+      "weight": "semibold",
+      "design": "mono"
+     },
+     {
+      "type": "date",
+      "date": "{data.nextAt}",
+      "style": "dayTime",
+      "size": 12,
+      "color": "muted",
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "A live countdown to the next calendar thing.",
+   "group": "calendar"
+  },
+  {
+   "id": "w34",
+   "name": "Habit rings",
+   "n": 34,
+   "family": "small",
+   "device": "phone",
+   "cards": [
+    "lucid"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#0f1b2a",
+    "muted": "#5c6b7a",
+    "accent": "#1b7fd6",
+    "tile": "#eef5fc",
+    "dark": {
+     "bg": [
+      "#141a21"
+     ],
+     "ink": "#eef3f8",
+     "muted": "#9aa7b4",
+     "accent": "#5eb1ff",
+     "tile": "#1f2731"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "center",
+    "frameAlign": "center",
+    "spacing": 2,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     10
+    ],
+    "children": [
+     {
+      "type": "text",
+      "text": "{data.done}/{data.total}",
+      "size": 26,
+      "weight": "semibold",
+      "design": "rounded"
+     },
+     {
+      "type": "text",
+      "text": "habits today",
+      "size": 12,
+      "color": "muted",
+      "weight": "medium"
+     },
+     {
+      "type": "spacer",
+      "height": 12,
+      "minLength": 12
+     },
+     {
+      "type": "each",
+      "style": "row",
+      "limit": 3,
+      "spacing": 10,
+      "children": [
+       {
+        "type": "check",
+        "style": "ring",
+        "action": "{item.action}",
+        "symbol": "{item.symbol}",
+        "size": 40,
+        "line": 4,
+        "scale": 0.42,
+        "color": "accent"
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Three rings that close as you tick each habit. Tap to tick.",
+   "group": "today"
+  },
+  {
+   "id": "w35",
+   "name": "Her message",
+   "n": 35,
+   "family": "small",
+   "device": "phone",
+   "cards": [
+    "cura"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#c2416b",
+    "tile": "#f7eef1",
+    "dark": {
+     "bg": [
+      "#1d1a1c"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#ff7aa2",
+     "tile": "#2b2428"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "center",
+    "frameAlign": "center",
+    "spacing": 2,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     10
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "bubble.left",
+        "size": 14,
+        "color": "accent",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "{value} ago",
+        "size": 12,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 6,
+      "minLength": 6
+     },
+     {
+      "type": "text",
+      "text": "{caption}",
+      "align": "center",
+      "size": 15,
+      "lines": 4,
+      "privacy": true,
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "What Cura last wrote. Hidden while locked.",
+   "group": "cura"
+  },
+  {
+   "id": "w36",
+   "name": "Eighty-seven",
+   "n": 36,
+   "family": "small",
+   "device": "phone",
+   "cards": [
+    "taxes-ustva"
+   ],
+   "theme": {
+    "bg": [
+     "#fff8ec"
+    ],
+    "ink": "#2a1f10",
+    "muted": "#6f604b",
+    "accent": "#a85d00",
+    "tile": "#f4e6cf",
+    "dark": {
+     "bg": [
+      "#1d1810"
+     ],
+     "ink": "#f6ecdc",
+     "muted": "#b3a58f",
+     "accent": "#ffb547",
+     "tile": "#2b2318"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "center",
+    "frameAlign": "center",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     10
+    ],
+    "children": [
+     {
+      "type": "date",
+      "date": "{data.dueAt}",
+      "size": 76,
+      "color": "accent",
+      "weight": "regular",
+      "design": "serif"
+     },
+     {
+      "type": "text",
+      "text": "days to the UStVA",
+      "size": 12,
+      "color": "muted",
+      "weight": "medium"
+     },
+     {
+      "type": "date",
+      "date": "{data.dueAt}",
+      "style": "dayMonth",
+      "label": "due",
+      "size": 12,
+      "weight": "semibold"
+     }
+    ]
+   },
+   "note": "Days left until the UStVA is due, big.",
+   "group": "taxes"
+  },
+  {
+   "id": "w37",
+   "name": "Ada at work",
+   "n": 37,
+   "family": "small",
+   "device": "phone",
+   "cards": [
+    "office"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#1d1d1f",
+    "tile": "#b9b8c4",
+    "dark": {
+     "bg": [
+      "#1c1c1e"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#f5f5f7",
+     "tile": "#55545e"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "center",
+    "frameAlign": "center",
+    "spacing": 2,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     10
+    ],
+    "children": [
+     {
+      "type": "each",
+      "test": "{item.on}",
+      "limit": 1,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "center",
+        "spacing": 3,
+        "children": [
+         {
+          "type": "zstack",
+          "width": 60,
+          "height": 60,
+          "children": [
+           {
+            "type": "circle",
+            "when": "{item.on}",
+            "strokeWidth": 2.5,
+            "width": 60,
+            "height": 60,
+            "stroke": "ok"
+           },
+           {
+            "type": "zstack",
+            "when": "{item.on}",
+            "width": 52,
+            "height": 52,
+            "opacity": 1,
+            "children": [
+             {
+              "type": "circle",
+              "width": 52,
+              "height": 52,
+              "color": "tile"
+             },
+             {
+              "type": "text",
+              "text": "{item.initial}",
+              "size": 22,
+              "color": "muted",
+              "weight": "semibold",
+              "design": "rounded"
+             },
+             {
+              "type": "image",
+              "src": "{item.image}",
+              "fit": "fill",
+              "radius": 26,
+              "width": 52,
+              "height": 52,
+              "full": true
+             }
+            ]
+           },
+           {
+            "type": "zstack",
+            "when": "!{item.on}",
+            "width": 52,
+            "height": 52,
+            "opacity": 0.5,
+            "children": [
+             {
+              "type": "circle",
+              "width": 52,
+              "height": 52,
+              "color": "tile"
+             },
+             {
+              "type": "text",
+              "text": "{item.initial}",
+              "size": 22,
+              "color": "muted",
+              "weight": "semibold",
+              "design": "rounded"
+             },
+             {
+              "type": "image",
+              "src": "{item.image}",
+              "fit": "fill",
+              "radius": 26,
+              "width": 52,
+              "height": 52,
+              "full": true
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "text",
+          "text": "{item.title}",
+          "size": 15,
+          "weight": "semibold"
+         },
+         {
+          "type": "text",
+          "text": "{item.detail}",
+          "align": "center",
+          "size": 12,
+          "lines": 2,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "vstack",
+      "when": "{data.busy} == 0",
+      "align": "center",
+      "spacing": 4,
+      "children": [
+       {
+        "type": "circle",
+        "strokeWidth": 1.3,
+        "width": 30,
+        "height": 30,
+        "dash": [
+         2,
+         1.8
+        ],
+        "stroke": "muted"
+       },
+       {
+        "type": "text",
+        "text": "Nobody working",
+        "size": 14,
+        "weight": "semibold"
+       },
+       {
+        "type": "text",
+        "text": "last {data.last}",
+        "size": 12,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 4,
+      "minLength": 4
+     },
+     {
+      "type": "text",
+      "text": "{data.hold} you hold",
+      "size": 11,
+      "color": "muted",
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "Whichever Kel is working right now, by face.",
+   "group": "office"
+  },
+  {
+   "id": "w38",
+   "name": "Tailnet ring",
+   "n": 38,
+   "family": "circular",
+   "device": "pad",
+   "cards": [
+    "argus"
+   ],
+   "layout": {
+    "type": "zstack",
+    "frameAlign": "center",
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "canvas",
+      "width": 72,
+      "height": 72,
+      "box": [
+       72,
+       72
+      ],
+      "children": [
+       {
+        "type": "arcs",
+        "value": "{data.online}",
+        "count": "{data.devices}",
+        "line": 5,
+        "spacing": 10,
+        "strokeWidth": 2,
+        "r": 30,
+        "from": 5
+       }
+      ]
+     },
+     {
+      "type": "vstack",
+      "align": "center",
+      "spacing": 1,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "network",
+        "size": 12,
+        "color": "ink",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "{data.online}/{data.devices}",
+        "size": 16,
+        "weight": "medium",
+        "design": "mono"
+       }
+      ]
+     }
+    ]
+   },
+   "note": "One arc per tailnet device, thick when online.",
+   "group": "network"
+  },
+  {
+   "id": "w39",
+   "name": "Next letter",
+   "n": 39,
+   "family": "rectangular",
+   "device": "pad",
+   "cards": [
+    "olympus"
+   ],
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "leading",
+    "spacing": 3,
+    "maxW": true,
+    "maxH": true,
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "building.columns",
+        "size": 13,
+        "color": "ink",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "{data.carried}/{data.total}",
+        "size": 15,
+        "weight": "medium",
+        "design": "serif"
+       },
+       {
+        "type": "text",
+        "text": "carried · {data.wait} wait",
+        "size": 11,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "text": "{data.next}",
+      "size": 12,
+      "lines": 2,
+      "privacy": true,
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "The first held motion. Hidden while locked.",
+   "group": "board"
+  },
+  {
+   "id": "w40",
+   "name": "Who is working",
+   "n": 40,
+   "family": "inline",
+   "device": "pad",
+   "cards": [
+    "office"
+   ],
+   "layout": {
+    "type": "zstack",
+    "children": [
+     {
+      "type": "text",
+      "text": "{@building.2} {data.who} working · {data.hold} you hold",
+      "when": "{data.busy} > 0",
+      "size": 13,
+      "weight": "medium"
+     },
+     {
+      "type": "text",
+      "text": "{@building.2} nobody working · {data.hold} you hold",
+      "when": "{data.busy} == 0",
+      "size": 13,
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "Who is working right now.",
+   "group": "office"
+  },
+  {
+   "id": "w41",
+   "name": "Thread cards",
+   "n": 41,
+   "family": "small",
+   "device": "pad",
+   "cards": [
+    "hq"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#6e56cf",
+    "tile": "#f3f1fb",
+    "dark": {
+     "bg": [
+      "#18171d"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#a594ff",
+     "tile": "#26242e"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     12
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "square.stack",
+        "size": 14,
+        "color": "ink",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "HQ",
+        "size": 13,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "text",
+        "text": "{value}",
+        "size": 15,
+        "weight": "semibold",
+        "design": "rounded"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 8,
+      "minLength": 8
+     },
+     {
+      "type": "each",
+      "limit": 3,
+      "spacing": 5,
+      "children": [
+       {
+        "type": "text",
+        "text": "{item.title}",
+        "frameAlign": "leading",
+        "size": 12,
+        "lines": 1,
+        "radius": 9,
+        "maxW": true,
+        "bg": "fill",
+        "weight": "semibold",
+        "padding": [
+         6,
+         8,
+         6,
+         8
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Unread HQ sessions as cards, for the iPad lock screen.",
+   "group": "hq"
+  },
+  {
+   "id": "w42",
+   "name": "Twenty-four hours",
+   "n": 42,
+   "family": "small",
+   "device": "pad",
+   "cards": [
+    "neural"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#0f1b2a",
+    "muted": "#5c6b7a",
+    "accent": "#1b7fd6",
+    "tile": "#eef5fc",
+    "dark": {
+     "bg": [
+      "#141a21"
+     ],
+     "ink": "#eef3f8",
+     "muted": "#9aa7b4",
+     "accent": "#5eb1ff",
+     "tile": "#1f2731"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     12
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "point.3.connected.trianglepath.dotted",
+        "size": 14,
+        "color": "accent",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "Neural",
+        "size": 13,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer",
+        "minLength": 6
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 6,
+      "minLength": 6
+     },
+     {
+      "type": "text",
+      "text": "+{data.today}",
+      "size": 26,
+      "weight": "semibold",
+      "design": "rounded"
+     },
+     {
+      "type": "text",
+      "text": "today · {time}",
+      "size": 11,
+      "color": "muted",
+      "weight": "medium"
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "bars",
+      "spacing": 1.6,
+      "width": 132,
+      "height": 50,
+      "cap": 364,
+      "box": [
+       132,
+       50
+      ],
+      "color": "ink"
+     }
+    ]
+   },
+   "note": "The last 24 hours of growth, hour by hour.",
+   "group": "neural"
+  },
+  {
+   "id": "w43",
+   "name": "Big habit glyphs",
+   "n": 43,
+   "family": "small",
+   "device": "pad",
+   "cards": [
+    "lucid"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#0f1b2a",
+    "muted": "#5c6b7a",
+    "accent": "#1b7fd6",
+    "tile": "#eef5fc",
+    "dark": {
+     "bg": [
+      "#141a21"
+     ],
+     "ink": "#eef3f8",
+     "muted": "#9aa7b4",
+     "accent": "#5eb1ff",
+     "tile": "#1f2731"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     12
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 0,
+      "children": [
+       {
+        "type": "text",
+        "text": "Today",
+        "size": 14,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "text",
+        "text": "{data.done}/{data.total}",
+        "size": 14,
+        "weight": "semibold",
+        "design": "rounded"
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "each",
+      "style": "row",
+      "limit": 3,
+      "spacing": 8,
+      "children": [
+       {
+        "type": "check",
+        "style": "glyph",
+        "action": "{item.action}",
+        "symbol": "{item.symbol}",
+        "size": 38,
+        "line": 1.7,
+        "scale": 0.54,
+        "color": "ink"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 6,
+      "minLength": 6
+     }
+    ]
+   },
+   "note": "Three habit buttons, big enough to hit on the lock screen.",
+   "group": "today"
+  },
+  {
+   "id": "w44",
+   "name": "Nothing marked",
+   "n": 44,
+   "family": "small",
+   "device": "pad",
+   "cards": [
+    "mail-claude"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#111111",
+    "muted": "#5e5e5e",
+    "accent": "#9b1b30",
+    "tile": "#f4f4f4",
+    "dark": {
+     "bg": [
+      "#121212"
+     ],
+     "ink": "#ececec",
+     "muted": "#a0a0a0",
+     "accent": "#e0687c",
+     "tile": "#1f1f1f"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "canvas",
+      "width": 64,
+      "height": 64,
+      "box": [
+       24,
+       24
+      ],
+      "children": [
+       {
+        "type": "path",
+        "d": "M3 12.2V4.5A1.5 1.5 0 0 1 4.5 3h7.7l8.3 8.3a1.5 1.5 0 0 1 0 2.1l-7.1 7.1a1.5 1.5 0 0 1-2.1 0z",
+        "line": 1.3,
+        "dash": [
+         2.2,
+         1.8
+        ],
+        "stroke": "muted"
+       },
+       {
+        "type": "path",
+        "d": "M9.2 7.8a1.4 1.4 0 1 1-2.8 0a1.4 1.4 0 1 1 2.8 0z",
+        "color": "muted"
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "text",
+      "text": "{value}",
+      "size": 34,
+      "weight": "semibold",
+      "design": "rounded"
+     },
+     {
+      "type": "text",
+      "text": "marked for Claude",
+      "size": 12,
+      "color": "muted",
+      "weight": "medium"
+     },
+     {
+      "type": "text",
+      "text": "{caption}",
+      "size": 11,
+      "lines": 1,
+      "color": "muted",
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "Mails you marked for Claude; an empty tag when there are none.",
+   "group": "mail"
+  },
+  {
+   "id": "w45",
+   "name": "An empty day",
+   "n": 45,
+   "family": "small",
+   "device": "pad",
+   "cards": [
+    "vesta"
+   ],
+   "theme": {
+    "bg": [
+     "#fbfbf6"
+    ],
+    "ink": "#1b2117",
+    "muted": "#5f6758",
+    "accent": "#4c7a35",
+    "tile": "#edf1e5",
+    "dark": {
+     "bg": [
+      "#151912"
+     ],
+     "ink": "#eef2e8",
+     "muted": "#a3ab9b",
+     "accent": "#9bcc7f",
+     "tile": "#20261c"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "date",
+      "date": "now",
+      "style": "weekdayLong",
+      "size": 13,
+      "color": "accent",
+      "weight": "semibold"
+     },
+     {
+      "type": "date",
+      "date": "now",
+      "style": "day",
+      "size": 54,
+      "weight": "regular"
+     },
+     {
+      "type": "hstack",
+      "spacing": 6,
+      "children": [
+       {
+        "type": "circle",
+        "strokeWidth": 1.3,
+        "width": 9,
+        "height": 9,
+        "dash": [
+         2,
+         1.8
+        ],
+        "stroke": "muted"
+       },
+       {
+        "type": "text",
+        "text": "{caption}",
+        "size": 12,
+        "lines": 1,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "divider",
+      "color": "line"
+     },
+     {
+      "type": "spacer",
+      "height": 6,
+      "minLength": 6
+     },
+     {
+      "type": "hstack",
+      "spacing": 4,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "soccerball",
+        "size": 11,
+        "color": "ink",
+        "weight": "regular"
+       },
+       {
+        "type": "date",
+        "date": "{data.nextAt}",
+        "style": "dayTime",
+        "size": 12,
+        "weight": "semibold"
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "text": "{data.next}",
+      "size": 11,
+      "lines": 1,
+      "color": "muted",
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "Today as a date, and what comes next.",
+   "group": "calendar"
+  },
+  {
+   "id": "w46",
+   "name": "Three cards",
+   "n": 46,
+   "family": "medium",
+   "device": "pad",
+   "cards": [
+    "hq"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#6e56cf",
+    "tile": "#f3f1fb",
+    "dark": {
+     "bg": [
+      "#18171d"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#a594ff",
+     "tile": "#26242e"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "square.stack",
+        "size": 14,
+        "color": "accent",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "HQ",
+        "size": 13,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "text",
+        "text": "{value} unread",
+        "size": 12,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 10,
+      "minLength": 10
+     },
+     {
+      "type": "each",
+      "limit": 3,
+      "spacing": 8,
+      "columns": 3,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "leading",
+        "frameAlign": "topLeading",
+        "spacing": 0,
+        "radius": 12,
+        "maxW": true,
+        "maxH": true,
+        "bg": "tile",
+        "padding": [
+         10
+        ],
+        "children": [
+         {
+          "type": "mark",
+          "value": "{item.tint}",
+          "size": 10
+         },
+         {
+          "type": "spacer",
+          "height": 6,
+          "minLength": 6
+         },
+         {
+          "type": "text",
+          "text": "{item.title}",
+          "size": 13,
+          "lines": 3,
+          "weight": "semibold"
+         },
+         {
+          "type": "spacer"
+         },
+         {
+          "type": "text",
+          "text": "{item.detail}",
+          "size": 11,
+          "color": "muted",
+          "weight": "medium"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Three HQ sessions side by side.",
+   "group": "hq"
+  },
+  {
+   "id": "w47",
+   "name": "Checklist",
+   "n": 47,
+   "family": "medium",
+   "device": "pad",
+   "cards": [
+    "argus"
+   ],
+   "theme": {
+    "bg": [
+     "#f4f4f1"
+    ],
+    "ink": "#141414",
+    "muted": "#5f5f5a",
+    "accent": "#141414",
+    "tile": "#e6e6e1",
+    "dark": {
+     "bg": [
+      "#0f100f"
+     ],
+     "ink": "#e6e8e3",
+     "muted": "#9a9d96",
+     "accent": "#e6e8e3",
+     "tile": "#1d1f1d"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "network",
+        "size": 14,
+        "color": "ink",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "Network",
+        "size": 13,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "text",
+        "text": "{label}",
+        "size": 12,
+        "weight": "medium",
+        "design": "mono"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 10,
+      "minLength": 10
+     },
+     {
+      "type": "each",
+      "limit": 4,
+      "spacing": 7,
+      "children": [
+       {
+        "type": "hstack",
+        "spacing": 7,
+        "children": [
+         {
+          "type": "mark",
+          "value": "{item.tint}",
+          "size": 12
+         },
+         {
+          "type": "text",
+          "text": "{item.title}",
+          "size": 12,
+          "lines": 1,
+          "weight": "medium"
+         },
+         {
+          "type": "spacer",
+          "minLength": 6
+         },
+         {
+          "type": "text",
+          "text": "{item.tag}",
+          "size": 10,
+          "radius": 4,
+          "color": "muted",
+          "stroke": "line",
+          "weight": "medium",
+          "design": "mono",
+          "padding": [
+           2,
+           6,
+           2,
+           6
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Every Argus check with its mark.",
+   "group": "network"
+  },
+  {
+   "id": "w48",
+   "name": "Desk floor",
+   "n": 48,
+   "family": "large",
+   "device": "pad",
+   "cards": [
+    "office"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#1d1d1f",
+    "tile": "#b9b8c4",
+    "dark": {
+     "bg": [
+      "#1c1c1e"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#f5f5f7",
+     "tile": "#55545e"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "building.2",
+        "size": 15,
+        "color": "accent",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "Office",
+        "size": 15,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "text",
+        "text": "{data.busy} busy",
+        "size": 12,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 10,
+      "minLength": 10
+     },
+     {
+      "type": "each",
+      "limit": 6,
+      "spacing": 10,
+      "columns": 3,
+      "rowSpacing": 12,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "center",
+        "spacing": 2,
+        "maxW": true,
+        "children": [
+         {
+          "type": "zstack",
+          "width": 88,
+          "height": 82,
+          "children": [
+           {
+            "type": "rect",
+            "when": "{item.on}",
+            "radius": 6,
+            "width": 84,
+            "height": 26,
+            "y": 24,
+            "color": "tile"
+           },
+           {
+            "type": "rect",
+            "when": "!{item.on}",
+            "radius": 6,
+            "width": 84,
+            "height": 26,
+            "y": 24,
+            "dash": [
+             3,
+             3
+            ],
+            "stroke": "line"
+           },
+           {
+            "type": "zstack",
+            "width": 44,
+            "height": 44,
+            "y": -6,
+            "children": [
+             {
+              "type": "circle",
+              "when": "{item.on}",
+              "strokeWidth": 2,
+              "width": 44,
+              "height": 44,
+              "stroke": "ok"
+             },
+             {
+              "type": "zstack",
+              "when": "{item.on}",
+              "width": 36,
+              "height": 36,
+              "opacity": 1,
+              "children": [
+               {
+                "type": "circle",
+                "width": 36,
+                "height": 36,
+                "color": "tile"
+               },
+               {
+                "type": "text",
+                "text": "{item.initial}",
+                "size": 15,
+                "color": "muted",
+                "weight": "semibold",
+                "design": "rounded"
+               },
+               {
+                "type": "image",
+                "src": "{item.image}",
+                "fit": "fill",
+                "radius": 18,
+                "width": 36,
+                "height": 36,
+                "full": true
+               }
+              ]
+             },
+             {
+              "type": "zstack",
+              "when": "!{item.on}",
+              "width": 36,
+              "height": 36,
+              "opacity": 0.5,
+              "children": [
+               {
+                "type": "circle",
+                "width": 36,
+                "height": 36,
+                "color": "tile"
+               },
+               {
+                "type": "text",
+                "text": "{item.initial}",
+                "size": 15,
+                "color": "muted",
+                "weight": "semibold",
+                "design": "rounded"
+               },
+               {
+                "type": "image",
+                "src": "{item.image}",
+                "fit": "fill",
+                "radius": 18,
+                "width": 36,
+                "height": 36,
+                "full": true
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "text",
+          "text": "{item.title}",
+          "size": 12,
+          "weight": "semibold"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "vstack",
+      "when": "{data.busy} > 0",
+      "align": "leading",
+      "spacing": 0,
+      "radius": 10,
+      "maxW": true,
+      "bg": "fill",
+      "padding": [
+       10
+      ],
+      "children": [
+       {
+        "type": "text",
+        "text": "Now",
+        "size": 11,
+        "color": "muted",
+        "weight": "medium"
+       },
+       {
+        "type": "text",
+        "text": "{data.who}: {data.task}",
+        "size": 13,
+        "lines": 2,
+        "weight": "semibold"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 8,
+      "minLength": 8
+     },
+     {
+      "type": "text",
+      "text": "{data.hold} you hold · {data.assigned} assigned · last {data.last}",
+      "size": 11,
+      "lines": 1,
+      "color": "muted",
+      "weight": "medium"
+     }
+    ]
+   },
+   "note": "The office floor: a desk per Kel, lit where someone works.",
+   "group": "office"
+  },
+  {
+   "id": "w49",
+   "name": "Growth field",
+   "n": 49,
+   "family": "large",
+   "device": "pad",
+   "cards": [
+    "neural"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#0f1b2a",
+    "muted": "#5c6b7a",
+    "accent": "#1b7fd6",
+    "tile": "#eef5fc",
+    "dark": {
+     "bg": [
+      "#141a21"
+     ],
+     "ink": "#eef3f8",
+     "muted": "#9aa7b4",
+     "accent": "#5eb1ff",
+     "tile": "#1f2731"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "point.3.connected.trianglepath.dotted",
+        "size": 14,
+        "color": "accent",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "Neural network",
+        "size": 13,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "text",
+        "text": "{time}",
+        "size": 12,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 8,
+      "minLength": 8
+     },
+     {
+      "type": "text",
+      "text": "{value}",
+      "size": 40,
+      "weight": "semibold",
+      "design": "mono"
+     },
+     {
+      "type": "text",
+      "text": "+{data.today} today · +{data.hour} last hour",
+      "size": 12,
+      "color": "muted",
+      "weight": "medium"
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "bars",
+      "spacing": 3,
+      "width": 310,
+      "height": 108,
+      "cap": 364,
+      "maxW": true,
+      "box": [
+       324,
+       112
+      ],
+      "color": "accent"
+     },
+     {
+      "type": "spacer",
+      "height": 4,
+      "minLength": 4
+     },
+     {
+      "type": "hstack",
+      "spacing": 0,
+      "children": [
+       {
+        "type": "text",
+        "text": "24h ago",
+        "size": 10,
+        "color": "muted",
+        "weight": "medium"
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "text",
+        "text": "now",
+        "size": 10,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 10,
+      "minLength": 10
+     },
+     {
+      "type": "hstack",
+      "spacing": 0,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "leading",
+        "spacing": 0,
+        "children": [
+         {
+          "type": "text",
+          "text": "Memories",
+          "size": 11,
+          "color": "muted",
+          "weight": "medium"
+         },
+         {
+          "type": "text",
+          "text": "{items.0.detail}",
+          "size": 15,
+          "weight": "semibold",
+          "design": "mono"
+         }
+        ]
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "vstack",
+        "align": "trailing",
+        "spacing": 0,
+        "children": [
+         {
+          "type": "text",
+          "text": "Branches",
+          "size": 11,
+          "color": "muted",
+          "weight": "medium"
+         },
+         {
+          "type": "text",
+          "text": "{items.1.detail}",
+          "size": 15,
+          "weight": "semibold",
+          "design": "mono"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "The whole day of growth as a field of bars.",
+   "group": "neural"
+  },
+  {
+   "id": "w50",
+   "name": "Sorted by weight",
+   "n": 50,
+   "family": "xl",
+   "device": "pad",
+   "cards": [
+    "*"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#1d1d1f",
+    "tile": "#f2f2f4",
+    "dark": {
+     "bg": [
+      "#1c1c1e"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#f5f5f7",
+     "tile": "#2c2c2e"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 0,
+      "children": [
+       {
+        "type": "text",
+        "text": "Sorted by weight",
+        "size": 17,
+        "weight": "bold"
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "text",
+        "text": "{wants} apps want you · {time}",
+        "size": 12,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "spacer",
+      "height": 12,
+      "minLength": 12
+     },
+     {
+      "type": "hstack",
+      "align": "top",
+      "spacing": 18,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "leading",
+        "spacing": 0,
+        "width": 430,
+        "children": [
+         {
+          "type": "hstack",
+          "spacing": 8,
+          "children": [
+           {
+            "type": "vstack",
+            "align": "leading",
+            "card": "mail",
+            "spacing": 0,
+            "radius": 14,
+            "height": 112,
+            "maxW": true,
+            "bg": "tile",
+            "padding": [
+             12
+            ],
+            "children": [
+             {
+              "type": "hstack",
+              "spacing": 0,
+              "children": [
+               {
+                "type": "symbol",
+                "name": "envelope",
+                "size": 14,
+                "color": "accent",
+                "weight": "regular"
+               },
+               {
+                "type": "spacer"
+               },
+               {
+                "type": "mark",
+                "value": "{tint}",
+                "size": 12
+               }
+              ]
+             },
+             {
+              "type": "spacer"
+             },
+             {
+              "type": "text",
+              "text": "{value}",
+              "size": 32,
+              "weight": "semibold",
+              "design": "rounded"
+             },
+             {
+              "type": "text",
+              "text": "mails need you",
+              "size": 12,
+              "lines": 1,
+              "color": "muted",
+              "weight": "medium"
+             }
+            ]
+           },
+           {
+            "type": "vstack",
+            "align": "leading",
+            "card": "office-asks",
+            "spacing": 0,
+            "radius": 14,
+            "height": 112,
+            "maxW": true,
+            "bg": "tile",
+            "padding": [
+             12
+            ],
+            "children": [
+             {
+              "type": "hstack",
+              "spacing": 0,
+              "children": [
+               {
+                "type": "symbol",
+                "name": "questionmark.bubble",
+                "size": 14,
+                "color": "accent",
+                "weight": "regular"
+               },
+               {
+                "type": "spacer"
+               },
+               {
+                "type": "mark",
+                "value": "{tint}",
+                "size": 12
+               }
+              ]
+             },
+             {
+              "type": "spacer"
+             },
+             {
+              "type": "text",
+              "text": "{value}",
+              "size": 32,
+              "weight": "semibold",
+              "design": "rounded"
+             },
+             {
+              "type": "text",
+              "text": "asks for you",
+              "size": 12,
+              "lines": 1,
+              "color": "muted",
+              "weight": "medium"
+             }
+            ]
+           },
+           {
+            "type": "vstack",
+            "align": "leading",
+            "card": "hq",
+            "spacing": 0,
+            "radius": 14,
+            "height": 112,
+            "maxW": true,
+            "bg": "tile",
+            "padding": [
+             12
+            ],
+            "children": [
+             {
+              "type": "hstack",
+              "spacing": 0,
+              "children": [
+               {
+                "type": "symbol",
+                "name": "square.stack",
+                "size": 14,
+                "color": "accent",
+                "weight": "regular"
+               },
+               {
+                "type": "spacer"
+               },
+               {
+                "type": "mark",
+                "value": "{tint}",
+                "size": 12
+               }
+              ]
+             },
+             {
+              "type": "spacer"
+             },
+             {
+              "type": "text",
+              "text": "{value}",
+              "size": 32,
+              "weight": "semibold",
+              "design": "rounded"
+             },
+             {
+              "type": "text",
+              "text": "unread in HQ",
+              "size": 12,
+              "lines": 1,
+              "color": "muted",
+              "weight": "medium"
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "spacer",
+          "height": 8,
+          "minLength": 8
+         },
+         {
+          "type": "hstack",
+          "spacing": 8,
+          "children": [
+           {
+            "type": "vstack",
+            "align": "leading",
+            "card": "olympus",
+            "spacing": 0,
+            "radius": 14,
+            "height": 112,
+            "maxW": true,
+            "bg": "tile",
+            "padding": [
+             12
+            ],
+            "children": [
+             {
+              "type": "hstack",
+              "spacing": 0,
+              "children": [
+               {
+                "type": "symbol",
+                "name": "building.columns",
+                "size": 14,
+                "color": "accent",
+                "weight": "regular"
+               },
+               {
+                "type": "spacer"
+               },
+               {
+                "type": "mark",
+                "value": "{tint}",
+                "size": 12
+               }
+              ]
+             },
+             {
+              "type": "spacer"
+             },
+             {
+              "type": "text",
+              "text": "{data.wait}",
+              "size": 32,
+              "weight": "semibold",
+              "design": "rounded"
+             },
+             {
+              "type": "text",
+              "text": "wait on you",
+              "size": 12,
+              "lines": 1,
+              "color": "muted",
+              "weight": "medium"
+             }
+            ]
+           },
+           {
+            "type": "vstack",
+            "align": "leading",
+            "card": "argus",
+            "spacing": 0,
+            "radius": 14,
+            "height": 112,
+            "maxW": true,
+            "bg": "tile",
+            "padding": [
+             12
+            ],
+            "children": [
+             {
+              "type": "hstack",
+              "spacing": 0,
+              "children": [
+               {
+                "type": "symbol",
+                "name": "network",
+                "size": 14,
+                "color": "accent",
+                "weight": "regular"
+               },
+               {
+                "type": "spacer"
+               },
+               {
+                "type": "mark",
+                "value": "{tint}",
+                "size": 12
+               }
+              ]
+             },
+             {
+              "type": "spacer"
+             },
+             {
+              "type": "text",
+              "text": "{data.open}",
+              "size": 32,
+              "weight": "semibold",
+              "design": "rounded"
+             },
+             {
+              "type": "text",
+              "text": "to check",
+              "size": 12,
+              "lines": 1,
+              "color": "muted",
+              "weight": "medium"
+             }
+            ]
+           },
+           {
+            "type": "vstack",
+            "align": "leading",
+            "card": "cura",
+            "spacing": 0,
+            "radius": 14,
+            "height": 112,
+            "maxW": true,
+            "bg": "tile",
+            "padding": [
+             12
+            ],
+            "children": [
+             {
+              "type": "hstack",
+              "spacing": 0,
+              "children": [
+               {
+                "type": "symbol",
+                "name": "bubble.left",
+                "size": 14,
+                "color": "accent",
+                "weight": "regular"
+               },
+               {
+                "type": "spacer"
+               },
+               {
+                "type": "mark",
+                "value": "{tint}",
+                "size": 12
+               }
+              ]
+             },
+             {
+              "type": "spacer"
+             },
+             {
+              "type": "text",
+              "text": "{value}",
+              "size": 32,
+              "weight": "semibold",
+              "design": "rounded"
+             },
+             {
+              "type": "text",
+              "text": "since Cura wrote",
+              "size": 12,
+              "lines": 1,
+              "color": "muted",
+              "weight": "medium"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "vstack",
+        "align": "leading",
+        "frameAlign": "topLeading",
+        "spacing": 9,
+        "maxW": true,
+        "children": [
+         {
+          "type": "text",
+          "text": "Fine",
+          "size": 15,
+          "weight": "semibold"
+         },
+         {
+          "type": "spacer",
+          "height": 6,
+          "minLength": 6
+         },
+         {
+          "type": "hstack",
+          "card": "lucid",
+          "spacing": 6,
+          "maxW": true,
+          "children": [
+           {
+            "type": "mark",
+            "value": "{tint}",
+            "size": 11
+           },
+           {
+            "type": "symbol",
+            "name": "sun.max",
+            "size": 12,
+            "color": "muted",
+            "weight": "regular"
+           },
+           {
+            "type": "text",
+            "text": "Today",
+            "size": 13,
+            "weight": "semibold"
+           },
+           {
+            "type": "spacer",
+            "minLength": 6
+           },
+           {
+            "type": "text",
+            "text": "{value} habits",
+            "size": 12,
+            "lines": 1,
+            "color": "muted",
+            "weight": "medium"
+           }
+          ]
+         },
+         {
+          "type": "hstack",
+          "card": "neural",
+          "spacing": 6,
+          "maxW": true,
+          "children": [
+           {
+            "type": "mark",
+            "value": "{tint}",
+            "size": 11
+           },
+           {
+            "type": "symbol",
+            "name": "point.3.connected.trianglepath.dotted",
+            "size": 12,
+            "color": "muted",
+            "weight": "regular"
+           },
+           {
+            "type": "text",
+            "text": "Neural",
+            "size": 13,
+            "weight": "semibold"
+           },
+           {
+            "type": "spacer",
+            "minLength": 6
+           },
+           {
+            "type": "text",
+            "text": "+{data.today} today",
+            "size": 12,
+            "lines": 1,
+            "color": "muted",
+            "weight": "medium"
+           }
+          ]
+         },
+         {
+          "type": "hstack",
+          "card": "vesta",
+          "spacing": 6,
+          "maxW": true,
+          "children": [
+           {
+            "type": "mark",
+            "value": "{tint}",
+            "size": 11
+           },
+           {
+            "type": "symbol",
+            "name": "calendar",
+            "size": 12,
+            "color": "muted",
+            "weight": "regular"
+           },
+           {
+            "type": "text",
+            "text": "Calendar",
+            "size": 13,
+            "weight": "semibold"
+           },
+           {
+            "type": "spacer",
+            "minLength": 6
+           },
+           {
+            "type": "text",
+            "text": "{caption}",
+            "size": 12,
+            "lines": 1,
+            "color": "muted",
+            "weight": "medium"
+           }
+          ]
+         },
+         {
+          "type": "hstack",
+          "card": "taxes-ustva",
+          "spacing": 6,
+          "maxW": true,
+          "children": [
+           {
+            "type": "mark",
+            "value": "{tint}",
+            "size": 11
+           },
+           {
+            "type": "symbol",
+            "name": "doc.text",
+            "size": 12,
+            "color": "muted",
+            "weight": "regular"
+           },
+           {
+            "type": "text",
+            "text": "UStVA",
+            "size": 13,
+            "weight": "semibold"
+           },
+           {
+            "type": "spacer",
+            "minLength": 6
+           },
+           {
+            "type": "text",
+            "text": "{label}",
+            "size": 12,
+            "lines": 1,
+            "color": "muted",
+            "weight": "medium"
+           }
+          ]
+         },
+         {
+          "type": "hstack",
+          "card": "tv-alerts",
+          "spacing": 6,
+          "maxW": true,
+          "children": [
+           {
+            "type": "mark",
+            "value": "{tint}",
+            "size": 11
+           },
+           {
+            "type": "symbol",
+            "name": "tv",
+            "size": 12,
+            "color": "muted",
+            "weight": "regular"
+           },
+           {
+            "type": "text",
+            "text": "Alerts",
+            "size": 13,
+            "weight": "semibold"
+           },
+           {
+            "type": "spacer",
+            "minLength": 6
+           },
+           {
+            "type": "text",
+            "text": "{caption}",
+            "size": 12,
+            "lines": 1,
+            "color": "muted",
+            "weight": "medium"
+           }
+          ]
+         },
+         {
+          "type": "hstack",
+          "card": "mail-claude",
+          "spacing": 6,
+          "maxW": true,
+          "children": [
+           {
+            "type": "mark",
+            "value": "{tint}",
+            "size": 11
+           },
+           {
+            "type": "symbol",
+            "name": "tag",
+            "size": 12,
+            "color": "muted",
+            "weight": "regular"
+           },
+           {
+            "type": "text",
+            "text": "For Claude",
+            "size": 13,
+            "weight": "semibold"
+           },
+           {
+            "type": "spacer",
+            "minLength": 6
+           },
+           {
+            "type": "text",
+            "text": "{caption}",
+            "size": 12,
+            "lines": 1,
+            "color": "muted",
+            "weight": "medium"
+           }
+          ]
+         },
+         {
+          "type": "hstack",
+          "card": "office",
+          "spacing": 6,
+          "maxW": true,
+          "children": [
+           {
+            "type": "mark",
+            "value": "{tint}",
+            "size": 11
+           },
+           {
+            "type": "symbol",
+            "name": "building.2",
+            "size": 12,
+            "color": "muted",
+            "weight": "regular"
+           },
+           {
+            "type": "text",
+            "text": "Office",
+            "size": 13,
+            "weight": "semibold"
+           },
+           {
+            "type": "spacer",
+            "minLength": 6
+           },
+           {
+            "type": "text",
+            "text": "{value}",
+            "size": 12,
+            "lines": 1,
+            "color": "muted",
+            "weight": "medium"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "What wants you as tiles, everything fine as a list.",
+   "group": "overview"
+  },
+  {
+   "id": "w51",
+   "name": "The Kels",
+   "n": 51,
+   "family": "xl",
+   "device": "pad",
+   "cards": [
+    "office"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#1d1d1f",
+    "tile": "#b9b8c4",
+    "dark": {
+     "bg": [
+      "#1c1c1e"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#f5f5f7",
+     "tile": "#55545e"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 5,
+      "children": [
+       {
+        "type": "symbol",
+        "name": "building.2",
+        "size": 15,
+        "color": "accent",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "Office",
+        "size": 15,
+        "weight": "semibold"
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "text",
+        "text": "{data.busy} busy · {data.hold} you hold · last {data.last}",
+        "size": 12,
+        "color": "muted",
+        "weight": "medium"
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "each",
+      "style": "row",
+      "limit": 6,
+      "spacing": 14,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "center",
+        "spacing": 4,
+        "width": 96,
+        "children": [
+         {
+          "type": "zstack",
+          "width": 88,
+          "height": 88,
+          "children": [
+           {
+            "type": "circle",
+            "when": "{item.on}",
+            "strokeWidth": 2.5,
+            "width": 88,
+            "height": 88,
+            "stroke": "ok"
+           },
+           {
+            "type": "zstack",
+            "when": "{item.on}",
+            "width": 80,
+            "height": 80,
+            "opacity": 1,
+            "children": [
+             {
+              "type": "circle",
+              "width": 80,
+              "height": 80,
+              "color": "tile"
+             },
+             {
+              "type": "text",
+              "text": "{item.initial}",
+              "size": 34,
+              "color": "muted",
+              "weight": "semibold",
+              "design": "rounded"
+             },
+             {
+              "type": "image",
+              "src": "{item.image}",
+              "fit": "fill",
+              "radius": 40,
+              "width": 80,
+              "height": 80,
+              "full": true
+             }
+            ]
+           },
+           {
+            "type": "zstack",
+            "when": "!{item.on}",
+            "width": 80,
+            "height": 80,
+            "opacity": 0.5,
+            "children": [
+             {
+              "type": "circle",
+              "width": 80,
+              "height": 80,
+              "color": "tile"
+             },
+             {
+              "type": "text",
+              "text": "{item.initial}",
+              "size": 34,
+              "color": "muted",
+              "weight": "semibold",
+              "design": "rounded"
+             },
+             {
+              "type": "image",
+              "src": "{item.image}",
+              "fit": "fill",
+              "radius": 40,
+              "width": 80,
+              "height": 80,
+              "full": true
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "text",
+          "text": "{item.title}",
+          "size": 15,
+          "weight": "semibold"
+         },
+         {
+          "type": "hstack",
+          "spacing": 4,
+          "children": [
+           {
+            "type": "mark",
+            "value": "ok",
+            "when": "{item.on}",
+            "size": 10
+           },
+           {
+            "type": "circle",
+            "when": "!{item.on}",
+            "strokeWidth": 1.3,
+            "width": 9,
+            "height": 9,
+            "dash": [
+             2,
+             1.8
+            ],
+            "stroke": "muted"
+           },
+           {
+            "type": "text",
+            "text": "{item.detail}",
+            "size": 11,
+            "lines": 1,
+            "color": "muted",
+            "weight": "medium"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "spacer"
+     },
+     {
+      "type": "hstack",
+      "when": "{data.busy} > 0",
+      "frameAlign": "leading",
+      "spacing": 6,
+      "radius": 10,
+      "maxW": true,
+      "bg": "fill",
+      "padding": [
+       10,
+       12,
+       10,
+       12
+      ],
+      "children": [
+       {
+        "type": "symbol",
+        "name": "building.2",
+        "size": 13,
+        "color": "ink",
+        "weight": "regular"
+       },
+       {
+        "type": "text",
+        "text": "{data.who}, now: {data.task}",
+        "size": 13,
+        "lines": 1,
+        "weight": "semibold"
+       }
+      ]
+     }
+    ]
+   },
+   "note": "All six Kels, big; a green ring on whoever is working.",
+   "group": "office"
+  },
+  {
+   "id": "w52",
+   "name": "The board, with Themis",
+   "n": 52,
+   "family": "xl",
+   "device": "pad",
+   "cards": [
+    "olympus"
+   ],
+   "theme": {
+    "bg": [
+     "#ffffff"
+    ],
+    "ink": "#1d1d1f",
+    "muted": "#6e6e73",
+    "accent": "#d4604a",
+    "tile": "#f5f5f7",
+    "dark": {
+     "bg": [
+      "#1c1c1e"
+     ],
+     "ink": "#f5f5f7",
+     "muted": "#a1a1a6",
+     "accent": "#e2705a",
+     "tile": "#2c2c2e"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "align": "top",
+      "spacing": 20,
+      "maxH": true,
+      "children": [
+       {
+        "type": "zstack",
+        "radius": 16,
+        "width": 212,
+        "maxH": true,
+        "children": [
+         {
+          "type": "rect",
+          "radius": 16,
+          "maxW": true,
+          "maxH": true,
+          "color": "accent"
+         },
+         {
+          "type": "image",
+          "src": "themis.png",
+          "fit": "fit",
+          "width": 196,
+          "height": 290,
+          "y": 10,
+          "full": true
+         }
+        ]
+       },
+       {
+        "type": "vstack",
+        "align": "leading",
+        "frameAlign": "topLeading",
+        "spacing": 0,
+        "maxW": true,
+        "maxH": true,
+        "children": [
+         {
+          "type": "text",
+          "text": "{data.carried}/{data.total}",
+          "size": 56,
+          "weight": "medium",
+          "design": "serif"
+         },
+         {
+          "type": "text",
+          "text": "carried · board {age} ago",
+          "size": 13,
+          "color": "muted",
+          "weight": "medium"
+         },
+         {
+          "type": "spacer",
+          "height": 10,
+          "minLength": 10
+         },
+         {
+          "type": "text",
+          "text": "{caption}",
+          "size": 19,
+          "lines": 3,
+          "weight": "regular",
+          "design": "serif"
+         },
+         {
+          "type": "spacer",
+          "height": 10,
+          "minLength": 10
+         },
+         {
+          "type": "hstack",
+          "spacing": 5,
+          "children": [
+           {
+            "type": "mark",
+            "value": "warn",
+            "size": 10
+           },
+           {
+            "type": "text",
+            "text": "{data.wait} wait on you",
+            "size": 14,
+            "weight": "semibold"
+           }
+          ]
+         },
+         {
+          "type": "spacer",
+          "height": 4,
+          "minLength": 4
+         },
+         {
+          "type": "each",
+          "test": "{item.tint} == warn",
+          "limit": 4,
+          "spacing": 0,
+          "children": [
+           {
+            "type": "vstack",
+            "align": "leading",
+            "spacing": 0,
+            "children": [
+             {
+              "type": "divider",
+              "color": "line"
+             },
+             {
+              "type": "text",
+              "text": "{item.title}",
+              "size": 14,
+              "lines": 1,
+              "weight": "medium",
+              "padding": [
+               7,
+               0,
+               7,
+               0
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Themis beside the board: the count, the next letter, what waits on you.",
+   "group": "board"
+  },
+  {
+   "id": "w53",
+   "name": "Window on the night",
+   "n": 53,
+   "family": "xl",
+   "device": "pad",
+   "cards": [
+    "lucid",
+    "neural",
+    "vesta"
+   ],
+   "theme": {
+    "bg": [
+     "#141414"
+    ],
+    "ink": "#ffffff",
+    "muted": "#ffffffc7",
+    "accent": "#ffffff",
+    "tile": "#ffffff29",
+    "image": "wall-nyc.jpg",
+    "dark": {
+     "bg": [
+      "#141414"
+     ],
+     "ink": "#ffffff",
+     "muted": "#ffffffc7",
+     "accent": "#ffffff",
+     "tile": "#ffffff29"
+    }
+   },
+   "layout": {
+    "type": "vstack",
+    "align": "leading",
+    "frameAlign": "topLeading",
+    "spacing": 0,
+    "maxW": true,
+    "maxH": true,
+    "padding": [
+     16
+    ],
+    "children": [
+     {
+      "type": "hstack",
+      "spacing": 0,
+      "maxH": true,
+      "children": [
+       {
+        "type": "vstack",
+        "align": "leading",
+        "frameAlign": "topLeading",
+        "spacing": 0,
+        "maxH": true,
+        "children": [
+         {
+          "type": "date",
+          "date": "now",
+          "style": "weekdayLong",
+          "size": 17,
+          "weight": "semibold"
+         },
+         {
+          "type": "date",
+          "date": "now",
+          "style": "day",
+          "size": 72,
+          "weight": "light"
+         },
+         {
+          "type": "spacer"
+         },
+         {
+          "type": "text",
+          "text": "{data.done}/{data.total}",
+          "size": 40,
+          "weight": "semibold",
+          "design": "rounded"
+         },
+         {
+          "type": "text",
+          "text": "habits today",
+          "size": 12,
+          "color": "muted",
+          "weight": "medium"
+         },
+         {
+          "type": "spacer",
+          "height": 10,
+          "minLength": 10
+         },
+         {
+          "type": "each",
+          "style": "row",
+          "limit": 3,
+          "spacing": 10,
+          "children": [
+           {
+            "type": "check",
+            "style": "glyph",
+            "action": "{item.action}",
+            "symbol": "{item.symbol}",
+            "size": 44,
+            "line": 1.7,
+            "scale": 0.54,
+            "color": "accent"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "spacer"
+       },
+       {
+        "type": "vstack",
+        "align": "leading",
+        "frameAlign": "topLeading",
+        "spacing": 0,
+        "width": 270,
+        "maxH": true,
+        "children": [
+         {
+          "type": "text",
+          "text": "+{cards.neural.data.today}",
+          "size": 34,
+          "weight": "semibold",
+          "design": "rounded"
+         },
+         {
+          "type": "text",
+          "text": "nodes today · {cards.neural.time}",
+          "size": 12,
+          "color": "muted",
+          "weight": "medium"
+         },
+         {
+          "type": "spacer",
+          "height": 8,
+          "minLength": 8
+         },
+         {
+          "type": "bars",
+          "card": "neural",
+          "spacing": 2,
+          "width": 260,
+          "height": 60,
+          "cap": 364,
+          "box": [
+           260,
+           60
+          ],
+          "color": "ink"
+         },
+         {
+          "type": "spacer"
+         },
+         {
+          "type": "hstack",
+          "spacing": 5,
+          "children": [
+           {
+            "type": "symbol",
+            "name": "soccerball",
+            "size": 13,
+            "color": "ink",
+            "weight": "regular"
+           },
+           {
+            "type": "date",
+            "date": "{data.nextAt}",
+            "style": "dayTime",
+            "card": "vesta",
+            "size": 13,
+            "weight": "semibold"
+           }
+          ]
+         },
+         {
+          "type": "text",
+          "text": "{cards.vesta.data.next}",
+          "size": 15,
+          "lines": 1,
+          "weight": "semibold"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "note": "Today, the network and the next match over one of your photos.",
+   "group": "overview"
+  }
+ ]
+}

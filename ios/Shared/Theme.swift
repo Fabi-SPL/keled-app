@@ -16,11 +16,32 @@ struct CardPalette {
     var weight: Font.Weight = .semibold
     var image: String?
     var themed = false
+    /// "full", "accented" (Clear and tinted Home Screens) or "vibrant" (lock screen), for `when`.
+    var mode = "full"
+    /// Status colours are Apple's own (orange, green, red); outside full colour they are ink.
+    var warn: Color = KeledPalette.warn
+    var ok: Color = KeledPalette.ok
+    var bad: Color = KeledPalette.bad
 
     static let system = CardPalette()
 
-    static func make(_ theme: CardTheme?, dark: Bool, mode: WidgetRenderingMode = .fullColor) -> CardPalette {
+    static func name(_ mode: WidgetRenderingMode) -> String {
+        if mode == .accented { return "accented" }
+        if mode == .vibrant { return "vibrant" }
+        return "full"
+    }
+
+    static func make(_ theme: CardTheme?, dark: Bool, mode: WidgetRenderingMode = .fullColor, forced: String? = nil) -> CardPalette {
         var p = CardPalette()
+        p.mode = forced ?? name(mode)
+        if p.mode != "full" {
+            p.warn = p.ink; p.ok = p.ink; p.bad = p.ink
+        }
+        if forced == "accented" || forced == "vibrant" {
+            // Screenshots only: how the system draws it, white on whatever is behind.
+            p.ink = .white; p.muted = .white.opacity(0.62); p.accent = .white; p.tile = .white.opacity(0.16)
+            p.warn = .white; p.ok = .white; p.bad = .white
+        }
         guard let theme else { return p }
         p.font = design(theme.font) ?? .default
         p.numbers = design(theme.numbers) ?? .rounded
@@ -28,7 +49,7 @@ struct CardPalette {
         p.weight = weight(theme.weight) ?? .semibold
         // Tinted and clear home screens recolour everything themselves; a brand palette there
         // only fights the system, so keep the fonts and drop the colours.
-        guard mode == .fullColor else { return p }
+        guard p.mode == "full" else { return p }
         p.themed = true
         let d = dark ? theme.dark : nil
         if let c = hex(d?.ink ?? theme.ink) { p.ink = c }
@@ -44,7 +65,17 @@ struct CardPalette {
         switch name {
         case nil, "accent": return accent
         case "neutral": return muted
-        default: return KeledPalette.tint(name)
+        default: return status(name ?? "")
+        }
+    }
+
+    func status(_ name: String) -> Color {
+        switch name {
+        case "warn": return warn
+        case "ok": return ok
+        case "bad": return bad
+        case "neutral": return muted
+        default: return accent
         }
     }
 
@@ -73,7 +104,10 @@ struct CardPalette {
         case "tile": base = tile
         case "bg": base = background.first ?? Color(uiColor: .systemBackground)
         case "tint": base = tint(card.tint)
-        case "ok", "warn", "bad": base = KeledPalette.tint(spec)
+        case "ok", "warn", "bad": base = status(spec)
+        case "line": base = ink.opacity(0.14)
+        case "fill": base = ink.opacity(0.07)
+        case "on": base = background.first ?? Color(uiColor: .systemBackground)
         case "neutral": base = muted
         case "white": base = .white
         case "black": base = .black
@@ -152,15 +186,38 @@ struct CardBackground: View {
     }
 }
 
+private struct ForcedModeKey: EnvironmentKey {
+    static let defaultValue: String? = nil
+}
+
+extension EnvironmentValues {
+    /// Screenshots only: draw as if on a Clear Home Screen or the lock screen.
+    var keledForcedMode: String? {
+        get { self[ForcedModeKey.self] }
+        set { self[ForcedModeKey.self] = newValue }
+    }
+}
+
 /// Resolves the palette from the environment's appearance and wraps a card in it.
 struct Themed<Content: View>: View {
-    let card: Card?
-    @ViewBuilder var content: (CardPalette) -> Content
+    let theme: CardTheme?
+    let content: (CardPalette) -> Content
     @Environment(\.colorScheme) private var scheme
     @Environment(\.widgetRenderingMode) private var mode
+    @Environment(\.keledForcedMode) private var forced
+
+    init(card: Card?, @ViewBuilder content: @escaping (CardPalette) -> Content) {
+        self.theme = card?.theme
+        self.content = content
+    }
+
+    init(theme: CardTheme?, @ViewBuilder content: @escaping (CardPalette) -> Content) {
+        self.theme = theme
+        self.content = content
+    }
 
     var body: some View {
-        let palette = CardPalette.make(card?.theme, dark: scheme == .dark, mode: mode)
+        let palette = CardPalette.make(theme, dark: scheme == .dark, mode: mode, forced: forced)
         content(palette).environment(\.cardPalette, palette)
     }
 }

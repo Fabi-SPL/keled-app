@@ -49,6 +49,7 @@ export default {
           tint: 'warn',
         })),
       ],
+      data: { carried: String(carried), total: String(tally.length), wait: String(waiting.length), next: waiting[0] ? String(typeof waiting[0].move === 'string' ? waiting[0].move : waiting[0].move?.title ?? '') : '' },
       url: UI,
       staleAfter: 3600,
       order: 30,

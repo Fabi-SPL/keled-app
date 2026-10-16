@@ -30,9 +30,11 @@ export const KINDS = ['metric', 'list', 'gauge', 'status', 'spark']
 export const TINTS = ['accent', 'ok', 'warn', 'bad', 'neutral']
 export const FAMILIES = ['small', 'medium', 'large', 'xl', 'circular', 'rectangular', 'inline']
 export const NODE_TYPES = ['vstack', 'hstack', 'zstack', 'text', 'symbol', 'image', 'spacer', 'divider', 'rect', 'circle',
-  'ring', 'bar', 'spark', 'date', 'button', 'check', 'link', 'each']
-const CONTAINERS = new Set(['vstack', 'hstack', 'zstack', 'button', 'link', 'each'])
-const COLOR_TOKENS = ['ink', 'muted', 'accent', 'bg', 'tile', 'tint', 'ok', 'warn', 'bad', 'neutral', 'white', 'black', 'clear']
+  'ring', 'bar', 'spark', 'date', 'button', 'check', 'link', 'each', 'grid', 'bars', 'mark', 'canvas',
+  // Shapes inside a canvas, drawn in its box units:
+  'path', 'arcs', 'rays', 'gauge', 'repeat']
+const CONTAINERS = new Set(['vstack', 'hstack', 'zstack', 'button', 'link', 'each', 'grid', 'canvas'])
+const COLOR_TOKENS = ['ink', 'muted', 'accent', 'bg', 'tile', 'tint', 'ok', 'warn', 'bad', 'neutral', 'white', 'black', 'clear', 'line', 'fill', 'on']
 const WEIGHTS = ['ultralight', 'thin', 'light', 'regular', 'medium', 'semibold', 'bold', 'heavy', 'black']
 const DESIGNS = ['system', 'rounded', 'serif', 'mono', 'numbers']
 export const ID = /^[a-z0-9][a-z0-9-]{0,47}$/
@@ -44,6 +46,7 @@ const HEX = /^#([0-9a-f]{6}|[0-9a-f]{8})$/i
 const TEMPLATE = /^\{[A-Za-z0-9_.]+\}$/
 const MAX_DEPTH = 10
 const MAX_NODES = 160
+const MAX_DESIGN_NODES = 400
 
 const str = (v, max) => {
   if (v === undefined || v === null || v === '') return undefined
@@ -86,10 +89,13 @@ function linkUrl(v, path, errors) {
 }
 
 const NODE_STR = { text: 200, name: 64, src: 60, value: 60, series: 40, date: 60, style: 16, of: 16, action: 120,
-  when: 80, family: 48, align: 16, frameAlign: 16, fit: 8, label: 40, symbol: 64 }
-const NODE_NUM = { limit: [1, 8], size: [4, 120], line: [0.5, 30], lines: [1, 12], scale: [0.2, 1], tracking: [-5, 20],
-  spacing: [0, 60], radius: [0, 80], strokeWidth: [0, 10], width: [0, 1000], height: [0, 1000], opacity: [0, 1], minLength: [0, 200] }
-const NODE_BOOL = ['upper', 'italic', 'mono', 'privacy', 'accent', 'maxW', 'maxH']
+  when: 80, family: 48, align: 16, frameAlign: 16, fit: 8, label: 40, symbol: 64, d: 600, test: 80, start: 60, card: 48, count: 40 }
+const NODE_NUM = { limit: [1, 16], size: [4, 160], line: [0.5, 30], lines: [1, 12], scale: [0.2, 1], tracking: [-5, 20],
+  spacing: [0, 80], radius: [0, 80], strokeWidth: [0, 10], width: [0, 1000], height: [0, 1000], opacity: [0, 1], minLength: [0, 200],
+  total: [1, 60], columns: [1, 12], cap: [0, 1e9], x: [-1000, 1000], y: [-1000, 1000], r: [0, 500], from: [-720, 720], to: [-720, 720],
+  rowSpacing: [0, 80] }
+const NODE_BOOL = ['upper', 'italic', 'mono', 'privacy', 'accent', 'maxW', 'maxH', 'full', 'knock']
+const NODE_NUMS = { box: [2, 2], dash: [1, 4] }
 const NODE_COLOR = ['color', 'track', 'bg', 'stroke']
 
 // A layout is a tree the widget draws natively. Unknown keys are dropped; bad values are errors,
@@ -97,7 +103,8 @@ const NODE_COLOR = ['color', 'track', 'bg', 'stroke']
 export function normalizeNode(input, path, errors, state = { count: 0 }, depth = 0) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) { errors.push(`${path}: node must be an object`); return undefined }
   if (depth > MAX_DEPTH) { errors.push(`${path}: deeper than ${MAX_DEPTH} levels`); return undefined }
-  if (++state.count > MAX_NODES) { if (state.count === MAX_NODES + 1) errors.push(`${path}: more than ${MAX_NODES} nodes`); return undefined }
+  const max = state.max ?? MAX_NODES
+  if (++state.count > max) { if (state.count === max + 1) errors.push(`${path}: more than ${max} nodes`); return undefined }
   const type = oneOf(input.type, NODE_TYPES, `${path}.type`, errors)
   if (!type) { if (!input.type) errors.push(`${path}: type is required`); return undefined }
   const node = { type }
@@ -110,6 +117,12 @@ export function normalizeNode(input, path, errors, state = { count: 0 }, depth =
     if (n !== undefined) node[k] = Math.max(lo, Math.min(hi, n))
   }
   for (const k of NODE_BOOL) if (input[k] !== undefined) node[k] = bool(input[k])
+  for (const [k, [lo, hi]] of Object.entries(NODE_NUMS)) {
+    if (input[k] === undefined) continue
+    const list = (Array.isArray(input[k]) ? input[k] : [input[k]]).map(num)
+    if (list.length < lo || list.length > hi || list.some((x) => x === undefined || x < 0)) errors.push(`${path}.${k}: ${lo}-${hi} numbers`)
+    else node[k] = list
+  }
   for (const k of NODE_COLOR) node[k] = color(input[k], `${path}.${k}`, errors)
   node.weight = oneOf(input.weight, WEIGHTS, `${path}.weight`, errors)
   node.design = oneOf(input.design, DESIGNS, `${path}.design`, errors)
@@ -123,7 +136,7 @@ export function normalizeNode(input, path, errors, state = { count: 0 }, depth =
   if (input.children !== undefined) {
     if (!CONTAINERS.has(type)) errors.push(`${path}: ${type} takes no children`)
     else if (!Array.isArray(input.children)) errors.push(`${path}.children must be an array`)
-    else node.children = input.children.slice(0, 24).map((c, i) => normalizeNode(c, `${path}.children[${i}]`, errors, state, depth + 1)).filter(Boolean)
+    else node.children = input.children.slice(0, 40).map((c, i) => normalizeNode(c, `${path}.children[${i}]`, errors, state, depth + 1)).filter(Boolean)
   }
   if ((type === 'button' || type === 'check') && !node.action) errors.push(`${path}: ${type} needs an action`)
   if (type === 'link' && !node.url) errors.push(`${path}: link needs a url`)
@@ -168,6 +181,27 @@ function themeColors(input, path, errors) {
     else errors.push(`${path}.${k}: theme colours are hex only`)
   }
   return clean(out)
+}
+
+export const DESIGN_ID = /^[a-z][a-z0-9-]{0,31}$/
+
+export function normalizeDesign(input) {
+  const errors = []
+  if (!input || typeof input !== 'object') return { errors: ['design must be an object'] }
+  const id = String(input.id ?? '')
+  if (!DESIGN_ID.test(id)) errors.push(`id: "${id}" must match ${DESIGN_ID}`)
+  const name = str(input.name, 40)
+  if (!name) errors.push('name is required')
+  const family = oneOf(input.family, FAMILIES, 'family', errors)
+  if (!family) errors.push('family is required')
+  const cards = Array.isArray(input.cards) ? input.cards.map(String).filter((c) => c === '*' || ID.test(c)).slice(0, 16) : []
+  if (!cards.length) errors.push('cards: at least one card id (or "*")')
+  const theme = input.theme === undefined ? undefined : normalizeTheme(input.theme, errors, { layouts: false, path: 'theme' })
+  const layout = normalizeNode(input.layout, 'layout', errors, { count: 0, max: MAX_DESIGN_NODES })
+  if (!layout) errors.push('layout is required')
+  const design = clean({ id, name, n: num(input.n), family, device: oneOf(input.device, ['phone', 'pad', 'any'], 'device', errors),
+    cards, theme, layout, note: str(input.note, 200), group: str(input.group, 24) })
+  return { design, errors }
 }
 
 export function normalizeTheme(input, errors, { layouts = true, path = 'theme' } = {}) {
@@ -283,7 +317,9 @@ export function normalizeCard(input, { allowHandlers = true } = {}) {
         const action = it?.action === undefined || it?.action === null ? undefined : String(it.action)
         if (action !== undefined && !ACTION_REF.test(action)) errors.push(`items[${i}].action: "${action}" must match ${ACTION_REF}`)
         return clean({ title: str(it?.title, 60) ?? '', detail: str(it?.detail, 60), tag: str(it?.tag, 12), tint: t,
-          action, on: bool(it?.on), symbol: str(it?.symbol, 48) })
+          action, on: bool(it?.on), symbol: str(it?.symbol, 48),
+          image: it?.image !== undefined && ASSET.test(String(it.image)) ? String(it.image) : undefined,
+          url: linkUrl(it?.url, `items[${i}].url`, errors), value: str(it?.value, 16) })
       }).filter((it) => it.title)
     }
   }

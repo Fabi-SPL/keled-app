@@ -144,6 +144,15 @@ jobs:
             shoot "$PHONE" medium iphone-medium-dark dark
             shoot "$PHONE" home iphone-home-dark dark
             shoot "$PHONE" themed iphone-themed-dark dark
+            # Every gallery design in every mode it meets, drawn by the app itself (Keled/DesignShots.swift).
+            DATA=$(xcrun simctl get_app_container "$PHONE" com.fabi.keled data)
+            rm -rf "$DATA/Documents/designs" "$DATA/Documents/keled-screen-designs.ok"
+            t 60 xcrun simctl launch --terminate-running-process "$PHONE" com.fabi.keled -KeledScreen designs -KeledDemo YES >/dev/null || echo "launch designs did not return"
+            for i in $(seq 1 240); do [ -f "$DATA/Documents/keled-screen-designs.ok" ] && break; sleep 1; done
+            [ -f "$DATA/Documents/keled-screen-designs.ok" ] || { echo "::error::design shots never finished"; exit 1; }
+            mkdir -p shots/designs
+            cp "$DATA/Documents/designs/"*.png shots/designs/
+            echo "design shots: $(ls shots/designs | wc -l)"
             xcrun simctl shutdown "$PHONE" || true
             up "$PAD"
             shoot "$PAD" home ipad-home
@@ -191,7 +200,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: keled-screens
-          path: shots/*.png
+          path: |
+            shots/*.png
+            shots/designs/*.png
           retention-days: 14
           if-no-files-found: ignore
 

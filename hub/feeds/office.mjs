@@ -30,6 +30,8 @@ export default {
         detail: a.task ? String(a.task.title ?? a.task) : a.lastError ? 'error' : a.status || 'idle',
         tag: busy(a) ? a.status : undefined,
         tint: a.lastError ? 'bad' : busy(a) ? 'ok' : undefined,
+        image: `kel-${name.toLowerCase()}.jpg`,
+        on: busy(a),
       }))
 
     return [
@@ -49,6 +51,14 @@ export default {
           lastAt ? `last ${ago(lastAt)}` : null,
         ].filter(Boolean).join(' · ') || 'quiet',
         items: agentRows,
+        data: {
+          busy: String(working.length),
+          hold: String(counts.blocked_with_me ?? 0),
+          assigned: String(counts.assigned ?? 0),
+          last: lastAt ? ago(lastAt) : '',
+          who: agentRows[0]?.title ?? '',
+          task: agentRows[0] && working.length ? agentRows[0].detail : '',
+        },
         url: UI,
         staleAfter: 900,
         order: 20,

@@ -22,6 +22,7 @@ struct ScreenshotView: View {
             case "preview-small": previewSmall
             case "preview-medium": previewMedium
             case "preview-large": previewLarge
+            case "designs": DesignShotsView()
             default: HomeView()
             }
         }

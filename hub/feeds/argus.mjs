@@ -14,6 +14,7 @@ export default {
     const checks = [...(p.checks ?? [])].sort((a, b) => (RANK[a.level] ?? 2) - (RANK[b.level] ?? 2))
     const open = checks.filter((c) => c.level !== 'ok').length
     const verdict = String(p.verdict ?? 'unknown')
+    const net = checks.map((c) => String(c.title).match(/(\d+)\s+devices?,\s*(\d+)\s+online/i)).find(Boolean)
 
     return {
       id: 'argus',
@@ -26,6 +27,7 @@ export default {
       label: open ? `${open} to check` : 'all clear',
       caption: p.headline,
       items: checks.slice(0, 4).map((c) => ({ title: String(c.title), tag: c.device, tint: TINT[c.level] })),
+      data: { open: String(open), devices: net ? net[1] : '', online: net ? net[2] : '' },
       url: BASE,
       staleAfter: 3600,
       order: 70,

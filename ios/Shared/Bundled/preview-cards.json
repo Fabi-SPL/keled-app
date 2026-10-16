@@ -1,0 +1,452 @@
+[
+ {
+  "id": "mail",
+  "title": "Mail",
+  "kind": "list",
+  "tint": "warn",
+  "app": "Keled Mail",
+  "symbol": "envelope.fill",
+  "value": "6",
+  "label": "need you",
+  "caption": "0 threads marked for Claude",
+  "items": [
+   {
+    "title": "PERSONAL",
+    "detail": "4 need you",
+    "tag": "812",
+    "tint": "warn",
+    "value": "4"
+   },
+   {
+    "title": "FABI",
+    "detail": "2 need you",
+    "tag": "74",
+    "tint": "warn",
+    "value": "2"
+   },
+   {
+    "title": "LABS",
+    "detail": "clear",
+    "tag": "4",
+    "value": "0"
+   },
+   {
+    "title": "STUDIO",
+    "detail": "clear",
+    "tag": "449",
+    "value": "0"
+   },
+   {
+    "title": "SHOP",
+    "detail": "clear",
+    "tag": "771",
+    "value": "0"
+   },
+   {
+    "title": "NEWS",
+    "detail": "clear",
+    "tag": "482",
+    "value": "0"
+   }
+  ],
+  "data": {
+   "need": "6",
+   "accounts": "6",
+   "clear": "4"
+  },
+  "order": 10,
+  "updatedAt": "2026-10-16T19:41:00.000Z",
+  "ageSec": 40
+ },
+ {
+  "id": "mail-claude",
+  "title": "For Claude",
+  "kind": "metric",
+  "tint": "neutral",
+  "app": "Keled Mail",
+  "symbol": "tag.fill",
+  "value": "0",
+  "label": "marked",
+  "caption": "nothing marked",
+  "order": 11,
+  "updatedAt": "2026-10-16T19:41:00.000Z",
+  "ageSec": 40
+ },
+ {
+  "id": "office",
+  "title": "Office",
+  "kind": "status",
+  "tint": "ok",
+  "app": "Keled Office",
+  "symbol": "building.2.fill",
+  "value": "1 busy",
+  "label": "agents",
+  "caption": "5 you hold · last 4m ago",
+  "items": [
+   {
+    "title": "Ada",
+    "detail": "Brand files fold",
+    "tag": "working",
+    "tint": "ok",
+    "on": true,
+    "image": "kel-ada.jpg"
+   },
+   {
+    "title": "Mira",
+    "detail": "idle",
+    "on": false,
+    "image": "kel-mira.jpg"
+   },
+   {
+    "title": "Nora",
+    "detail": "idle",
+    "on": false,
+    "image": "kel-nora.jpg"
+   },
+   {
+    "title": "Lena",
+    "detail": "idle",
+    "on": false,
+    "image": "kel-lena.jpg"
+   },
+   {
+    "title": "Thea",
+    "detail": "idle",
+    "on": false,
+    "image": "kel-thea.jpg"
+   },
+   {
+    "title": "Ivy",
+    "detail": "idle",
+    "on": false,
+    "image": "kel-ivy.jpg"
+   }
+  ],
+  "data": {
+   "busy": "1",
+   "hold": "5",
+   "assigned": "3",
+   "last": "4m ago",
+   "who": "Ada",
+   "task": "Brand files fold"
+  },
+  "order": 20,
+  "updatedAt": "2026-10-16T19:41:00.000Z",
+  "ageSec": 60
+ },
+ {
+  "id": "office-asks",
+  "title": "Asks",
+  "kind": "metric",
+  "tint": "warn",
+  "app": "Keled Office",
+  "symbol": "questionmark.bubble.fill",
+  "value": "3",
+  "label": "for you",
+  "caption": "2 questions, 1 decision",
+  "order": 21,
+  "updatedAt": "2026-10-16T19:41:00.000Z",
+  "ageSec": 60
+ },
+ {
+  "id": "olympus",
+  "title": "Board",
+  "kind": "list",
+  "tint": "warn",
+  "app": "Olympus",
+  "symbol": "building.columns.fill",
+  "value": "7/10",
+  "label": "carried",
+  "caption": "Read the three letters first, then pick one answer for each.",
+  "items": [
+   {
+    "title": "Weekly board meeting",
+    "detail": "32m ago",
+    "tag": "keled"
+   },
+   {
+    "title": "Pricing letter: pick one of three answers",
+    "detail": "waiting on you",
+    "tag": "held",
+    "tint": "warn"
+   },
+   {
+    "title": "Terms update: read the two changed lines",
+    "detail": "waiting on you",
+    "tag": "held",
+    "tint": "warn"
+   },
+   {
+    "title": "Site copy: approve the new headline",
+    "detail": "waiting on you",
+    "tag": "held",
+    "tint": "warn"
+   }
+  ],
+  "data": {
+   "carried": "7",
+   "total": "10",
+   "wait": "3",
+   "next": "Pick one of the three answers for the pricing letter"
+  },
+  "order": 30,
+  "updatedAt": "2026-10-16T19:41:00.000Z",
+  "ageSec": 1900
+ },
+ {
+  "id": "lucid",
+  "title": "Today",
+  "kind": "list",
+  "tint": "accent",
+  "app": "Lucid",
+  "symbol": "sun.max.fill",
+  "value": "1/3",
+  "label": "habits",
+  "caption": "1 thread done today",
+  "items": [
+   {
+    "title": "Cardio / Training",
+    "detail": "done",
+    "tag": "Cardio",
+    "tint": "ok",
+    "action": "habit:cardio",
+    "on": true,
+    "symbol": "figure.run"
+   },
+   {
+    "title": "Cook a real meal",
+    "detail": "open",
+    "tag": "Cook",
+    "action": "habit:cook",
+    "on": false,
+    "symbol": "fork.knife"
+   },
+   {
+    "title": "Went outside",
+    "detail": "open",
+    "tag": "Outside",
+    "action": "habit:outside",
+    "on": false,
+    "symbol": "bicycle"
+   }
+  ],
+  "data": {
+   "done": "1",
+   "total": "3"
+  },
+  "order": 1,
+  "updatedAt": "2026-10-16T19:41:00.000Z",
+  "ageSec": 120
+ },
+ {
+  "id": "neural",
+  "title": "Neural network",
+  "kind": "spark",
+  "tint": "accent",
+  "app": "Lucid",
+  "symbol": "point.3.connected.trianglepath.dotted",
+  "value": "172,691",
+  "label": "nodes",
+  "caption": "+290 last hour · +4,209 today",
+  "series": [
+   212,
+   197,
+   132,
+   194,
+   44,
+   64,
+   53,
+   84,
+   168,
+   59,
+   187,
+   166,
+   117,
+   135,
+   245,
+   364,
+   147,
+   269,
+   263,
+   132,
+   288,
+   218,
+   308,
+   290
+  ],
+  "items": [
+   {
+    "title": "Memories",
+    "detail": "172,210"
+   },
+   {
+    "title": "Branches",
+    "detail": "481"
+   },
+   {
+    "title": "Last hour",
+    "detail": "+290"
+   },
+   {
+    "title": "Today",
+    "detail": "+4,209"
+   }
+  ],
+  "data": {
+   "total": "172691",
+   "hour": "290",
+   "today": "4209"
+  },
+  "refresh": 300,
+  "order": 2,
+  "updatedAt": "2026-10-16T19:41:00.000Z",
+  "ageSec": 200
+ },
+ {
+  "id": "hq",
+  "title": "HQ",
+  "kind": "list",
+  "tint": "warn",
+  "app": "Lucid HQ",
+  "symbol": "square.stack.fill",
+  "value": "3",
+  "label": "unread",
+  "caption": "1 running",
+  "items": [
+   {
+    "title": "Widget build: all 53 designs",
+    "detail": "9m",
+    "tint": "warn"
+   },
+   {
+    "title": "Terminus builds itself",
+    "detail": "14m",
+    "tint": "warn"
+   },
+   {
+    "title": "Where Cura goes next",
+    "detail": "4h",
+    "tint": "warn"
+   }
+  ],
+  "order": 5,
+  "updatedAt": "2026-10-16T19:41:00.000Z",
+  "ageSec": 90
+ },
+ {
+  "id": "cura",
+  "title": "Cura",
+  "kind": "metric",
+  "tint": "accent",
+  "app": "Cura",
+  "symbol": "bubble.left.fill",
+  "value": "56m",
+  "label": "she wrote",
+  "caption": "Morning. The plan for today is short, and the first thing on it is easy.",
+  "order": 40,
+  "updatedAt": "2026-10-16T19:41:00.000Z",
+  "ageSec": 300
+ },
+ {
+  "id": "vesta",
+  "title": "Calendar",
+  "kind": "list",
+  "tint": "accent",
+  "app": "Vesta",
+  "symbol": "calendar",
+  "value": "0",
+  "label": "today",
+  "caption": "nothing today",
+  "items": [
+   {
+    "title": "Bayern München – RB Leipzig",
+    "detail": "tmrw 18:30",
+    "tag": "sport"
+   }
+  ],
+  "data": {
+   "nextAt": "2026-10-17T16:30:00.000Z",
+   "next": "Bayern München – RB Leipzig",
+   "nextAllDay": "",
+   "today": "0"
+  },
+  "order": 50,
+  "updatedAt": "2026-10-16T19:41:00.000Z",
+  "ageSec": 600
+ },
+ {
+  "id": "argus",
+  "title": "Network",
+  "kind": "status",
+  "tint": "warn",
+  "app": "Argus",
+  "symbol": "network",
+  "value": "Warn",
+  "label": "3 to check",
+  "caption": "Working, with things worth looking at.",
+  "items": [
+   {
+    "title": "No exit node: traffic leaves through your own line",
+    "tag": "vpn",
+    "tint": "warn"
+   },
+   {
+    "title": "2 device keys expire within two weeks",
+    "tag": "keys",
+    "tint": "warn"
+   },
+   {
+    "title": "VPN exit lanes did not answer",
+    "tag": "exits",
+    "tint": "neutral"
+   },
+   {
+    "title": "Tailnet: 9 devices, 6 online",
+    "tag": "tail",
+    "tint": "ok"
+   }
+  ],
+  "data": {
+   "open": "3",
+   "devices": "9",
+   "online": "6"
+  },
+  "order": 70,
+  "updatedAt": "2026-10-16T19:41:00.000Z",
+  "ageSec": 900
+ },
+ {
+  "id": "taxes-ustva",
+  "title": "UStVA",
+  "kind": "metric",
+  "tint": "accent",
+  "app": "Taxes",
+  "symbol": "doc.text",
+  "value": "Q4",
+  "label": "due 11.01.",
+  "caption": "ohne Dauerfristverlängerung",
+  "data": {
+   "quarter": "Q4 2026",
+   "due": "Mon 11.01.",
+   "dueAt": "2027-01-11",
+   "from": "2026-10-11"
+  },
+  "order": 60,
+  "updatedAt": "2026-10-16T19:41:00.000Z",
+  "ageSec": 3600
+ },
+ {
+  "id": "tv-alerts",
+  "title": "Alerts",
+  "kind": "metric",
+  "tint": "ok",
+  "app": "Lucid TV",
+  "symbol": "tv",
+  "value": "0",
+  "label": "alerts",
+  "caption": "all quiet",
+  "order": 80,
+  "updatedAt": "2026-10-16T19:41:00.000Z",
+  "ageSec": 1200
+ }
+]

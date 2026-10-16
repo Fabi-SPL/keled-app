@@ -7,3 +7,5 @@ ios/*.xcodeproj
 DerivedData/
 .DS_Store
 shots/
+# His wallpapers are other people's photos (Pinterest pins): served by the hub, never committed.
+hub/assets/wall-*

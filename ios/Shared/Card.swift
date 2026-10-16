@@ -10,6 +10,11 @@ struct CardItem: Codable, Hashable {
     var on: Bool?
     var symbol: String?
     var confirm: Bool?
+    /// An image asset for this row (a Kel's portrait), and a link a row or tile opens.
+    var image: String?
+    var url: String?
+    /// The row's own number (an account's "need you" count), so a design can size or compare it.
+    var value: String?
 }
 
 /// A button on the card. With `url` it only opens something; otherwise the hub runs it.
@@ -101,6 +106,103 @@ struct LayoutNode: Codable, Hashable {
     var opacity: Double?
     var fit: String?
     var minLength: Double?
+    /// Draw this node and its children with another card (by id) as {value}, {items}, links.
+    var card: String?
+    /// Segments, rays, bars or grid cells to draw; grid columns; the value a bar breaks above.
+    var total: Double?
+    var columns: Double?
+    var cap: Double?
+    /// An image that keeps its colours on Clear and tinted Home Screens (iOS 18).
+    var full: Bool?
+    /// Shape geometry inside a canvas, in its box's units: position, radius, SVG path, dashes.
+    var x: Double?
+    var y: Double?
+    var r: Double?
+    var d: String?
+    var box: [Double]?
+    var dash: [Double]?
+    /// A filter for each ("{tint} == warn"), and the degrees a gauge runs between.
+    var test: String?
+    var from: Double?
+    var to: Double?
+    var start: String?
+    /// Cut this node out of what is under it (a number punched through a filled bubble).
+    var knock: Bool?
+    /// Gap between rows in a grid (spacing is the gap between columns).
+    var rowSpacing: Double?
+    /// How many segments or cells to draw, as a template ("{count}", "{data.total}").
+    var count: String?
+}
+
+/// One widget design from the hub: what it reads, the size it was drawn for, and its tree.
+/// Designs are data, so a new one reaches the phone without a build.
+struct Design: Codable, Identifiable, Hashable {
+    var id: String
+    var name: String
+    var n: Int?
+    var family: String
+    var device: String?
+    var cards: [String]
+    var theme: CardTheme?
+    var layout: LayoutNode
+    var note: String?
+    /// Gallery entry it belongs to: one per app, every style reachable from the edit menu.
+    var group: String?
+
+    var label: String { n.map { String(format: "W%02d %@", $0, name) } ?? name }
+
+    var familyLabel: String {
+        switch family {
+        case "circular": return "Lock, round"
+        case "rectangular": return "Lock, wide"
+        case "inline": return "Lock, one line"
+        case "small": return "Small"
+        case "medium": return "Medium"
+        case "large": return "Large"
+        case "xl": return "iPad, extra large"
+        default: return family
+        }
+    }
+
+    var isAccessory: Bool { ["circular", "rectangular", "inline"].contains(family) }
+
+    /// The cards this design reads, in its own order; "*" means every card.
+    func pick(_ all: [Card]) -> [Card] {
+        if cards.contains("*") { return all }
+        return cards.compactMap { id in all.first { $0.id == id } }
+    }
+
+    var assetNames: Set<String> {
+        var names = Set<String>()
+        if let image = theme?.image { names.insert(image) }
+        func walk(_ n: LayoutNode) {
+            if n.type == "image", let src = n.src, !src.contains("{") { names.insert(src) }
+            n.children?.forEach(walk)
+        }
+        walk(layout)
+        return names
+    }
+}
+
+struct DesignsResponse: Codable {
+    var version: String?
+    var designs: [Design]
+
+    private struct Lossy: Decodable {
+        let design: Design?
+        init(from decoder: Decoder) throws { design = try? Design(from: decoder) }
+    }
+
+    init(version: String?, designs: [Design]) {
+        self.version = version
+        self.designs = designs
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        version = try c.decodeIfPresent(String.self, forKey: .version)
+        designs = (try c.decodeIfPresent([Lossy].self, forKey: .designs) ?? []).compactMap(\.design)
+    }
 }
 
 /// One widget card, exactly as the hub serves it. Unknown keys are ignored.
@@ -138,6 +240,8 @@ struct Card: Codable, Identifiable, Hashable {
 struct CardsResponse: Codable {
     var now: String?
     var cards: [Card]
+    /// Version of the hub's design list, so the phone refetches designs only when they change.
+    var designs: String?
 
     private struct Lossy: Decodable {
         let card: Card?
@@ -153,6 +257,7 @@ struct CardsResponse: Codable {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         now = try c.decodeIfPresent(String.self, forKey: .now)
         cards = (try c.decodeIfPresent([Lossy].self, forKey: .cards) ?? []).compactMap(\.card)
+        designs = try c.decodeIfPresent(String.self, forKey: .designs)
     }
 }
 
@@ -161,9 +266,9 @@ enum KeledPalette {
     static let wine = Color(uiColor: UIColor { $0.userInterfaceStyle == .dark
         ? UIColor(red: 0.86, green: 0.36, blue: 0.44, alpha: 1)
         : UIColor(red: 0.608, green: 0.106, blue: 0.188, alpha: 1) })
-    static let ok = Color(red: 0.19, green: 0.64, blue: 0.38)
-    static let warn = Color(red: 0.90, green: 0.58, blue: 0.10)
-    static let bad = Color(red: 0.86, green: 0.22, blue: 0.22)
+    static let ok = Color(uiColor: .systemGreen)
+    static let warn = Color(uiColor: .systemOrange)
+    static let bad = Color(uiColor: .systemRed)
 
     static func tint(_ name: String?) -> Color {
         switch name {
@@ -221,6 +326,7 @@ extension Card {
             n.children?.forEach(walk)
         }
         layouts?.values.forEach(walk)
+        items?.forEach { if let i = $0.image { names.insert(i) } }
         return names
     }
 

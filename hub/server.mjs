@@ -5,7 +5,7 @@
 
 import { createServer } from 'node:http'
 import { timingSafeEqual } from 'node:crypto'
-import { readdirSync, writeFileSync, mkdirSync, readFileSync } from 'node:fs'
+import { readdirSync, writeFileSync, mkdirSync, readFileSync, statSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { putCard, getCard, listCards, removeCard, servedCard, assetPath, DATA_DIR } from './store.mjs'
@@ -15,6 +15,19 @@ import { loadSecret, PORT } from './config.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const MAX_BODY = 64 * 1024
+const DESIGNS_FILE = process.env.KELED_WIDGETS_DESIGNS || join(HERE, 'designs', 'designs.json')
+
+// The gallery designs (hub/designs/build.mjs output), reread whenever the file changes.
+let designsCache = { mtime: -1, value: { version: null, designs: [] } }
+export function designs() {
+  try {
+    const mtime = statSync(DESIGNS_FILE).mtimeMs
+    if (mtime !== designsCache.mtime) designsCache = { mtime, value: JSON.parse(readFileSync(DESIGNS_FILE, 'utf8')) }
+  } catch {
+    designsCache = { mtime: -1, value: { version: null, designs: [] } }
+  }
+  return designsCache.value
+}
 
 export function authorized(header, token) {
   if (!token || typeof header !== 'string' || !header.startsWith('Bearer ')) return false
@@ -60,8 +73,9 @@ export function createHub({ token, feedStatus = () => ({}), feeds = [] }) {
       if (url.pathname === '/v1/cards' && req.method === 'GET') {
         const now = Date.now()
         logFetch(req.headers['x-keled-source'], now)
-        return send(res, 200, { now: new Date(now).toISOString(), cards: listCards().map((c) => serve(c, now)) })
+        return send(res, 200, { now: new Date(now).toISOString(), designs: designs().version ?? undefined, cards: listCards().map((c) => serve(c, now)) })
       }
+      if (url.pathname === '/v1/designs' && req.method === 'GET') return send(res, 200, designs())
       if (url.pathname === '/v1/status' && req.method === 'GET') {
         return send(res, 200, { cards: listCards().length, feeds: feedStatus() })
       }
