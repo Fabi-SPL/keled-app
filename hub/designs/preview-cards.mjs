@@ -21,7 +21,7 @@ export const PREVIEW_CARDS = [
   { id: 'office', title: 'Office', kind: 'status', tint: 'ok', app: 'Keled Office', symbol: 'building.2.fill', value: '1 busy', label: 'agents',
     caption: '5 you hold · last 4m ago', ageSec: 60, order: 20,
     data: { busy: '1', hold: '5', assigned: '3', last: '4m ago', who: 'Ada', task: 'Brand files fold' },
-    items: [kel('Ada', 'Brand files fold', true), kel('Mira', 'idle', false), kel('Nora', 'idle', false), kel('Lena', 'idle', false), kel('Thea', 'idle', false), kel('Ivy', 'idle', false)] },
+    items: [kel('Ada', 'Brand files fold', true), kel('Mira', 'idle', false), kel('Nora', 'idle', false), kel('Hazel', 'idle', false), kel('Noratwin', 'idle', false), kel('Iris', 'idle', false)] },
   { id: 'office-asks', title: 'Asks', kind: 'metric', tint: 'warn', app: 'Keled Office', symbol: 'questionmark.bubble.fill', value: '3', label: 'for you',
     caption: '2 questions, 1 decision', ageSec: 60, order: 21 },
   { id: 'olympus', title: 'Board', kind: 'list', tint: 'warn', app: 'Olympus', symbol: 'building.columns.fill', value: '7/10', label: 'carried',

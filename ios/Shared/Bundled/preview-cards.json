@@ -104,22 +104,22 @@
     "image": "kel-nora.jpg"
    },
    {
-    "title": "Lena",
+    "title": "Hazel",
     "detail": "idle",
     "on": false,
-    "image": "kel-lena.jpg"
+    "image": "kel-hazel.jpg"
    },
    {
-    "title": "Thea",
+    "title": "Noratwin",
     "detail": "idle",
     "on": false,
-    "image": "kel-thea.jpg"
+    "image": "kel-noratwin.jpg"
    },
    {
-    "title": "Ivy",
+    "title": "Iris",
     "detail": "idle",
     "on": false,
-    "image": "kel-ivy.jpg"
+    "image": "kel-iris.jpg"
    }
   ],
   "data": {
