@@ -18,7 +18,7 @@ import {
   putTheme, getTheme, listThemes, removeTheme, ASSETS_DIR, ASSET, KINDS, TINTS, FAMILIES, NODE_TYPES,
 } from './store.mjs'
 import { loadSecret, SECRET_FILE, PORT, PUBLIC_URL } from './config.mjs'
-import { loadFeeds, runFeed } from './server.mjs'
+import { loadFeeds, runFeed, PRIVATE_DIR } from './server.mjs'
 import { readFileSync, writeFileSync, rmSync, copyFileSync, mkdirSync, readdirSync, statSync, existsSync } from 'node:fs'
 import { seal, open } from './seal.mjs'
 import { basename, dirname, join, resolve } from 'node:path'
@@ -314,7 +314,7 @@ try {
     }
     case 'preview': await preview(pos, flags); break
     case 'feed': {
-      const feeds = await loadFeeds()
+      const feeds = [...await loadFeeds(), ...await loadFeeds(join(PRIVATE_DIR, 'feeds'))]
       const feed = feeds.find((x) => x.name === pos[0])
       if (!feed) throw new Error(`no feed ${pos[0]}; have: ${feeds.map((x) => x.name).join(', ')}`)
       for (const c of await runFeed(feed)) console.log(JSON.stringify(c))

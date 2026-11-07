@@ -9,3 +9,5 @@ DerivedData/
 shots/
 # His wallpapers are other people's photos (Pinterest pins): served by the hub, never committed.
 hub/assets/wall-*
+# Personal routes and feeds: local only, never in this public repo.
+hub/private/

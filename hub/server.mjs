@@ -5,7 +5,7 @@
 
 import { createServer } from 'node:http'
 import { timingSafeEqual } from 'node:crypto'
-import { readdirSync, writeFileSync, mkdirSync, readFileSync, statSync } from 'node:fs'
+import { readdirSync, writeFileSync, mkdirSync, readFileSync, statSync, existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { putCard, getCard, listCards, removeCard, servedCard, assetPath, DATA_DIR } from './store.mjs'
@@ -16,6 +16,10 @@ import { loadSecret, PORT } from './config.mjs'
 const HERE = dirname(fileURLToPath(import.meta.url))
 const MAX_BODY = 64 * 1024
 const DESIGNS_FILE = process.env.KELED_WIDGETS_DESIGNS || join(HERE, 'designs', 'designs.json')
+// hub/private (gitignored) holds routes and feeds that stay off this public repo; without it the hub runs as is.
+export const PRIVATE_DIR = process.env.KELED_HUB_PRIVATE || join(HERE, 'private')
+const PRIVATE_ROUTES = join(PRIVATE_DIR, 'routes.mjs')
+const privateRoutes = existsSync(PRIVATE_ROUTES) ? await import(pathToFileURL(PRIVATE_ROUTES).href) : null
 
 // The gallery designs (hub/designs/build.mjs output), reread whenever the file changes.
 let designsCache = { mtime: -1, value: { version: null, designs: [] } }
@@ -68,6 +72,7 @@ export function createHub({ token, feedStatus = () => ({}), feeds = [] }) {
     try { url = new URL(req.url, 'http://hub') } catch { return send(res, 400, { error: 'bad url' }) }
     try {
       if (url.pathname === '/healthz') return send(res, 200, { ok: true })
+      if (privateRoutes && await privateRoutes.handle(req, res, url, send)) return
       if (!authorized(req.headers.authorization, token)) return send(res, 401, { error: 'unauthorized' })
 
       if (url.pathname === '/v1/cards' && req.method === 'GET') {
@@ -143,7 +148,7 @@ async function main() {
     process.exit(2)
   }
   const status = {}
-  const feeds = await loadFeeds()
+  const feeds = [...await loadFeeds(), ...await loadFeeds(join(PRIVATE_DIR, 'feeds'))]
   const tick = async (feed) => {
     const started = Date.now()
     try {
