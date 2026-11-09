@@ -49,7 +49,7 @@ test('fixed images ship in the app; his photos never do', () => {
   const wanted = new Set()
   const walk = (n) => { if (n.type === 'image' && n.src && !n.src.includes('{')) wanted.add(n.src); (n.children ?? []).forEach(walk) }
   built.designs.forEach((d) => walk(d.layout))
-  for (const k of ['ada', 'ivy', 'lena', 'mira', 'nora', 'thea', 'iris', 'vera', 'noratwin', 'theatwin', 'clara', 'nova', 'hazel']) wanted.add(`kel-${k}.jpg`)
+  for (const k of ['ada', 'ivy', 'lena', 'mira', 'nora', 'thea', 'iris', 'vera', 'noratwin', 'theatwin', 'clara', 'nova', 'hazel', 'rosa', 'paula']) wanted.add(`kel-${k}.jpg`)
   for (const name of wanted) assert.ok(shipped.has(name), `missing bundled ${name}`)
   const ignore = readFileSync(join(ROOT, '.gitignore'), 'utf8')
   assert.match(ignore, /^hub\/assets\/wall-\*$/m)
