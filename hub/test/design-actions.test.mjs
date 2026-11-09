@@ -187,6 +187,10 @@ test('a feed card action goes to the feed and the feed re-reads the truth', asyn
   assert.equal(card.items[0].on, true)
   assert.equal(card.items[0].action, 'lamp:on')
   assert.equal(card.source, 'feed:demo')
+  const back = await act('feed-card', 'lamp:on', false)
+  assert.equal(back.status, 200, 'the toggled ref (2-char arg) must fire too')
+  assert.deepEqual(feedActs.at(-1), { name: 'lamp', arg: 'on', on: false })
+  assert.equal(store.getCard('feed-card').items[0].action, 'lamp:off')
 })
 
 test('assets are served by name only', async () => {
@@ -211,8 +215,16 @@ test('over HTTP a card with handlers or a feed behind it cannot be rewritten, an
   assert.equal((await put('forged', { title: 'F', source: 'feed:demo', items: [{ title: 'x', action: 'lamp:on' }] })).status, 200)
   assert.equal(store.getCard('forged').source, 'push')
   feedActs.length = 0
-  assert.equal((await act('forged', 'lamp:on')).status, 400)
+  const forged = await act('forged', 'lamp:on')
+  assert.equal(forged.status, 400)
+  assert.equal((await forged.json()).error, 'no handler for this action')
   assert.equal(feedActs.length, 0)
+})
+
+test('short args parse; only the dot segments and a leading dash are refused', async () => {
+  const { parseRef } = await import('../actions.mjs')
+  for (const [ref, arg] of [['ack:a', 'a'], ['ack:a1', 'a1'], ['lamp:on', 'on'], ['x:...', '...'], ['x:.a', '.a'], ['power', '']]) assert.equal(parseRef(ref)?.arg, arg, ref)
+  for (const ref of ['x:.', 'x:..', 'x:-rf', 'x:-']) assert.equal(parseRef(ref), null, ref)
 })
 
 test('dot-segment and dash args are refused', async () => {

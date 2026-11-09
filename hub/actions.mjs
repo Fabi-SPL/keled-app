@@ -19,7 +19,7 @@ export function parseRef(ref) {
   const m = String(ref ?? '').match(ACTION_REF)
   if (!m) return null
   const arg = m[2] ?? ''
-  if (/^.{1,2}$/.test(arg) || arg.startsWith('-')) return null
+  if (/^\.{1,2}$/.test(arg) || arg.startsWith('-')) return null
   return { name: m[1], arg }
 }
 
