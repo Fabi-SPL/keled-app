@@ -227,6 +227,18 @@ test('short args parse; only the dot segments and a leading dash are refused', a
   for (const ref of ['x:.', 'x:..', 'x:-rf', 'x:-']) assert.equal(parseRef(ref), null, ref)
 })
 
+test('short declared refs reach their handler; an undeclared short ref never does', async () => {
+  store.putCard({ id: 'acks', title: 'A', items: [{ title: 'one', action: 'ack:a' }, { title: 'two', action: 'ack:a1' }],
+    do: { ack: { then: 'none', http: { url: `${targetUrl}/ack/{arg}` } } } })
+  hits.length = 0
+  for (const ref of ['ack:a', 'ack:a1']) assert.equal((await act('acks', ref)).status, 200, ref)
+  assert.deepEqual(hits.map((h) => h.url), ['/ack/a', '/ack/a1'])
+  const stray = await act('acks', 'ack:zz')
+  assert.equal(stray.status, 400)
+  assert.equal((await stray.json()).error, 'action not declared on this card')
+  assert.equal(hits.length, 2)
+})
+
 test('dot-segment and dash args are refused', async () => {
   store.putCard({ id: 'paths', title: 'P', items: [{ title: 'a', action: 'go:..' }, { title: 'b', action: 'go:-rf' }, { title: 'c', action: 'go:.' }],
     do: { go: { http: { url: `${targetUrl}/go/{arg}` } } } })
