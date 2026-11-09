@@ -1,6 +1,6 @@
 import { test, before, after } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs'
+import { mkdtempSync, readFileSync, readdirSync, rmSync, copyFileSync, existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -82,4 +82,20 @@ test('one gallery entry per group, at most seven per bundle', () => {
   assert.equal((swift.match(/: Widget \{/g) ?? []).length, GROUPS.length)
   assert.equal(bundles, Math.ceil(GROUPS.length / 7))
   assert.match(swift, /struct KeledGallery: WidgetBundle/)
+})
+
+test('a Kel the office drew gets a hub face with the same crop as the hand-made ones', async (t) => {
+  const { makeKelFace, OFFICE_FACES } = await import('../kelfaces.mjs')
+  const face = join(OFFICE_FACES, 'hazel-face.webp')
+  if (!existsSync(face)) return t.skip('office portraits are not on this machine')
+  const tmp = mkdtempSync(join(tmpdir(), 'keled-kelface-'))
+  try {
+    copyFileSync(face, join(tmp, 'newkel-face.webp'))
+    assert.equal(await makeKelFace('newkel', { src: tmp, out: tmp }), true)
+    const made = readFileSync(join(tmp, 'kel-newkel.jpg'))
+    assert.ok(made.equals(readFileSync(join(ROOT, 'hub', 'assets', 'kel-hazel.jpg'))), 'crop or JPEG settings drifted from the hand-made faces')
+    assert.equal(await makeKelFace('newkel', { src: tmp, out: tmp }), false, 'an existing face is never redrawn')
+    assert.equal(await makeKelFace('nobody', { src: tmp, out: tmp }), false, 'no office face, no picture')
+    assert.equal(await makeKelFace('../x', { src: tmp, out: tmp }), false)
+  } finally { rmSync(tmp, { recursive: true, force: true }) }
 })
