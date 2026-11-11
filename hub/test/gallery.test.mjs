@@ -1,6 +1,6 @@
 import { test, before, after } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, readFileSync, readdirSync, rmSync, copyFileSync, existsSync } from 'node:fs'
+import fs, { mkdtempSync, readFileSync, readdirSync, rmSync, copyFileSync, existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -103,8 +103,40 @@ test('a Kel the office drew gets a hub face with the same crop as the hand-made 
     assert.ok(existsSync(join(bun, 'kel-newkel.jpg')), 'a missing bundle twin is put back without redrawing')
     rmSync(bun, { recursive: true, force: true })
     assert.ok(made.equals(readFileSync(join(ROOT, 'hub', 'assets', 'kel-hazel.jpg'))), 'crop or JPEG settings drifted from the hand-made faces')
-    assert.equal(await makeKelFace('newkel', { src: tmp, out: tmp }), false, 'an existing face is never redrawn')
+    assert.equal(await makeKelFace('newkel', { src: tmp, out: tmp }), false, 'an unchanged office face is never redrawn')
     assert.equal(await makeKelFace('nobody', { src: tmp, out: tmp }), false, 'no office face, no picture')
     assert.equal(await makeKelFace('../x', { src: tmp, out: tmp }), false)
   } finally { rmSync(tmp, { recursive: true, force: true }) }
+})
+
+test('a face the hub drew follows the office redraw; a hand-cut face never changes', async (t) => {
+  const { makeKelFace, OFFICE_FACES } = await import('../kelfaces.mjs')
+  const [hazel, rosa] = ['hazel', 'rosa'].map((k) => join(OFFICE_FACES, `${k}-face.webp`))
+  if (!existsSync(hazel) || !existsSync(rosa)) return t.skip('office portraits are not on this machine')
+  const tmp = mkdtempSync(join(tmpdir(), 'keled-kelredraw-'))
+  const bun = mkdtempSync(join(tmpdir(), 'keled-kelbundle-'))
+  try {
+    copyFileSync(hazel, join(tmp, 'newkel-face.webp'))
+    assert.equal(await makeKelFace('newkel', { src: tmp, out: tmp, bundle: bun }), true)
+    copyFileSync(rosa, join(tmp, 'newkel-face.webp'))
+    assert.equal(await makeKelFace('newkel', { src: tmp, out: tmp, bundle: bun }), true, 'the office redrew her, so the hub redraws')
+    const rosaHub = readFileSync(join(ROOT, 'hub', 'assets', 'kel-rosa.jpg'))
+    assert.ok(readFileSync(join(tmp, 'kel-newkel.jpg')).equals(rosaHub), 'the redraw is the new face')
+    assert.ok(readFileSync(join(bun, 'kel-newkel.jpg')).equals(rosaHub), 'the bundle twin follows the redraw')
+
+    const handCut = Buffer.from('a hand-cut jpg the hub would never draw')
+    copyFileSync(hazel, join(tmp, 'cut-face.webp'))
+    fs.writeFileSync(join(tmp, 'kel-cut.jpg'), handCut)
+    assert.equal(await makeKelFace('cut', { src: tmp, out: tmp }), false)
+    copyFileSync(rosa, join(tmp, 'cut-face.webp'))
+    assert.equal(await makeKelFace('cut', { src: tmp, out: tmp }), false)
+    assert.ok(readFileSync(join(tmp, 'kel-cut.jpg')).equals(handCut), 'a hand-cut face survives an office redraw')
+    assert.deepEqual(JSON.parse(readFileSync(join(tmp, 'kelfaces.json'), 'utf8')).cut, { hand: true })
+
+    copyFileSync(hazel, join(tmp, 'seen-face.webp'))
+    copyFileSync(join(ROOT, 'hub', 'assets', 'kel-hazel.jpg'), join(tmp, 'kel-seen.jpg'))
+    assert.equal(await makeKelFace('seen', { src: tmp, out: tmp }), false, 'a face the hub would draw as it is gets recorded, not redrawn')
+    copyFileSync(rosa, join(tmp, 'seen-face.webp'))
+    assert.equal(await makeKelFace('seen', { src: tmp, out: tmp }), true, 'and then follows the office like one it drew')
+  } finally { rmSync(tmp, { recursive: true, force: true }); rmSync(bun, { recursive: true, force: true }) }
 })

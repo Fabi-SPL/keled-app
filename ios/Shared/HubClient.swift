@@ -135,7 +135,8 @@ enum AssetStore {
 
     /// Decoded at most 1400 px on the long side: the widget extension dies near 30 MB, and a
     /// 1 MB PNG can decode to far more than that at full size.
-    /// Kel portraits and Themis ship inside the app; everything else comes from the hub.
+    /// Kel portraits and Themis ship inside the app. A Kel face is still fetched and, once fetched, the hub's copy wins,
+    /// so a face the office redraws (Nova and Paula, 2026-11-11) reaches the phone without a build.
     private static func bundled(_ name: String) -> URL? {
         let ns = name as NSString
         return Bundle.main.url(forResource: ns.deletingPathExtension, withExtension: ns.pathExtension)
@@ -162,7 +163,7 @@ enum AssetStore {
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         await withTaskGroup(of: Void.self) { group in
             for name in names {
-                guard let url = file(name), bundled(name) == nil else { continue }
+                guard let url = file(name), bundled(name) == nil || name.hasPrefix("kel-") else { continue }
                 let modified = (try? url.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate
                 if let modified, Date().timeIntervalSince(modified) < maxAge { continue }
                 group.addTask {
