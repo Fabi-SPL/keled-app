@@ -1,6 +1,6 @@
 // Keled Office daemon on this PC. Read-only GETs on its local API.
 import { getJson, ago, plural } from './_http.mjs'
-import { makeKelFace } from '../kelfaces.mjs'
+import { syncKelFaces } from '../kelfaces.mjs'
 
 const BASE = process.env.KELED_OFFICE_URL || 'http://127.0.0.1:4640'
 const UI = 'https://fabi-pc.taildd1460.ts.net:3456'
@@ -9,6 +9,8 @@ export default {
   refresh: '5m',
   every: 120,
   async run() {
+    // A new hire or a redrawn face reaches the widget even while the office API is too slow to answer.
+    syncKelFaces().catch(() => {})
     const [state, asks, decisions] = await Promise.all([
       getJson(`${BASE}/api/state`),
       getJson(`${BASE}/api/ask?open=1`).catch(() => ({ items: [] })),
@@ -18,8 +20,6 @@ export default {
     // budget.stopped is the STOP file; `running` only covers the old cycle mode.
     const stopped = !!state.budget?.stopped
     const agents = Object.entries(state.agents ?? {})
-    // A new hire gets a widget face as soon as the office has drawn one.
-    for (const [name] of agents) makeKelFace(name)
     // 'resting' is the office plateau, not work: count it with idle.
     const busy = (a) => !!a.status && a.status !== 'idle' && a.status !== 'resting'
     const working = agents.filter(([, a]) => busy(a))

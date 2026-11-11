@@ -2,7 +2,7 @@
 // so the next build ships it without a hand copy. A face the hub made itself is redrawn when the office redraws
 // hers (Nova and Paula, 2026-11-11). The six hand-cut originals (98ba0fc) are never touched: the first look at
 // an existing face records whether the hub would have drawn exactly it ({ src }) or a hand did ({ hand }).
-import { existsSync, copyFileSync, readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs'
+import { existsSync, copyFileSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -70,4 +70,16 @@ export function makeKelFace(id, { src = OFFICE_FACES, out = ASSETS_DIR, bundle =
   })().finally(() => pending.delete(dest))
   pending.set(dest, job)
   return job
+}
+
+// Every face the office has drawn, read off its folder: no network, so a slow /api/state (2026-11-11, >15 s)
+// never holds back a new hire or a redraw. Resolves to the ids it drew.
+export async function syncKelFaces(opts = {}) {
+  const src = opts.src ?? OFFICE_FACES
+  let names = []
+  try { names = readdirSync(src) } catch { return [] }
+  const ids = names.map((f) => /^([a-z0-9-]{1,40})-face\.webp$/.exec(f)?.[1]).filter(Boolean)
+  const drawn = []
+  for (const id of ids) if (await makeKelFace(id, opts)) drawn.push(id)
+  return drawn
 }

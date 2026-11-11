@@ -140,3 +140,18 @@ test('a face the hub drew follows the office redraw; a hand-cut face never chang
     assert.equal(await makeKelFace('seen', { src: tmp, out: tmp }), true, 'and then follows the office like one it drew')
   } finally { rmSync(tmp, { recursive: true, force: true }); rmSync(bun, { recursive: true, force: true }) }
 })
+
+test('the office feed draws faces off the portrait folder before it asks the office anything', async (t) => {
+  const { syncKelFaces, OFFICE_FACES } = await import('../kelfaces.mjs')
+  const hazel = join(OFFICE_FACES, 'hazel-face.webp')
+  if (!existsSync(hazel)) return t.skip('office portraits are not on this machine')
+  const tmp = mkdtempSync(join(tmpdir(), 'keled-kelsync-'))
+  try {
+    for (const n of ['one', 'two']) copyFileSync(hazel, join(tmp, `${n}-face.webp`))
+    fs.writeFileSync(join(tmp, 'one-look.webp'), 'not a face')
+    assert.deepEqual((await syncKelFaces({ src: tmp, out: tmp })).sort(), ['one', 'two'])
+    assert.deepEqual(await syncKelFaces({ src: tmp, out: tmp }), [], 'nothing changed, nothing drawn')
+    const feed = readFileSync(join(ROOT, 'hub', 'feeds', 'office.mjs'), 'utf8')
+    assert.ok(feed.includes('syncKelFaces()') && feed.indexOf('syncKelFaces()') < feed.indexOf('getJson('), 'faces before the network call')
+  } finally { rmSync(tmp, { recursive: true, force: true }) }
+})
